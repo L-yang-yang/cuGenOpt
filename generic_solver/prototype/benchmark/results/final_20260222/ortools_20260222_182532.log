@@ -1,0 +1,9 @@
+[18:25:32] Starting OR-Tools benchmark
+[18:25:32] TSP eil51 (n=51)
+[18:34:22] TSP kroA100 (n=100)
+[18:43:12] TSP ch150 (n=150)
+[18:52:03] TSP tsp225 (n=225)
+[19:00:53] TSP lin318 (n=318)
+[19:09:44] TSP pcb442 (n=442)
+[19:18:35] VRP A-n32-k5
+[19:22:25] OR-Tools benchmark completed

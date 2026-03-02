@@ -1,0 +1,5 @@
+instance,config,seed,obj,penalty,time_ms,gap_pct,generations,stop_reason
+A-n32-k5,routing_GLS_1s,0,784.00,0.00,1000.3,0.00,0,time
+A-n32-k5,routing_GLS_5s,0,784.00,0.00,5000.6,0.00,0,time
+A-n32-k5,routing_GLS_10s,0,784.00,0.00,10001.0,0.00,0,time
+A-n32-k5,routing_GLS_30s,0,784.00,0.00,30000.3,0.00,0,time

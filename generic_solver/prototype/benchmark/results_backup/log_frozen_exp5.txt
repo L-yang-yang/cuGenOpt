@@ -1,0 +1,13 @@
+GPU: Tesla T4 (SM=40, Shared=48KB, Compute=7.5)
+Warming up GPU...
+Warmup done.
+
+[exp5] Ablation study — TSP + BinPacking + GraphColor
+  [exp5] TSP kroA100 (n=100)
+  [exp5] TSP ch150 (n=150)
+  [exp5] BinPacking20
+  [exp5] GraphColor20
+  [exp5] Schedule5x6
+  [exp5] JSP4x3
+
+All requested experiments completed.

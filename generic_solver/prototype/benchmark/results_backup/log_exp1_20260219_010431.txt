@@ -1,0 +1,7 @@
+GPU: Tesla T4 (SM=40, Shared=48KB, Compute=7.5)
+Warming up GPU...
+Warmup done.
+
+[exp1] Generality validation — 12 problems (default config)
+
+All requested experiments completed.

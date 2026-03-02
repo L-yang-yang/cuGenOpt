@@ -1,0 +1,9 @@
+GPU: Tesla T4 (SM=40, Shared=48KB, Compute=7.5)
+Warming up GPU...
+Warmup done.
+
+[exp5] Ablation study — kroA100 + ch150
+  [exp5] kroA100 (n=100)
+  [exp5] ch150 (n=150)
+
+All requested experiments completed.

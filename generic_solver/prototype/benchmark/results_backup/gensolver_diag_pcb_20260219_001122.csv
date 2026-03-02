@@ -1,0 +1,891 @@
+  [KERNEL] sizeof(Sol)=280 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+instance,config,seed,obj,penalty,time_ms,gap_pct,generations,stop_reason
+
+[GenSolver v2.0 Block] Perm [1][100] pop=32(auto) gen=1000 blk=128
+  [AUTO] GPU=Tesla T4 SM=40 strategy=full(smem) → pop=32 isl=4x8/Hybrid SA=50/0.9990 CX=10% AOS seed=42
+  [INIT] oversample=4x → 128 candidates, top-N select 23 + 9 random (obj0 avg: 170050.6 → 158349.7, 6.9% better)
+  [SEQ] 8 sequences registered: 0(0.23) 1(0.23) 2(0.23) 3(0.11) 4(0.18) 20(0.01) 21(0.01) 22(0.00)
+  [K-STEP] K weights: K1=0.80 K2=0.15 K3=0.05
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=35 K=2 d=-6131 obj=149679 old_sc=149679 new_sc=143548
+  [DBG g=1] w=94 K=2 d=-4011 obj=143548 old_sc=143548 new_sc=139537
+  [DBG g=2] w=11 K=1 d=-3832 obj=139537 old_sc=139537 new_sc=135705
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=35 K=1 d=-553 obj=54935 old_sc=54935 new_sc=54382
+  [DBG g=1] w=121 K=1 d=-529 obj=54382 old_sc=54382 new_sc=53853
+  [DBG g=2] w=93 K=1 d=-919 obj=53853 old_sc=53853 new_sc=52934
+  [  100] 38550.0
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=1] w=97 K=1 d=-12 obj=39206 old_sc=39206 new_sc=39194
+  [DBG g=2] w=13 K=1 d=-233 obj=39194 old_sc=39194 new_sc=38961
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=35 K=1 d=45 obj=34144 old_sc=34144 new_sc=34189
+  [DBG g=1] w=75 K=1 d=-51 obj=34189 old_sc=34189 new_sc=34138
+  [DBG g=2] w=41 K=1 d=114 obj=34138 old_sc=34138 new_sc=34252
+  [  200] 28515.0
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=58 K=1 d=-320 obj=28820 old_sc=28820 new_sc=28500
+  [DBG g=2] w=83 K=1 d=-325 obj=28500 old_sc=28500 new_sc=28175
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=66 K=1 d=-229 obj=27327 old_sc=27327 new_sc=27098
+  [DBG g=2] w=126 K=1 d=-249 obj=27098 old_sc=27098 new_sc=26849
+  [  300] 24924.0
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=37 K=1 d=0 obj=24001 old_sc=24001 new_sc=24001
+  [  400] 22676.0
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=2] w=123 K=1 d=-14 obj=22676 old_sc=22676 new_sc=22662
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [  500] 21902.0
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [  600] 21699.0
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [  700] 21663.0
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=31 K=1 d=-5 obj=21755 old_sc=21755 new_sc=21750
+  [DBG g=2] w=66 K=2 d=-36 obj=21750 old_sc=21750 new_sc=21714
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=2] w=89 K=1 d=-53 obj=21714 old_sc=21714 new_sc=21661
+  [  800] 21650.0
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=1] w=76 K=1 d=-14 obj=21664 old_sc=21664 new_sc=21650
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [  900] 21650.0
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=47 K=1 d=0 obj=21650 old_sc=21650 new_sc=21650
+  [KERNEL] sizeof(Sol)=1048 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [ 1000] 21650.0
+  Result: obj0=21650.00  288ms 1000gen
+  row[0]: 53 1 81 94 12 75 32 36 4 95 77 51 47 99 40 70 13 2 42 45 ...(100)
+  AOS K-step weights: K1=0.527 K2=0.249 K3=0.224
+  AOS seq weights: [0]=0.249 [1]=0.191 [2]=0.292 [3]=0.063 [4]=0.063 [20]=0.050 [21]=0.050 [22]=0.040
+
+[GenSolver v2.0 Block] Perm [1][442] pop=64(auto) gen=5000 blk=128
+  [AUTO] GPU=Tesla T4 SM=40 L2=4096KB ws=763KB → pop=64 isl=4x16/Hybrid SA=50/0.9990 CX=10% AOS seed=42
+  [INIT] oversample=4x → 256 candidates, top-N select 45 + 19 random (obj0 avg: 772822.2 → 751470.9, 2.8% better)
+  [SEQ] 8 sequences registered: 0(0.23) 1(0.23) 2(0.23) 3(0.11) 4(0.18) 20(0.01) 21(0.01) 22(0.00)
+  [K-STEP] K weights: K1=0.80 K2=0.15 K3=0.05
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=31 K=2 d=-7477 obj=732447 old_sc=732447 new_sc=724970
+  [DBG g=1] w=83 K=1 d=-4167 obj=724970 old_sc=724970 new_sc=720803
+  [DBG g=2] w=24 K=2 d=-4233 obj=720803 old_sc=720803 new_sc=716570
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=46 K=2 d=-2183 obj=601821 old_sc=601821 new_sc=599638
+  [DBG g=1] w=94 K=3 d=-5665 obj=599638 old_sc=599638 new_sc=593973
+  [DBG g=2] w=26 K=3 d=-3790 obj=593973 old_sc=593973 new_sc=590183
+  [  100] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=4 g=0] old_scalar=-712974.0 obj[0]=712974.0 dir=1 mode=0 w=1.000
+  [BUG tid=48 g=0] old_scalar=-712974.0 obj[0]=712974.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=4 K=3 d=-23352 obj=712974 old_sc=-712974 new_sc=-736326
+  [BUG tid=48 g=1] old_scalar=-736326.0 obj[0]=736326.0 dir=1 mode=0 w=1.000
+  [BUG tid=4 g=1] old_scalar=-736326.0 obj[0]=736326.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=31 K=3 d=-9951 obj=736326 old_sc=736326 new_sc=726375
+  [BUG tid=4 g=2] old_scalar=-726375.0 obj[0]=726375.0 dir=1 mode=0 w=1.000
+  [BUG tid=48 g=2] old_scalar=-726375.0 obj[0]=726375.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=63 K=3 d=-5019 obj=726375 old_sc=726375 new_sc=721356
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=19 K=2 d=-4564 obj=741954 old_sc=741954 new_sc=737390
+  [DBG g=1] w=33 K=3 d=-13936 obj=737390 old_sc=737390 new_sc=723454
+  [DBG g=2] w=75 K=2 d=-7408 obj=723454 old_sc=723454 new_sc=716046
+  [  200] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=13 K=3 d=-10525 obj=744054 old_sc=744054 new_sc=733529
+  [DBG g=1] w=91 K=3 d=-15470 obj=733529 old_sc=733529 new_sc=718059
+  [DBG g=2] w=11 K=2 d=-10736 obj=718059 old_sc=718059 new_sc=707323
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=1 K=3 d=-10027 obj=750213 old_sc=750213 new_sc=740186
+  [BUG tid=92 g=1] old_scalar=-740186.0 obj[0]=740186.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=48 K=1 d=-3840 obj=740186 old_sc=740186 new_sc=736346
+  [BUG tid=92 g=2] old_scalar=-736346.0 obj[0]=736346.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=11 K=1 d=-8230 obj=736346 old_sc=736346 new_sc=728116
+  [  300] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=47 K=2 d=-15037 obj=740793 old_sc=740793 new_sc=725756
+  [DBG g=1] w=47 K=3 d=-15198 obj=725756 old_sc=725756 new_sc=710558
+  [BUG tid=42 g=2] old_scalar=-710558.0 obj[0]=710558.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=42 K=1 d=-6006 obj=710558 old_sc=-710558 new_sc=-716564
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=95 g=0] old_scalar=-708029.0 obj[0]=708029.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=9 K=3 d=-7116 obj=708029 old_sc=708029 new_sc=700913
+  [BUG tid=95 g=1] old_scalar=-700913.0 obj[0]=700913.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=46 K=3 d=-13568 obj=700913 old_sc=700913 new_sc=687345
+  [BUG tid=95 g=2] old_scalar=-687345.0 obj[0]=687345.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=104 K=3 d=-3731 obj=687345 old_sc=687345 new_sc=683614
+  [  400] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=37 g=0] old_scalar=-704716.0 obj[0]=704716.0 dir=1 mode=0 w=1.000
+  [BUG tid=114 g=0] old_scalar=-704716.0 obj[0]=704716.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=114 K=1 d=-9432 obj=704716 old_sc=-704716 new_sc=-714148
+  [BUG tid=114 g=1] old_scalar=-714148.0 obj[0]=714148.0 dir=1 mode=0 w=1.000
+  [BUG tid=33 g=1] old_scalar=-714148.0 obj[0]=714148.0 dir=1 mode=0 w=1.000
+  [BUG tid=37 g=1] old_scalar=-714148.0 obj[0]=714148.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=46 K=3 d=-10125 obj=714148 old_sc=714148 new_sc=704023
+  [BUG tid=114 g=2] old_scalar=-704023.0 obj[0]=704023.0 dir=1 mode=0 w=1.000
+  [BUG tid=33 g=2] old_scalar=-704023.0 obj[0]=704023.0 dir=1 mode=0 w=1.000
+  [BUG tid=37 g=2] old_scalar=-704023.0 obj[0]=704023.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=18 K=1 d=-6107 obj=704023 old_sc=704023 new_sc=697916
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=60 K=2 d=-8127 obj=739782 old_sc=739782 new_sc=731655
+  [BUG tid=37 g=1] old_scalar=-731655.0 obj[0]=731655.0 dir=1 mode=0 w=1.000
+  [BUG tid=65 g=1] old_scalar=-731655.0 obj[0]=731655.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=94 K=3 d=-14593 obj=731655 old_sc=731655 new_sc=717062
+  [BUG tid=37 g=2] old_scalar=-717062.0 obj[0]=717062.0 dir=1 mode=0 w=1.000
+  [BUG tid=65 g=2] old_scalar=-717062.0 obj[0]=717062.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=26 K=1 d=-5906 obj=717062 old_sc=717062 new_sc=711156
+  [  500] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=57 K=1 d=-7517 obj=736278 old_sc=736278 new_sc=728761
+  [DBG g=1] w=104 K=2 d=-7231 obj=728761 old_sc=728761 new_sc=721530
+  [DBG g=2] w=5 K=1 d=-5012 obj=721530 old_sc=721530 new_sc=716518
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=28 K=2 d=-5329 obj=674852 old_sc=674852 new_sc=669523
+  [DBG g=1] w=118 K=1 d=-6632 obj=669523 old_sc=669523 new_sc=662891
+  [BUG tid=83 g=2] old_scalar=-662891.0 obj[0]=662891.0 dir=1 mode=0 w=1.000
+  [BUG tid=43 g=2] old_scalar=-662891.0 obj[0]=662891.0 dir=1 mode=0 w=1.000
+  [BUG tid=58 g=2] old_scalar=-662891.0 obj[0]=662891.0 dir=1 mode=0 w=1.000
+  [BUG tid=1 g=2] old_scalar=-662891.0 obj[0]=662891.0 dir=1 mode=0 w=1.000
+  [BUG tid=4 g=2] old_scalar=-662891.0 obj[0]=662891.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=43 K=3 d=-7658 obj=662891 old_sc=-662891 new_sc=-670549
+  [  600] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=35 K=1 d=-9612 obj=711567 old_sc=711567 new_sc=701955
+  [BUG tid=79 g=1] old_scalar=-701955.0 obj[0]=701955.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=103 K=3 d=-7759 obj=701955 old_sc=701955 new_sc=694196
+  [BUG tid=79 g=2] old_scalar=-694196.0 obj[0]=694196.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=127 K=1 d=-6653 obj=694196 old_sc=694196 new_sc=687543
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=104 g=0] old_scalar=-759979.0 obj[0]=759979.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=109 K=1 d=-22530 obj=759979 old_sc=759979 new_sc=737449
+  [BUG tid=104 g=1] old_scalar=-737449.0 obj[0]=737449.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=38 K=3 d=-7635 obj=737449 old_sc=737449 new_sc=729814
+  [BUG tid=104 g=2] old_scalar=-729814.0 obj[0]=729814.0 dir=1 mode=0 w=1.000
+  [BUG tid=34 g=2] old_scalar=-729814.0 obj[0]=729814.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=34 K=3 d=-13535 obj=729814 old_sc=-729814 new_sc=-743349
+  [  700] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=103 K=3 d=-13633 obj=727814 old_sc=727814 new_sc=714181
+  [BUG tid=33 g=1] old_scalar=-714181.0 obj[0]=714181.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=80 K=2 d=-3354 obj=714181 old_sc=714181 new_sc=710827
+  [BUG tid=33 g=2] old_scalar=-710827.0 obj[0]=710827.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=19 K=3 d=-9710 obj=710827 old_sc=710827 new_sc=701117
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=24 K=1 d=-7098 obj=747521 old_sc=747521 new_sc=740423
+  [BUG tid=72 g=1] old_scalar=-740423.0 obj[0]=740423.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=39 K=2 d=-19234 obj=740423 old_sc=740423 new_sc=721189
+  [BUG tid=72 g=2] old_scalar=-721189.0 obj[0]=721189.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=63 K=3 d=-6427 obj=721189 old_sc=721189 new_sc=714762
+  [  800] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=4 K=3 d=-15948 obj=745513 old_sc=745513 new_sc=729565
+  [DBG g=1] w=88 K=2 d=-6291 obj=729565 old_sc=729565 new_sc=723274
+  [BUG tid=97 g=2] old_scalar=-723274.0 obj[0]=723274.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=97 K=3 d=-12379 obj=723274 old_sc=-723274 new_sc=-735653
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=5 g=0] old_scalar=-717604.0 obj[0]=717604.0 dir=1 mode=0 w=1.000
+  [BUG tid=126 g=0] old_scalar=-717604.0 obj[0]=717604.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=5 K=2 d=-15373 obj=717604 old_sc=-717604 new_sc=-732977
+  [BUG tid=69 g=1] old_scalar=-732977.0 obj[0]=732977.0 dir=1 mode=0 w=1.000
+  [BUG tid=126 g=1] old_scalar=-732977.0 obj[0]=732977.0 dir=1 mode=0 w=1.000
+  [BUG tid=5 g=1] old_scalar=-732977.0 obj[0]=732977.0 dir=1 mode=0 w=1.000
+  [BUG tid=27 g=1] old_scalar=-732977.0 obj[0]=732977.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=98 K=3 d=-10715 obj=732977 old_sc=732977 new_sc=722262
+  [BUG tid=5 g=2] old_scalar=-722262.0 obj[0]=722262.0 dir=1 mode=0 w=1.000
+  [BUG tid=27 g=2] old_scalar=-722262.0 obj[0]=722262.0 dir=1 mode=0 w=1.000
+  [BUG tid=69 g=2] old_scalar=-722262.0 obj[0]=722262.0 dir=1 mode=0 w=1.000
+  [BUG tid=126 g=2] old_scalar=-722262.0 obj[0]=722262.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=0 K=1 d=-8169 obj=722262 old_sc=722262 new_sc=714093
+  [  900] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=49 g=0] old_scalar=-755758.0 obj[0]=755758.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=104 K=2 d=-8371 obj=755758 old_sc=755758 new_sc=747387
+  [BUG tid=42 g=1] old_scalar=-747387.0 obj[0]=747387.0 dir=1 mode=0 w=1.000
+  [BUG tid=49 g=1] old_scalar=-747387.0 obj[0]=747387.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=24 K=2 d=-11105 obj=747387 old_sc=747387 new_sc=736282
+  [BUG tid=42 g=2] old_scalar=-736282.0 obj[0]=736282.0 dir=1 mode=0 w=1.000
+  [BUG tid=49 g=2] old_scalar=-736282.0 obj[0]=736282.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=42 K=2 d=-11087 obj=736282 old_sc=-736282 new_sc=-747369
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=14 K=3 d=-3430 obj=725124 old_sc=725124 new_sc=721694
+  [BUG tid=33 g=1] old_scalar=-721694.0 obj[0]=721694.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=113 K=3 d=-6113 obj=721694 old_sc=721694 new_sc=715581
+  [BUG tid=102 g=2] old_scalar=-715581.0 obj[0]=715581.0 dir=1 mode=0 w=1.000
+  [BUG tid=33 g=2] old_scalar=-715581.0 obj[0]=715581.0 dir=1 mode=0 w=1.000
+  [BUG tid=52 g=2] old_scalar=-715581.0 obj[0]=715581.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=13 K=1 d=-11578 obj=715581 old_sc=715581 new_sc=704003
+  [ 1000] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=3 K=2 d=-11784 obj=733065 old_sc=733065 new_sc=721281
+  [DBG g=1] w=117 K=3 d=-5543 obj=721281 old_sc=721281 new_sc=715738
+  [DBG g=2] w=75 K=1 d=-5658 obj=715738 old_sc=715738 new_sc=710080
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=13 K=2 d=-7394 obj=693197 old_sc=693197 new_sc=685803
+  [DBG g=1] w=85 K=3 d=-6300 obj=685803 old_sc=685803 new_sc=679503
+  [BUG tid=71 g=2] old_scalar=-679503.0 obj[0]=679503.0 dir=1 mode=0 w=1.000
+  [BUG tid=111 g=2] old_scalar=-679503.0 obj[0]=679503.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=111 K=2 d=-10420 obj=679503 old_sc=-679503 new_sc=-689923
+  [ 1100] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=59 K=3 d=-13611 obj=748173 old_sc=748173 new_sc=734562
+  [DBG g=1] w=98 K=2 d=-15102 obj=734562 old_sc=734562 new_sc=719460
+  [BUG tid=59 g=2] old_scalar=-719460.0 obj[0]=719460.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=121 K=3 d=-8664 obj=719460 old_sc=719460 new_sc=710796
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=4 K=3 d=-7752 obj=726513 old_sc=726513 new_sc=718761
+  [DBG g=1] w=43 K=1 d=-6713 obj=718761 old_sc=718761 new_sc=712048
+  [BUG tid=0 g=2] old_scalar=-712048.0 obj[0]=712048.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=115 K=3 d=-5246 obj=712048 old_sc=712048 new_sc=706802
+  [ 1200] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=88 g=0] old_scalar=-754740.0 obj[0]=754740.0 dir=1 mode=0 w=1.000
+  [BUG tid=5 g=0] old_scalar=-754740.0 obj[0]=754740.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=49 K=1 d=-7951 obj=754740 old_sc=754740 new_sc=746789
+  [BUG tid=4 g=1] old_scalar=-746789.0 obj[0]=746789.0 dir=1 mode=0 w=1.000
+  [BUG tid=5 g=1] old_scalar=-746789.0 obj[0]=746789.0 dir=1 mode=0 w=1.000
+  [BUG tid=88 g=1] old_scalar=-746789.0 obj[0]=746789.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=26 K=3 d=-8335 obj=746789 old_sc=746789 new_sc=738454
+  [BUG tid=88 g=2] old_scalar=-738454.0 obj[0]=738454.0 dir=1 mode=0 w=1.000
+  [BUG tid=4 g=2] old_scalar=-738454.0 obj[0]=738454.0 dir=1 mode=0 w=1.000
+  [BUG tid=5 g=2] old_scalar=-738454.0 obj[0]=738454.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=89 K=1 d=-12009 obj=738454 old_sc=738454 new_sc=726445
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=30 g=0] old_scalar=-742241.0 obj[0]=742241.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=124 K=2 d=-19086 obj=742241 old_sc=742241 new_sc=723155
+  [BUG tid=30 g=1] old_scalar=-723155.0 obj[0]=723155.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=72 K=3 d=-6687 obj=723155 old_sc=723155 new_sc=716468
+  [BUG tid=30 g=2] old_scalar=-716468.0 obj[0]=716468.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=30 K=2 d=-19007 obj=716468 old_sc=-716468 new_sc=-735475
+  [ 1300] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=107 g=0] old_scalar=-768020.0 obj[0]=768020.0 dir=1 mode=0 w=1.000
+  [BUG tid=19 g=0] old_scalar=-768020.0 obj[0]=768020.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=71 K=3 d=-11376 obj=768020 old_sc=768020 new_sc=756644
+  [BUG tid=19 g=1] old_scalar=-756644.0 obj[0]=756644.0 dir=1 mode=0 w=1.000
+  [BUG tid=107 g=1] old_scalar=-756644.0 obj[0]=756644.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=82 K=1 d=-12294 obj=756644 old_sc=756644 new_sc=744350
+  [BUG tid=19 g=2] old_scalar=-744350.0 obj[0]=744350.0 dir=1 mode=0 w=1.000
+  [BUG tid=70 g=2] old_scalar=-744350.0 obj[0]=744350.0 dir=1 mode=0 w=1.000
+  [BUG tid=107 g=2] old_scalar=-744350.0 obj[0]=744350.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=89 K=2 d=-13017 obj=744350 old_sc=744350 new_sc=731333
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=92 K=1 d=-12555 obj=733764 old_sc=733764 new_sc=721209
+  [BUG tid=68 g=1] old_scalar=-721209.0 obj[0]=721209.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=68 K=2 d=-6824 obj=721209 old_sc=-721209 new_sc=-728033
+  [BUG tid=68 g=2] old_scalar=-728033.0 obj[0]=728033.0 dir=1 mode=0 w=1.000
+  [BUG tid=85 g=2] old_scalar=-728033.0 obj[0]=728033.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=85 K=3 d=-14239 obj=728033 old_sc=-728033 new_sc=-742272
+  [ 1400] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=45 g=0] old_scalar=-732927.0 obj[0]=732927.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=45 K=2 d=-29448 obj=732927 old_sc=-732927 new_sc=-762375
+  [BUG tid=45 g=1] old_scalar=-762375.0 obj[0]=762375.0 dir=1 mode=0 w=1.000
+  [BUG tid=79 g=1] old_scalar=-762375.0 obj[0]=762375.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=27 K=3 d=-10262 obj=762375 old_sc=762375 new_sc=752113
+  [BUG tid=45 g=2] old_scalar=-752113.0 obj[0]=752113.0 dir=1 mode=0 w=1.000
+  [BUG tid=79 g=2] old_scalar=-752113.0 obj[0]=752113.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=37 K=2 d=-8694 obj=752113 old_sc=752113 new_sc=743419
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=119 g=0] old_scalar=-757882.0 obj[0]=757882.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=123 K=3 d=-23070 obj=757882 old_sc=757882 new_sc=734812
+  [BUG tid=9 g=1] old_scalar=-734812.0 obj[0]=734812.0 dir=1 mode=0 w=1.000
+  [BUG tid=119 g=1] old_scalar=-734812.0 obj[0]=734812.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=29 K=2 d=-13632 obj=734812 old_sc=734812 new_sc=721180
+  [BUG tid=9 g=2] old_scalar=-721180.0 obj[0]=721180.0 dir=1 mode=0 w=1.000
+  [BUG tid=41 g=2] old_scalar=-721180.0 obj[0]=721180.0 dir=1 mode=0 w=1.000
+  [BUG tid=119 g=2] old_scalar=-721180.0 obj[0]=721180.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=107 K=2 d=-5760 obj=721180 old_sc=721180 new_sc=715420
+  [ 1500] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=122 g=0] old_scalar=-531734.0 obj[0]=531734.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=122 K=1 d=-14216 obj=531734 old_sc=-531734 new_sc=-545950
+  [BUG tid=122 g=1] old_scalar=-545950.0 obj[0]=545950.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=122 K=1 d=-4096 obj=545950 old_sc=-545950 new_sc=-550046
+  [BUG tid=24 g=2] old_scalar=-550046.0 obj[0]=550046.0 dir=1 mode=0 w=1.000
+  [BUG tid=90 g=2] old_scalar=-550046.0 obj[0]=550046.0 dir=1 mode=0 w=1.000
+  [BUG tid=114 g=2] old_scalar=-550046.0 obj[0]=550046.0 dir=1 mode=0 w=1.000
+  [BUG tid=122 g=2] old_scalar=-550046.0 obj[0]=550046.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=90 K=1 d=-18506 obj=550046 old_sc=-550046 new_sc=-568552
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=40 g=0] old_scalar=-745759.0 obj[0]=745759.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=119 K=3 d=-15997 obj=745759 old_sc=745759 new_sc=729762
+  [BUG tid=64 g=1] old_scalar=-729762.0 obj[0]=729762.0 dir=1 mode=0 w=1.000
+  [BUG tid=40 g=1] old_scalar=-729762.0 obj[0]=729762.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=93 K=1 d=-17014 obj=729762 old_sc=729762 new_sc=712748
+  [BUG tid=64 g=2] old_scalar=-712748.0 obj[0]=712748.0 dir=1 mode=0 w=1.000
+  [BUG tid=40 g=2] old_scalar=-712748.0 obj[0]=712748.0 dir=1 mode=0 w=1.000
+  [BUG tid=52 g=2] old_scalar=-712748.0 obj[0]=712748.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=64 K=3 d=-10849 obj=712748 old_sc=-712748 new_sc=-723597
+  [ 1600] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=67 K=1 d=-12878 obj=738471 old_sc=738471 new_sc=725593
+  [BUG tid=27 g=1] old_scalar=-725593.0 obj[0]=725593.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=22 K=2 d=-7188 obj=725593 old_sc=725593 new_sc=718405
+  [BUG tid=27 g=2] old_scalar=-718405.0 obj[0]=718405.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=95 K=1 d=-5380 obj=718405 old_sc=718405 new_sc=713025
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=93 g=0] old_scalar=-740954.0 obj[0]=740954.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=18 K=1 d=-16705 obj=740954 old_sc=740954 new_sc=724249
+  [BUG tid=93 g=1] old_scalar=-724249.0 obj[0]=724249.0 dir=1 mode=0 w=1.000
+  [BUG tid=115 g=1] old_scalar=-724249.0 obj[0]=724249.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=22 K=3 d=-12291 obj=724249 old_sc=724249 new_sc=711958
+  [BUG tid=10 g=2] old_scalar=-711958.0 obj[0]=711958.0 dir=1 mode=0 w=1.000
+  [BUG tid=115 g=2] old_scalar=-711958.0 obj[0]=711958.0 dir=1 mode=0 w=1.000
+  [BUG tid=93 g=2] old_scalar=-711958.0 obj[0]=711958.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=115 K=2 d=-9214 obj=711958 old_sc=-711958 new_sc=-721172
+  [ 1700] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=3 g=0] old_scalar=-733309.0 obj[0]=733309.0 dir=1 mode=0 w=1.000
+  [BUG tid=60 g=0] old_scalar=-733309.0 obj[0]=733309.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=45 K=3 d=-12431 obj=733309 old_sc=733309 new_sc=720878
+  [BUG tid=3 g=1] old_scalar=-720878.0 obj[0]=720878.0 dir=1 mode=0 w=1.000
+  [BUG tid=39 g=1] old_scalar=-720878.0 obj[0]=720878.0 dir=1 mode=0 w=1.000
+  [BUG tid=60 g=1] old_scalar=-720878.0 obj[0]=720878.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=101 K=2 d=-12967 obj=720878 old_sc=720878 new_sc=707911
+  [BUG tid=3 g=2] old_scalar=-707911.0 obj[0]=707911.0 dir=1 mode=0 w=1.000
+  [BUG tid=26 g=2] old_scalar=-707911.0 obj[0]=707911.0 dir=1 mode=0 w=1.000
+  [BUG tid=33 g=2] old_scalar=-707911.0 obj[0]=707911.0 dir=1 mode=0 w=1.000
+  [BUG tid=39 g=2] old_scalar=-707911.0 obj[0]=707911.0 dir=1 mode=0 w=1.000
+  [BUG tid=42 g=2] old_scalar=-707911.0 obj[0]=707911.0 dir=1 mode=0 w=1.000
+  [BUG tid=60 g=2] old_scalar=-707911.0 obj[0]=707911.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=42 K=2 d=-23454 obj=707911 old_sc=-707911 new_sc=-731365
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=45 g=0] old_scalar=-734495.0 obj[0]=734495.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=15 K=2 d=-10720 obj=734495 old_sc=734495 new_sc=723775
+  [BUG tid=45 g=1] old_scalar=-723775.0 obj[0]=723775.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=96 K=1 d=-3536 obj=723775 old_sc=723775 new_sc=720239
+  [BUG tid=45 g=2] old_scalar=-720239.0 obj[0]=720239.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=127 K=2 d=-6204 obj=720239 old_sc=720239 new_sc=714035
+  [ 1800] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=29 K=3 d=-6653 obj=733748 old_sc=733748 new_sc=727095
+  [DBG g=1] w=51 K=2 d=-8550 obj=727095 old_sc=727095 new_sc=718545
+  [BUG tid=115 g=2] old_scalar=-718545.0 obj[0]=718545.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=115 K=1 d=-9220 obj=718545 old_sc=-718545 new_sc=-727765
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=63 K=3 d=-4643 obj=719535 old_sc=719535 new_sc=714892
+  [BUG tid=109 g=1] old_scalar=-714892.0 obj[0]=714892.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=50 K=3 d=-4465 obj=714892 old_sc=714892 new_sc=710427
+  [BUG tid=109 g=2] old_scalar=-710427.0 obj[0]=710427.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=86 K=3 d=-8715 obj=710427 old_sc=710427 new_sc=701712
+  [ 1900] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=48 g=0] old_scalar=-756056.0 obj[0]=756056.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=0 K=3 d=-11539 obj=756056 old_sc=756056 new_sc=744517
+  [BUG tid=48 g=1] old_scalar=-744517.0 obj[0]=744517.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=123 K=3 d=-6095 obj=744517 old_sc=744517 new_sc=738422
+  [BUG tid=48 g=2] old_scalar=-738422.0 obj[0]=738422.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=105 K=2 d=-15079 obj=738422 old_sc=738422 new_sc=723343
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=28 g=0] old_scalar=-720405.0 obj[0]=720405.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=4 K=3 d=-16474 obj=720405 old_sc=720405 new_sc=703931
+  [BUG tid=28 g=1] old_scalar=-703931.0 obj[0]=703931.0 dir=1 mode=0 w=1.000
+  [BUG tid=29 g=1] old_scalar=-703931.0 obj[0]=703931.0 dir=1 mode=0 w=1.000
+  [BUG tid=95 g=1] old_scalar=-703931.0 obj[0]=703931.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=39 K=3 d=-5502 obj=703931 old_sc=703931 new_sc=698429
+  [BUG tid=95 g=2] old_scalar=-698429.0 obj[0]=698429.0 dir=1 mode=0 w=1.000
+  [BUG tid=28 g=2] old_scalar=-698429.0 obj[0]=698429.0 dir=1 mode=0 w=1.000
+  [BUG tid=29 g=2] old_scalar=-698429.0 obj[0]=698429.0 dir=1 mode=0 w=1.000
+  [BUG tid=104 g=2] old_scalar=-698429.0 obj[0]=698429.0 dir=1 mode=0 w=1.000
+  [BUG tid=108 g=2] old_scalar=-698429.0 obj[0]=698429.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=104 K=3 d=-17133 obj=698429 old_sc=-698429 new_sc=-715562
+  [ 2000] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=28 K=1 d=-2199 obj=531734 old_sc=531734 new_sc=529535
+  [DBG g=1] w=89 K=1 d=-3205 obj=529535 old_sc=529535 new_sc=526330
+  [DBG g=2] w=114 K=1 d=-1980 obj=526330 old_sc=526330 new_sc=524350
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=80 K=3 d=-11294 obj=725761 old_sc=725761 new_sc=714467
+  [DBG g=1] w=116 K=1 d=-7989 obj=714467 old_sc=714467 new_sc=706478
+  [BUG tid=3 g=2] old_scalar=-706478.0 obj[0]=706478.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=15 K=3 d=-4792 obj=706478 old_sc=706478 new_sc=701686
+  [ 2100] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=84 g=0] old_scalar=-744470.0 obj[0]=744470.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=21 K=3 d=-11824 obj=744470 old_sc=744470 new_sc=732646
+  [BUG tid=71 g=1] old_scalar=-732646.0 obj[0]=732646.0 dir=1 mode=0 w=1.000
+  [BUG tid=80 g=1] old_scalar=-732646.0 obj[0]=732646.0 dir=1 mode=0 w=1.000
+  [BUG tid=84 g=1] old_scalar=-732646.0 obj[0]=732646.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=70 K=1 d=-5027 obj=732646 old_sc=732646 new_sc=727619
+  [BUG tid=50 g=2] old_scalar=-727619.0 obj[0]=727619.0 dir=1 mode=0 w=1.000
+  [BUG tid=71 g=2] old_scalar=-727619.0 obj[0]=727619.0 dir=1 mode=0 w=1.000
+  [BUG tid=80 g=2] old_scalar=-727619.0 obj[0]=727619.0 dir=1 mode=0 w=1.000
+  [BUG tid=84 g=2] old_scalar=-727619.0 obj[0]=727619.0 dir=1 mode=0 w=1.000
+  [BUG tid=94 g=2] old_scalar=-727619.0 obj[0]=727619.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=84 K=1 d=-11523 obj=727619 old_sc=-727619 new_sc=-739142
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=9 K=2 d=-7593 obj=753966 old_sc=753966 new_sc=746373
+  [DBG g=1] w=50 K=3 d=-19333 obj=746373 old_sc=746373 new_sc=727040
+  [BUG tid=21 g=2] old_scalar=-727040.0 obj[0]=727040.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=84 K=2 d=-14758 obj=727040 old_sc=727040 new_sc=712282
+  [ 2200] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=52 K=3 d=-21495 obj=770101 old_sc=770101 new_sc=748606
+  [BUG tid=90 g=1] old_scalar=-748606.0 obj[0]=748606.0 dir=1 mode=0 w=1.000
+  [BUG tid=100 g=1] old_scalar=-748606.0 obj[0]=748606.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=59 K=2 d=-15062 obj=748606 old_sc=748606 new_sc=733544
+  [BUG tid=3 g=2] old_scalar=-733544.0 obj[0]=733544.0 dir=1 mode=0 w=1.000
+  [BUG tid=12 g=2] old_scalar=-733544.0 obj[0]=733544.0 dir=1 mode=0 w=1.000
+  [BUG tid=77 g=2] old_scalar=-733544.0 obj[0]=733544.0 dir=1 mode=0 w=1.000
+  [BUG tid=90 g=2] old_scalar=-733544.0 obj[0]=733544.0 dir=1 mode=0 w=1.000
+  [BUG tid=100 g=2] old_scalar=-733544.0 obj[0]=733544.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=100 K=2 d=-12138 obj=733544 old_sc=-733544 new_sc=-745682
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=109 K=3 d=-17155 obj=763615 old_sc=763615 new_sc=746460
+  [DBG g=1] w=56 K=1 d=-14922 obj=746460 old_sc=746460 new_sc=731538
+  [BUG tid=53 g=2] old_scalar=-731538.0 obj[0]=731538.0 dir=1 mode=0 w=1.000
+  [BUG tid=111 g=2] old_scalar=-731538.0 obj[0]=731538.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=53 K=1 d=-7146 obj=731538 old_sc=-731538 new_sc=-738684
+  [ 2300] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=48 K=2 d=-6779 obj=734759 old_sc=734759 new_sc=727980
+  [DBG g=1] w=64 K=3 d=-10249 obj=727980 old_sc=727980 new_sc=717731
+  [BUG tid=80 g=2] old_scalar=-717731.0 obj[0]=717731.0 dir=1 mode=0 w=1.000
+  [BUG tid=46 g=2] old_scalar=-717731.0 obj[0]=717731.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=46 K=3 d=-8560 obj=717731 old_sc=-717731 new_sc=-726291
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=8 K=1 d=-16692 obj=768520 old_sc=768520 new_sc=751828
+  [DBG g=1] w=62 K=3 d=-15775 obj=751828 old_sc=751828 new_sc=736053
+  [BUG tid=58 g=2] old_scalar=-736053.0 obj[0]=736053.0 dir=1 mode=0 w=1.000
+  [BUG tid=71 g=2] old_scalar=-736053.0 obj[0]=736053.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=43 K=1 d=-10376 obj=736053 old_sc=736053 new_sc=725677
+  [ 2400] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=9 g=0] old_scalar=-745059.0 obj[0]=745059.0 dir=1 mode=0 w=1.000
+  [BUG tid=122 g=0] old_scalar=-745059.0 obj[0]=745059.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=104 K=3 d=-13455 obj=745059 old_sc=745059 new_sc=731604
+  [BUG tid=122 g=1] old_scalar=-731604.0 obj[0]=731604.0 dir=1 mode=0 w=1.000
+  [BUG tid=9 g=1] old_scalar=-731604.0 obj[0]=731604.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=63 K=3 d=-10690 obj=731604 old_sc=731604 new_sc=720914
+  [BUG tid=39 g=2] old_scalar=-720914.0 obj[0]=720914.0 dir=1 mode=0 w=1.000
+  [BUG tid=8 g=2] old_scalar=-720914.0 obj[0]=720914.0 dir=1 mode=0 w=1.000
+  [BUG tid=9 g=2] old_scalar=-720914.0 obj[0]=720914.0 dir=1 mode=0 w=1.000
+  [BUG tid=122 g=2] old_scalar=-720914.0 obj[0]=720914.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=39 K=2 d=-5753 obj=720914 old_sc=-720914 new_sc=-726667
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=22 K=1 d=-19486 obj=753923 old_sc=753923 new_sc=734437
+  [BUG tid=51 g=1] old_scalar=-734437.0 obj[0]=734437.0 dir=1 mode=0 w=1.000
+  [BUG tid=104 g=1] old_scalar=-734437.0 obj[0]=734437.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=75 K=3 d=-11051 obj=734437 old_sc=734437 new_sc=723386
+  [BUG tid=102 g=2] old_scalar=-723386.0 obj[0]=723386.0 dir=1 mode=0 w=1.000
+  [BUG tid=104 g=2] old_scalar=-723386.0 obj[0]=723386.0 dir=1 mode=0 w=1.000
+  [BUG tid=51 g=2] old_scalar=-723386.0 obj[0]=723386.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=64 K=2 d=-6978 obj=723386 old_sc=723386 new_sc=716408
+  [ 2500] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=50 K=2 d=-10398 obj=753725 old_sc=753725 new_sc=743327
+  [DBG g=1] w=113 K=2 d=-5946 obj=743327 old_sc=743327 new_sc=737381
+  [DBG g=2] w=89 K=1 d=-5381 obj=737381 old_sc=737381 new_sc=732000
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=12 K=3 d=-17113 obj=762518 old_sc=762518 new_sc=745405
+  [DBG g=1] w=97 K=3 d=-14894 obj=745405 old_sc=745405 new_sc=730511
+  [BUG tid=97 g=2] old_scalar=-730511.0 obj[0]=730511.0 dir=1 mode=0 w=1.000
+  [BUG tid=110 g=2] old_scalar=-730511.0 obj[0]=730511.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=74 K=2 d=-26161 obj=730511 old_sc=730511 new_sc=704350
+  [ 2600] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=88 g=0] old_scalar=-741273.0 obj[0]=741273.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=88 K=3 d=-22104 obj=741273 old_sc=-741273 new_sc=-763377
+  [BUG tid=88 g=1] old_scalar=-763377.0 obj[0]=763377.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=83 K=2 d=-10451 obj=763377 old_sc=763377 new_sc=752926
+  [BUG tid=88 g=2] old_scalar=-752926.0 obj[0]=752926.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=78 K=2 d=-12886 obj=752926 old_sc=752926 new_sc=740040
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=29 g=0] old_scalar=-736230.0 obj[0]=736230.0 dir=1 mode=0 w=1.000
+  [BUG tid=74 g=0] old_scalar=-736230.0 obj[0]=736230.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=118 K=1 d=-9425 obj=736230 old_sc=736230 new_sc=726805
+  [BUG tid=74 g=1] old_scalar=-726805.0 obj[0]=726805.0 dir=1 mode=0 w=1.000
+  [BUG tid=6 g=1] old_scalar=-726805.0 obj[0]=726805.0 dir=1 mode=0 w=1.000
+  [BUG tid=29 g=1] old_scalar=-726805.0 obj[0]=726805.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=59 K=3 d=-15939 obj=726805 old_sc=726805 new_sc=710866
+  [BUG tid=6 g=2] old_scalar=-710866.0 obj[0]=710866.0 dir=1 mode=0 w=1.000
+  [BUG tid=29 g=2] old_scalar=-710866.0 obj[0]=710866.0 dir=1 mode=0 w=1.000
+  [BUG tid=74 g=2] old_scalar=-710866.0 obj[0]=710866.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=124 K=1 d=-8147 obj=710866 old_sc=710866 new_sc=702719
+  [ 2700] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=42 K=3 d=-14585 obj=756576 old_sc=756576 new_sc=741991
+  [DBG g=1] w=98 K=3 d=-13853 obj=741991 old_sc=741991 new_sc=728138
+  [BUG tid=100 g=2] old_scalar=-728138.0 obj[0]=728138.0 dir=1 mode=0 w=1.000
+  [BUG tid=88 g=2] old_scalar=-728138.0 obj[0]=728138.0 dir=1 mode=0 w=1.000
+  [BUG tid=48 g=2] old_scalar=-728138.0 obj[0]=728138.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=48 K=1 d=-7272 obj=728138 old_sc=-728138 new_sc=-735410
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=1 g=0] old_scalar=-717646.0 obj[0]=717646.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=7 K=1 d=-8352 obj=717646 old_sc=717646 new_sc=709294
+  [BUG tid=1 g=1] old_scalar=-709294.0 obj[0]=709294.0 dir=1 mode=0 w=1.000
+  [BUG tid=48 g=1] old_scalar=-709294.0 obj[0]=709294.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=1 K=1 d=-9186 obj=709294 old_sc=-709294 new_sc=-718480
+  [BUG tid=48 g=2] old_scalar=-718480.0 obj[0]=718480.0 dir=1 mode=0 w=1.000
+  [BUG tid=1 g=2] old_scalar=-718480.0 obj[0]=718480.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=71 K=1 d=-10186 obj=718480 old_sc=718480 new_sc=708294
+  [ 2800] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=40 K=3 d=-10578 obj=751437 old_sc=751437 new_sc=740859
+  [DBG g=1] w=18 K=2 d=-18123 obj=740859 old_sc=740859 new_sc=722736
+  [BUG tid=88 g=2] old_scalar=-722736.0 obj[0]=722736.0 dir=1 mode=0 w=1.000
+  [BUG tid=15 g=2] old_scalar=-722736.0 obj[0]=722736.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=15 K=3 d=-7390 obj=722736 old_sc=-722736 new_sc=-730126
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=44 g=0] old_scalar=-741862.0 obj[0]=741862.0 dir=1 mode=0 w=1.000
+  [BUG tid=78 g=0] old_scalar=-741862.0 obj[0]=741862.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=44 K=3 d=-14192 obj=741862 old_sc=-741862 new_sc=-756054
+  [BUG tid=78 g=1] old_scalar=-756054.0 obj[0]=756054.0 dir=1 mode=0 w=1.000
+  [BUG tid=35 g=1] old_scalar=-756054.0 obj[0]=756054.0 dir=1 mode=0 w=1.000
+  [BUG tid=44 g=1] old_scalar=-756054.0 obj[0]=756054.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=27 K=1 d=-9583 obj=756054 old_sc=756054 new_sc=746471
+  [BUG tid=78 g=2] old_scalar=-746471.0 obj[0]=746471.0 dir=1 mode=0 w=1.000
+  [BUG tid=87 g=2] old_scalar=-746471.0 obj[0]=746471.0 dir=1 mode=0 w=1.000
+  [BUG tid=35 g=2] old_scalar=-746471.0 obj[0]=746471.0 dir=1 mode=0 w=1.000
+  [BUG tid=44 g=2] old_scalar=-746471.0 obj[0]=746471.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=103 K=3 d=-10104 obj=746471 old_sc=746471 new_sc=736367
+  [ 2900] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=35 K=1 d=-14488 obj=750317 old_sc=750317 new_sc=735829
+  [DBG g=1] w=24 K=3 d=-14694 obj=735829 old_sc=735829 new_sc=721135
+  [DBG g=2] w=127 K=1 d=-11623 obj=721135 old_sc=721135 new_sc=709512
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=58 g=0] old_scalar=-732609.0 obj[0]=732609.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=21 K=1 d=-7106 obj=732609 old_sc=732609 new_sc=725503
+  [BUG tid=58 g=1] old_scalar=-725503.0 obj[0]=725503.0 dir=1 mode=0 w=1.000
+  [BUG tid=127 g=1] old_scalar=-725503.0 obj[0]=725503.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=38 K=3 d=-9425 obj=725503 old_sc=725503 new_sc=716078
+  [BUG tid=127 g=2] old_scalar=-716078.0 obj[0]=716078.0 dir=1 mode=0 w=1.000
+  [BUG tid=16 g=2] old_scalar=-716078.0 obj[0]=716078.0 dir=1 mode=0 w=1.000
+  [BUG tid=58 g=2] old_scalar=-716078.0 obj[0]=716078.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=58 K=3 d=-13048 obj=716078 old_sc=-716078 new_sc=-729126
+  [ 3000] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=44 g=0] old_scalar=-749946.0 obj[0]=749946.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=73 K=3 d=-10609 obj=749946 old_sc=749946 new_sc=739337
+  [BUG tid=44 g=1] old_scalar=-739337.0 obj[0]=739337.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=44 K=1 d=-10707 obj=739337 old_sc=-739337 new_sc=-750044
+  [BUG tid=44 g=2] old_scalar=-750044.0 obj[0]=750044.0 dir=1 mode=0 w=1.000
+  [BUG tid=62 g=2] old_scalar=-750044.0 obj[0]=750044.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=44 K=1 d=-14181 obj=750044 old_sc=-750044 new_sc=-764225
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=6 K=3 d=-7124 obj=734261 old_sc=734261 new_sc=727137
+  [DBG g=1] w=68 K=3 d=-13364 obj=727137 old_sc=727137 new_sc=713773
+  [BUG tid=47 g=2] old_scalar=-713773.0 obj[0]=713773.0 dir=1 mode=0 w=1.000
+  [BUG tid=54 g=2] old_scalar=-713773.0 obj[0]=713773.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=47 K=1 d=-10116 obj=713773 old_sc=-713773 new_sc=-723889
+  [ 3100] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=119 K=1 d=-18597 obj=769279 old_sc=769279 new_sc=750682
+  [BUG tid=4 g=1] old_scalar=-750682.0 obj[0]=750682.0 dir=1 mode=0 w=1.000
+  [BUG tid=6 g=1] old_scalar=-750682.0 obj[0]=750682.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=59 K=2 d=-7952 obj=750682 old_sc=750682 new_sc=742730
+  [BUG tid=4 g=2] old_scalar=-742730.0 obj[0]=742730.0 dir=1 mode=0 w=1.000
+  [BUG tid=6 g=2] old_scalar=-742730.0 obj[0]=742730.0 dir=1 mode=0 w=1.000
+  [BUG tid=88 g=2] old_scalar=-742730.0 obj[0]=742730.0 dir=1 mode=0 w=1.000
+  [BUG tid=123 g=2] old_scalar=-742730.0 obj[0]=742730.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=5 K=2 d=-8347 obj=742730 old_sc=742730 new_sc=734383
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=30 K=2 d=-4568 obj=702902 old_sc=702902 new_sc=698334
+  [DBG g=1] w=111 K=1 d=-8884 obj=698334 old_sc=698334 new_sc=689450
+  [DBG g=2] w=3 K=2 d=-4483 obj=689450 old_sc=689450 new_sc=684967
+  [ 3200] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=47 g=0] old_scalar=-738112.0 obj[0]=738112.0 dir=1 mode=0 w=1.000
+  [BUG tid=77 g=0] old_scalar=-738112.0 obj[0]=738112.0 dir=1 mode=0 w=1.000
+  [BUG tid=22 g=0] old_scalar=-738112.0 obj[0]=738112.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=125 K=3 d=-11898 obj=738112 old_sc=738112 new_sc=726214
+  [BUG tid=22 g=1] old_scalar=-726214.0 obj[0]=726214.0 dir=1 mode=0 w=1.000
+  [BUG tid=77 g=1] old_scalar=-726214.0 obj[0]=726214.0 dir=1 mode=0 w=1.000
+  [BUG tid=47 g=1] old_scalar=-726214.0 obj[0]=726214.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=47 K=1 d=-10486 obj=726214 old_sc=-726214 new_sc=-736700
+  [BUG tid=22 g=2] old_scalar=-736700.0 obj[0]=736700.0 dir=1 mode=0 w=1.000
+  [BUG tid=47 g=2] old_scalar=-736700.0 obj[0]=736700.0 dir=1 mode=0 w=1.000
+  [BUG tid=77 g=2] old_scalar=-736700.0 obj[0]=736700.0 dir=1 mode=0 w=1.000
+  [BUG tid=119 g=2] old_scalar=-736700.0 obj[0]=736700.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=123 K=3 d=-9568 obj=736700 old_sc=736700 new_sc=727132
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=89 K=3 d=-8160 obj=738932 old_sc=738932 new_sc=730772
+  [DBG g=1] w=12 K=3 d=-11358 obj=730772 old_sc=730772 new_sc=719414
+  [BUG tid=49 g=2] old_scalar=-719414.0 obj[0]=719414.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=94 K=1 d=-5701 obj=719414 old_sc=719414 new_sc=713713
+  [ 3300] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=22 K=1 d=-13414 obj=749102 old_sc=749102 new_sc=735688
+  [DBG g=1] w=114 K=1 d=-7527 obj=735688 old_sc=735688 new_sc=728161
+  [DBG g=2] w=77 K=3 d=-6824 obj=728161 old_sc=728161 new_sc=721337
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=114 K=1 d=-2981 obj=531734 old_sc=531734 new_sc=528753
+  [BUG tid=113 g=1] old_scalar=-528753.0 obj[0]=528753.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=4 K=2 d=-4143 obj=528753 old_sc=528753 new_sc=524610
+  [BUG tid=113 g=2] old_scalar=-524610.0 obj[0]=524610.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=113 K=3 d=-14574 obj=524610 old_sc=-524610 new_sc=-539184
+  [ 3400] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=103 g=0] old_scalar=-767377.0 obj[0]=767377.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=91 K=3 d=-21775 obj=767377 old_sc=767377 new_sc=745602
+  [BUG tid=87 g=1] old_scalar=-745602.0 obj[0]=745602.0 dir=1 mode=0 w=1.000
+  [BUG tid=103 g=1] old_scalar=-745602.0 obj[0]=745602.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=11 K=3 d=-8182 obj=745602 old_sc=745602 new_sc=737420
+  [BUG tid=87 g=2] old_scalar=-737420.0 obj[0]=737420.0 dir=1 mode=0 w=1.000
+  [BUG tid=103 g=2] old_scalar=-737420.0 obj[0]=737420.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=103 K=3 d=-25251 obj=737420 old_sc=-737420 new_sc=-762671
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=127 g=0] old_scalar=-728080.0 obj[0]=728080.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=18 K=2 d=-18928 obj=728080 old_sc=728080 new_sc=709152
+  [BUG tid=127 g=1] old_scalar=-709152.0 obj[0]=709152.0 dir=1 mode=0 w=1.000
+  [BUG tid=15 g=1] old_scalar=-709152.0 obj[0]=709152.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=69 K=1 d=-9218 obj=709152 old_sc=709152 new_sc=699934
+  [BUG tid=127 g=2] old_scalar=-699934.0 obj[0]=699934.0 dir=1 mode=0 w=1.000
+  [BUG tid=15 g=2] old_scalar=-699934.0 obj[0]=699934.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=15 K=3 d=-18908 obj=699934 old_sc=-699934 new_sc=-718842
+  [ 3500] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=122 K=2 d=-14892 obj=764403 old_sc=764403 new_sc=749511
+  [BUG tid=120 g=1] old_scalar=-749511.0 obj[0]=749511.0 dir=1 mode=0 w=1.000
+  [BUG tid=86 g=1] old_scalar=-749511.0 obj[0]=749511.0 dir=1 mode=0 w=1.000
+  [BUG tid=91 g=1] old_scalar=-749511.0 obj[0]=749511.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=86 K=3 d=-11003 obj=749511 old_sc=-749511 new_sc=-760514
+  [BUG tid=120 g=2] old_scalar=-760514.0 obj[0]=760514.0 dir=1 mode=0 w=1.000
+  [BUG tid=86 g=2] old_scalar=-760514.0 obj[0]=760514.0 dir=1 mode=0 w=1.000
+  [BUG tid=91 g=2] old_scalar=-760514.0 obj[0]=760514.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=119 K=1 d=-8183 obj=760514 old_sc=760514 new_sc=752331
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=41 K=3 d=-8619 obj=733365 old_sc=733365 new_sc=724746
+  [BUG tid=50 g=1] old_scalar=-724746.0 obj[0]=724746.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=62 K=1 d=-6824 obj=724746 old_sc=724746 new_sc=717922
+  [BUG tid=50 g=2] old_scalar=-717922.0 obj[0]=717922.0 dir=1 mode=0 w=1.000
+  [BUG tid=77 g=2] old_scalar=-717922.0 obj[0]=717922.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=93 K=1 d=-12684 obj=717922 old_sc=717922 new_sc=705238
+  [ 3600] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=43 g=0] old_scalar=-767549.0 obj[0]=767549.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=32 K=2 d=-19908 obj=767549 old_sc=767549 new_sc=747641
+  [BUG tid=43 g=1] old_scalar=-747641.0 obj[0]=747641.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=36 K=3 d=-13908 obj=747641 old_sc=747641 new_sc=733733
+  [BUG tid=84 g=2] old_scalar=-733733.0 obj[0]=733733.0 dir=1 mode=0 w=1.000
+  [BUG tid=43 g=2] old_scalar=-733733.0 obj[0]=733733.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=107 K=1 d=-9209 obj=733733 old_sc=733733 new_sc=724524
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=72 K=1 d=-13260 obj=754351 old_sc=754351 new_sc=741091
+  [BUG tid=112 g=1] old_scalar=-741091.0 obj[0]=741091.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=112 K=3 d=-8920 obj=741091 old_sc=-741091 new_sc=-750011
+  [BUG tid=112 g=2] old_scalar=-750011.0 obj[0]=750011.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=81 K=3 d=-9968 obj=750011 old_sc=750011 new_sc=740043
+  [ 3700] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=106 K=1 d=-13545 obj=739142 old_sc=739142 new_sc=725597
+  [BUG tid=88 g=1] old_scalar=-725597.0 obj[0]=725597.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=114 K=2 d=-5915 obj=725597 old_sc=725597 new_sc=719682
+  [BUG tid=32 g=2] old_scalar=-719682.0 obj[0]=719682.0 dir=1 mode=0 w=1.000
+  [BUG tid=88 g=2] old_scalar=-719682.0 obj[0]=719682.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=88 K=2 d=-6829 obj=719682 old_sc=-719682 new_sc=-726511
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=48 K=1 d=-9476 obj=747220 old_sc=747220 new_sc=737744
+  [DBG g=1] w=75 K=2 d=-10940 obj=737744 old_sc=737744 new_sc=726804
+  [BUG tid=126 g=2] old_scalar=-726804.0 obj[0]=726804.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=53 K=2 d=-4854 obj=726804 old_sc=726804 new_sc=721950
+  [ 3800] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=47 g=0] old_scalar=-756474.0 obj[0]=756474.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=57 K=3 d=-5669 obj=756474 old_sc=756474 new_sc=750805
+  [BUG tid=47 g=1] old_scalar=-750805.0 obj[0]=750805.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=96 K=1 d=-16366 obj=750805 old_sc=750805 new_sc=734439
+  [BUG tid=43 g=2] old_scalar=-734439.0 obj[0]=734439.0 dir=1 mode=0 w=1.000
+  [BUG tid=47 g=2] old_scalar=-734439.0 obj[0]=734439.0 dir=1 mode=0 w=1.000
+  [BUG tid=10 g=2] old_scalar=-734439.0 obj[0]=734439.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=36 K=3 d=-6430 obj=734439 old_sc=734439 new_sc=728009
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=33 g=0] old_scalar=-746269.0 obj[0]=746269.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=46 K=1 d=-9561 obj=746269 old_sc=746269 new_sc=736708
+  [BUG tid=33 g=1] old_scalar=-736708.0 obj[0]=736708.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=84 K=3 d=-9306 obj=736708 old_sc=736708 new_sc=727402
+  [BUG tid=33 g=2] old_scalar=-727402.0 obj[0]=727402.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=51 K=3 d=-8317 obj=727402 old_sc=727402 new_sc=719085
+  [ 3900] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=49 g=0] old_scalar=-753039.0 obj[0]=753039.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=118 K=3 d=-8129 obj=753039 old_sc=753039 new_sc=744910
+  [BUG tid=49 g=1] old_scalar=-744910.0 obj[0]=744910.0 dir=1 mode=0 w=1.000
+  [BUG tid=86 g=1] old_scalar=-744910.0 obj[0]=744910.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=14 K=1 d=-12273 obj=744910 old_sc=744910 new_sc=732637
+  [BUG tid=49 g=2] old_scalar=-732637.0 obj[0]=732637.0 dir=1 mode=0 w=1.000
+  [BUG tid=86 g=2] old_scalar=-732637.0 obj[0]=732637.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=29 K=3 d=-6578 obj=732637 old_sc=732637 new_sc=726059
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=22 K=2 d=-6098 obj=718740 old_sc=718740 new_sc=712642
+  [DBG g=1] w=60 K=1 d=-13468 obj=712642 old_sc=712642 new_sc=699174
+  [BUG tid=64 g=2] old_scalar=-699174.0 obj[0]=699174.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=64 K=3 d=-11397 obj=699174 old_sc=-699174 new_sc=-710571
+  [ 4000] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=91 K=1 d=-8340 obj=748665 old_sc=748665 new_sc=740325
+  [DBG g=1] w=65 K=2 d=-20851 obj=740325 old_sc=740325 new_sc=719474
+  [BUG tid=80 g=2] old_scalar=-719474.0 obj[0]=719474.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=80 K=1 d=-8492 obj=719474 old_sc=-719474 new_sc=-727966
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=111 K=2 d=-6475 obj=726389 old_sc=726389 new_sc=719914
+  [DBG g=1] w=106 K=1 d=-6391 obj=719914 old_sc=719914 new_sc=713523
+  [BUG tid=1 g=2] old_scalar=-713523.0 obj[0]=713523.0 dir=1 mode=0 w=1.000
+  [BUG tid=21 g=2] old_scalar=-713523.0 obj[0]=713523.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=21 K=3 d=-6916 obj=713523 old_sc=-713523 new_sc=-720439
+  [ 4100] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=24 K=3 d=-8362 obj=747221 old_sc=747221 new_sc=738859
+  [BUG tid=2 g=1] old_scalar=-738859.0 obj[0]=738859.0 dir=1 mode=0 w=1.000
+  [BUG tid=50 g=1] old_scalar=-738859.0 obj[0]=738859.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=44 K=3 d=-7983 obj=738859 old_sc=738859 new_sc=730876
+  [BUG tid=2 g=2] old_scalar=-730876.0 obj[0]=730876.0 dir=1 mode=0 w=1.000
+  [BUG tid=50 g=2] old_scalar=-730876.0 obj[0]=730876.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=47 K=1 d=-5713 obj=730876 old_sc=730876 new_sc=725163
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=27 g=0] old_scalar=-724504.0 obj[0]=724504.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=99 K=1 d=-8084 obj=724504 old_sc=724504 new_sc=716420
+  [BUG tid=27 g=1] old_scalar=-716420.0 obj[0]=716420.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=88 K=2 d=-11611 obj=716420 old_sc=716420 new_sc=704809
+  [BUG tid=27 g=2] old_scalar=-704809.0 obj[0]=704809.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=114 K=3 d=-5859 obj=704809 old_sc=704809 new_sc=698950
+  [ 4200] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=96 K=3 d=-6108 obj=748997 old_sc=748997 new_sc=742889
+  [BUG tid=73 g=1] old_scalar=-742889.0 obj[0]=742889.0 dir=1 mode=0 w=1.000
+  [BUG tid=3 g=1] old_scalar=-742889.0 obj[0]=742889.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=90 K=3 d=-15816 obj=742889 old_sc=742889 new_sc=727073
+  [BUG tid=73 g=2] old_scalar=-727073.0 obj[0]=727073.0 dir=1 mode=0 w=1.000
+  [BUG tid=48 g=2] old_scalar=-727073.0 obj[0]=727073.0 dir=1 mode=0 w=1.000
+  [BUG tid=3 g=2] old_scalar=-727073.0 obj[0]=727073.0 dir=1 mode=0 w=1.000
+  [BUG tid=16 g=2] old_scalar=-727073.0 obj[0]=727073.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=58 K=3 d=-13568 obj=727073 old_sc=727073 new_sc=713505
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=122 K=1 d=-13626 obj=760054 old_sc=760054 new_sc=746428
+  [DBG g=1] w=28 K=2 d=-9408 obj=746428 old_sc=746428 new_sc=737020
+  [DBG g=2] w=126 K=2 d=-18838 obj=737020 old_sc=737020 new_sc=718182
+  [ 4300] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=107 g=0] old_scalar=-702921.0 obj[0]=702921.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=60 K=1 d=-15182 obj=702921 old_sc=702921 new_sc=687739
+  [BUG tid=107 g=1] old_scalar=-687739.0 obj[0]=687739.0 dir=1 mode=0 w=1.000
+  [BUG tid=126 g=1] old_scalar=-687739.0 obj[0]=687739.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=29 K=1 d=-5586 obj=687739 old_sc=687739 new_sc=682153
+  [BUG tid=107 g=2] old_scalar=-682153.0 obj[0]=682153.0 dir=1 mode=0 w=1.000
+  [BUG tid=126 g=2] old_scalar=-682153.0 obj[0]=682153.0 dir=1 mode=0 w=1.000
+  [BUG tid=3 g=2] old_scalar=-682153.0 obj[0]=682153.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=126 K=3 d=-10304 obj=682153 old_sc=-682153 new_sc=-692457
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=122 g=0] old_scalar=-756871.0 obj[0]=756871.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=62 K=2 d=-10974 obj=756871 old_sc=756871 new_sc=745897
+  [BUG tid=52 g=1] old_scalar=-745897.0 obj[0]=745897.0 dir=1 mode=0 w=1.000
+  [BUG tid=122 g=1] old_scalar=-745897.0 obj[0]=745897.0 dir=1 mode=0 w=1.000
+  [BUG tid=31 g=1] old_scalar=-745897.0 obj[0]=745897.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=85 K=3 d=-8251 obj=745897 old_sc=745897 new_sc=737646
+  [BUG tid=31 g=2] old_scalar=-737646.0 obj[0]=737646.0 dir=1 mode=0 w=1.000
+  [BUG tid=122 g=2] old_scalar=-737646.0 obj[0]=737646.0 dir=1 mode=0 w=1.000
+  [BUG tid=51 g=2] old_scalar=-737646.0 obj[0]=737646.0 dir=1 mode=0 w=1.000
+  [BUG tid=52 g=2] old_scalar=-737646.0 obj[0]=737646.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=31 K=1 d=-18008 obj=737646 old_sc=-737646 new_sc=-755654
+  [ 4400] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=87 K=2 d=-12968 obj=749263 old_sc=749263 new_sc=736295
+  [DBG g=1] w=110 K=2 d=-5584 obj=736295 old_sc=736295 new_sc=730711
+  [BUG tid=101 g=2] old_scalar=-730711.0 obj[0]=730711.0 dir=1 mode=0 w=1.000
+  [BUG tid=53 g=2] old_scalar=-730711.0 obj[0]=730711.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=6 K=2 d=-6846 obj=730711 old_sc=730711 new_sc=723865
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=78 K=1 d=-14459 obj=759741 old_sc=759741 new_sc=745282
+  [BUG tid=47 g=1] old_scalar=-745282.0 obj[0]=745282.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=19 K=3 d=-10920 obj=745282 old_sc=745282 new_sc=734362
+  [BUG tid=47 g=2] old_scalar=-734362.0 obj[0]=734362.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=52 K=3 d=-13969 obj=734362 old_sc=734362 new_sc=720393
+  [ 4500] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=40 g=0] old_scalar=-736514.0 obj[0]=736514.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=29 K=1 d=-6612 obj=736514 old_sc=736514 new_sc=729902
+  [BUG tid=40 g=1] old_scalar=-729902.0 obj[0]=729902.0 dir=1 mode=0 w=1.000
+  [BUG tid=47 g=1] old_scalar=-729902.0 obj[0]=729902.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=40 K=1 d=-7134 obj=729902 old_sc=-729902 new_sc=-737036
+  [BUG tid=24 g=2] old_scalar=-737036.0 obj[0]=737036.0 dir=1 mode=0 w=1.000
+  [BUG tid=40 g=2] old_scalar=-737036.0 obj[0]=737036.0 dir=1 mode=0 w=1.000
+  [BUG tid=47 g=2] old_scalar=-737036.0 obj[0]=737036.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=42 K=2 d=-9806 obj=737036 old_sc=737036 new_sc=727230
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=55 K=3 d=-15109 obj=760306 old_sc=760306 new_sc=745197
+  [BUG tid=94 g=1] old_scalar=-745197.0 obj[0]=745197.0 dir=1 mode=0 w=1.000
+  [BUG tid=29 g=1] old_scalar=-745197.0 obj[0]=745197.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=94 K=3 d=-10163 obj=745197 old_sc=-745197 new_sc=-755360
+  [BUG tid=94 g=2] old_scalar=-755360.0 obj[0]=755360.0 dir=1 mode=0 w=1.000
+  [BUG tid=7 g=2] old_scalar=-755360.0 obj[0]=755360.0 dir=1 mode=0 w=1.000
+  [BUG tid=29 g=2] old_scalar=-755360.0 obj[0]=755360.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=31 K=2 d=-12682 obj=755360 old_sc=755360 new_sc=742678
+  [ 4600] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=21 g=0] old_scalar=-757784.0 obj[0]=757784.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=125 K=3 d=-12205 obj=757784 old_sc=757784 new_sc=745579
+  [BUG tid=21 g=1] old_scalar=-745579.0 obj[0]=745579.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=28 K=3 d=-12369 obj=745579 old_sc=745579 new_sc=733210
+  [BUG tid=81 g=2] old_scalar=-733210.0 obj[0]=733210.0 dir=1 mode=0 w=1.000
+  [BUG tid=18 g=2] old_scalar=-733210.0 obj[0]=733210.0 dir=1 mode=0 w=1.000
+  [BUG tid=21 g=2] old_scalar=-733210.0 obj[0]=733210.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=18 K=3 d=-7328 obj=733210 old_sc=-733210 new_sc=-740538
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=84 g=0] old_scalar=-742757.0 obj[0]=742757.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=97 K=2 d=-17353 obj=742757 old_sc=742757 new_sc=725404
+  [BUG tid=84 g=1] old_scalar=-725404.0 obj[0]=725404.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=32 K=2 d=-12022 obj=725404 old_sc=725404 new_sc=713382
+  [BUG tid=84 g=2] old_scalar=-713382.0 obj[0]=713382.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=37 K=2 d=-10886 obj=713382 old_sc=713382 new_sc=702496
+  [ 4700] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=125 g=0] old_scalar=-730069.0 obj[0]=730069.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=111 K=3 d=-10689 obj=730069 old_sc=730069 new_sc=719380
+  [BUG tid=22 g=1] old_scalar=-719380.0 obj[0]=719380.0 dir=1 mode=0 w=1.000
+  [BUG tid=96 g=1] old_scalar=-719380.0 obj[0]=719380.0 dir=1 mode=0 w=1.000
+  [BUG tid=125 g=1] old_scalar=-719380.0 obj[0]=719380.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=125 K=3 d=-13169 obj=719380 old_sc=-719380 new_sc=-732549
+  [BUG tid=22 g=2] old_scalar=-732549.0 obj[0]=732549.0 dir=1 mode=0 w=1.000
+  [BUG tid=96 g=2] old_scalar=-732549.0 obj[0]=732549.0 dir=1 mode=0 w=1.000
+  [BUG tid=125 g=2] old_scalar=-732549.0 obj[0]=732549.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=42 K=3 d=-11217 obj=732549 old_sc=732549 new_sc=721332
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=113 g=0] old_scalar=-727228.0 obj[0]=727228.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=25 K=1 d=-9048 obj=727228 old_sc=727228 new_sc=718180
+  [BUG tid=113 g=1] old_scalar=-718180.0 obj[0]=718180.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=27 K=2 d=-6297 obj=718180 old_sc=718180 new_sc=711883
+  [BUG tid=82 g=2] old_scalar=-711883.0 obj[0]=711883.0 dir=1 mode=0 w=1.000
+  [BUG tid=113 g=2] old_scalar=-711883.0 obj[0]=711883.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=82 K=2 d=-15875 obj=711883 old_sc=-711883 new_sc=-727758
+  [ 4800] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=105 g=0] old_scalar=-531734.0 obj[0]=531734.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=105 K=1 d=-5831 obj=531734 old_sc=-531734 new_sc=-537565
+  [BUG tid=105 g=1] old_scalar=-537565.0 obj[0]=537565.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=105 K=1 d=-14960 obj=537565 old_sc=-537565 new_sc=-552525
+  [BUG tid=36 g=2] old_scalar=-552525.0 obj[0]=552525.0 dir=1 mode=0 w=1.000
+  [BUG tid=105 g=2] old_scalar=-552525.0 obj[0]=552525.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=36 K=2 d=-7360 obj=552525 old_sc=-552525 new_sc=-559885
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=96 g=0] old_scalar=-725087.0 obj[0]=725087.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=54 K=2 d=-8347 obj=725087 old_sc=725087 new_sc=716740
+  [BUG tid=96 g=1] old_scalar=-716740.0 obj[0]=716740.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=30 K=1 d=-9907 obj=716740 old_sc=716740 new_sc=706833
+  [BUG tid=96 g=2] old_scalar=-706833.0 obj[0]=706833.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=109 K=3 d=-6081 obj=706833 old_sc=706833 new_sc=700752
+  [ 4900] 531734.0
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [DBG g=0] w=33 K=3 d=-6748 obj=734461 old_sc=734461 new_sc=727713
+  [DBG g=1] w=120 K=1 d=-8839 obj=727713 old_sc=727713 new_sc=718874
+  [DBG g=2] w=43 K=2 d=-8224 obj=718874 old_sc=718874 new_sc=710650
+  [KERNEL] sizeof(Sol)=2072 sizeof(Cand)=36 oc.dirs[0]=0 oc.mode=0 oc.w[0]=1.000 num_obj=1
+  [BUG tid=124 g=0] old_scalar=-750128.0 obj[0]=750128.0 dir=1 mode=0 w=1.000
+  [BUG tid=126 g=0] old_scalar=-750128.0 obj[0]=750128.0 dir=1 mode=0 w=1.000
+  [BUG tid=7 g=0] old_scalar=-750128.0 obj[0]=750128.0 dir=1 mode=0 w=1.000
+  [DBG g=0] w=68 K=3 d=-6391 obj=750128 old_sc=750128 new_sc=743737
+  [BUG tid=7 g=1] old_scalar=-743737.0 obj[0]=743737.0 dir=1 mode=0 w=1.000
+  [BUG tid=124 g=1] old_scalar=-743737.0 obj[0]=743737.0 dir=1 mode=0 w=1.000
+  [BUG tid=126 g=1] old_scalar=-743737.0 obj[0]=743737.0 dir=1 mode=0 w=1.000
+  [DBG g=1] w=59 K=1 d=-13567 obj=743737 old_sc=743737 new_sc=730170
+  [BUG tid=124 g=2] old_scalar=-730170.0 obj[0]=730170.0 dir=1 mode=0 w=1.000
+  [BUG tid=126 g=2] old_scalar=-730170.0 obj[0]=730170.0 dir=1 mode=0 w=1.000
+  [BUG tid=7 g=2] old_scalar=-730170.0 obj[0]=730170.0 dir=1 mode=0 w=1.000
+  [DBG g=2] w=54 K=3 d=-10293 obj=730170 old_sc=730170 new_sc=719877
+  [ 5000] 531734.0
+  Result: obj0=531734.00  14989ms 5000gen
+  row[0]: 95 15 309 275 226 242 316 313 185 280 221 293 167 429 361 131 5 148 406 172 ...(442)
+  AOS K-step weights: K1=0.800 K2=0.150 K3=0.050
+  AOS seq weights: [0]=0.165 [1]=0.165 [2]=0.165 [3]=0.165 [4]=0.165 [20]=0.063 [21]=0.063 [22]=0.050

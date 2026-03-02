@@ -1,0 +1,7 @@
+GPU: Tesla T4 (SM=40, Shared=48KB, Compute=7.5)
+Warming up GPU...
+Warmup done.
+
+[diag_pcb] pcb442 AOS on vs off
+
+All requested experiments completed.

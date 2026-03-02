@@ -1,0 +1,32 @@
+GPU: Tesla T4 (SM=40, Shared=48KB, Compute=7.5)
+Warming up GPU...
+Warmup done.
+
+[exp1] Generality validation — 12 problems (default config)
+[exp2] TSP standard instances — quality + time budgets
+  [exp2] eil51 (n=51)
+  [exp2] kroA100 (n=100)
+  [exp2] ch150 (n=150)
+  [exp2] tsp225 (n=225)
+  [exp2] lin318 (n=318)
+  [exp2] pcb442 (n=442)
+[exp3] VRP standard instances
+[exp4] Scalability — fixed time budget, increasing N
+  [exp4] eil51 (n=51)
+  [exp4] kroA100 (n=100)
+  [exp4] ch150 (n=150)
+  [exp4] tsp225 (n=225)
+  [exp4] lin318 (n=318)
+  [exp4] pcb442 (n=442)
+[exp5] Ablation study — TSP + BinPacking + GraphColor
+  [exp5] TSP kroA100 (n=100)
+  [exp5] TSP ch150 (n=150)
+  [exp5] BinPacking20
+  [exp5] GraphColor20
+  [exp5] Schedule5x6
+  [exp5] JSP4x3
+[exp6] Time-quality curves — kroA100 + ch150
+  [exp6] kroA100 (n=100)
+  [exp6] ch150 (n=150)
+
+All requested experiments completed.

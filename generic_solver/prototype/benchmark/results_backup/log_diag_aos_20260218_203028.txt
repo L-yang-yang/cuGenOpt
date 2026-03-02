@@ -1,0 +1,9 @@
+GPU: Tesla T4 (SM=40, Shared=48KB, Compute=7.5)
+Warming up GPU...
+Warmup done.
+
+[diag_aos] AOS floor/cap sweep on kroA100 + ch150
+  [diag_aos] kroA100 (n=100)
+  [diag_aos] ch150 (n=150)
+
+All requested experiments completed.

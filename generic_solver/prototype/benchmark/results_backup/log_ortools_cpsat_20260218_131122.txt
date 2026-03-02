@@ -1,0 +1,4 @@
+  [cpsat] Assign4 done
+  [cpsat] Schedule3x4 done
+  [cpsat] BinPack8 done
+  [cpsat] GraphColor10 done

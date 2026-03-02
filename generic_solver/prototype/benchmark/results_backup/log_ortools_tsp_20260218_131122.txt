@@ -1,0 +1,7 @@
+  [tsp_routing] eil51 (n=51)
+  [tsp_routing] eil76 (n=76)
+  [tsp_routing] kroA100 (n=100)
+  [tsp_routing] ch150 (n=150)
+  [tsp_routing] tsp225 (n=225)
+  [tsp_routing] lin318 (n=318)
+  [tsp_routing] pcb442 (n=442)

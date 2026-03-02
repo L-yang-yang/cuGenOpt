@@ -1,0 +1,6 @@
+  [mip] TSP eil51 (n=51)
+  [mip] TSP eil76 (n=76)
+  [mip] TSP kroA100 (n=100)
+  [mip] TSP ch150 (n=150)
+  [mip] TSP tsp225 (n=225)
+  [mip] BinPacking

@@ -1,0 +1,16 @@
+GPU: Tesla T4 (SM=40, Shared=48KB, Compute=7.5)
+Warming up GPU...
+Warmup done.
+
+[diag_pcb] LNS cap sweep: kroA100 + pcb442
+config       | kroA100 gap%  time_ms | pcb442 gap%  time_ms
+-------------|----------------------|---------------------
+default      |   0.29%    267.3ms |  18.81%   15334.0ms
+cap=0.05     |   2.18%    258.6ms |  22.74%   15506.2ms
+cap=0.03     |   0.41%    235.1ms |  19.57%   15490.4ms
+cap=0.02     |   1.33%    225.2ms |  21.50%   15194.9ms
+cap=0.01     |   0.18%    197.2ms |  18.95%   14950.4ms
+cap=0.005    |   0.16%    185.2ms |  19.00%   14426.1ms
+noLNS        |   1.87%    283.4ms |  29.74%   15281.1ms
+
+All requested experiments completed.

@@ -1,0 +1,961 @@
+instance,config,seed,obj,penalty,time_ms,gap_pct,generations,stop_reason
+
+[GenSolver v2.0 Block] Perm [1][442] pop=64(auto) gen=5000 blk=128
+  [AUTO] GPU=Tesla T4 SM=40 L2=4096KB ws=763KB → pop=64 isl=4x16/Hybrid SA=50/0.9990 CX=10% AOS seed=42
+  [INIT] oversample=4x → 256 candidates, top-N select 45 + 19 random (obj0 avg: 772822.2 → 751470.9, 2.8% better)
+  [SEQ] 8 sequences registered: 0(0.23) 1(0.23) 2(0.23) 3(0.11) 4(0.18) 20(0.01) 21(0.01) 22(0.00)
+  [K-STEP] K weights: K1=0.80 K2=0.15 K3=0.05
+  [DBG g=0] winner=31 K=2 delta=-7477.0 s_sol_obj=732447.0 winner_old_sc=732447.0 winner_new_sc=724970.0
+  [DBG g=0] WINNER tid=31 local_obj=724970.0 s_sol_obj_before=732447.0 delta=-7477.00
+  [DBG g=0] AFTER  stored_obj=724970.0 recomputed=724970.0 diff=0.0000
+  [DBG g=1] winner=83 K=1 delta=-4167.0 s_sol_obj=724970.0 winner_old_sc=724970.0 winner_new_sc=720803.0
+  [DBG g=1] WINNER tid=83 local_obj=720803.0 s_sol_obj_before=724970.0 delta=-4167.00
+  [DBG g=1] AFTER  stored_obj=720803.0 recomputed=720803.0 diff=0.0000
+  [DBG g=2] winner=24 K=2 delta=-4233.0 s_sol_obj=720803.0 winner_old_sc=720803.0 winner_new_sc=716570.0
+  [DBG g=2] WINNER tid=24 local_obj=716570.0 s_sol_obj_before=720803.0 delta=-4233.00
+  [DBG g=2] AFTER  stored_obj=716570.0 recomputed=716570.0 diff=0.0000
+  [DBG g=0] winner=46 K=2 delta=-2183.0 s_sol_obj=601821.0 winner_old_sc=601821.0 winner_new_sc=599638.0
+  [DBG g=0] WINNER tid=46 local_obj=599638.0 s_sol_obj_before=601821.0 delta=-2183.00
+  [DBG g=0] AFTER  stored_obj=599638.0 recomputed=599638.0 diff=0.0000
+  [DBG g=1] winner=94 K=3 delta=-5665.0 s_sol_obj=599638.0 winner_old_sc=599638.0 winner_new_sc=593973.0
+  [DBG g=1] WINNER tid=94 local_obj=593973.0 s_sol_obj_before=599638.0 delta=-5665.00
+  [DBG g=1] AFTER  stored_obj=593973.0 recomputed=593973.0 diff=0.0000
+  [DBG g=2] winner=26 K=3 delta=-3790.0 s_sol_obj=593973.0 winner_old_sc=593973.0 winner_new_sc=590183.0
+  [DBG g=2] WINNER tid=26 local_obj=590183.0 s_sol_obj_before=593973.0 delta=-3790.00
+  [DBG g=2] AFTER  stored_obj=590183.0 recomputed=590183.0 diff=0.0000
+  [  100] 531734.0
+  [DBG g=0] winner=4 K=3 delta=-23352.0 s_sol_obj=712974.0 winner_old_sc=-712974.0 winner_new_sc=-736326.0
+  [DBG g=0] WINNER tid=4 local_obj=736326.0 s_sol_obj_before=712974.0 delta=-23352.00
+  [DBG g=0] AFTER  stored_obj=736326.0 recomputed=736326.0 diff=0.0000
+  [DBG g=1] winner=31 K=3 delta=-9951.0 s_sol_obj=736326.0 winner_old_sc=736326.0 winner_new_sc=726375.0
+  [DBG g=1] WINNER tid=31 local_obj=726375.0 s_sol_obj_before=736326.0 delta=-9951.00
+  [DBG g=1] AFTER  stored_obj=726375.0 recomputed=726375.0 diff=0.0000
+  [DBG g=2] winner=63 K=3 delta=-5019.0 s_sol_obj=726375.0 winner_old_sc=726375.0 winner_new_sc=721356.0
+  [DBG g=2] WINNER tid=63 local_obj=721356.0 s_sol_obj_before=726375.0 delta=-5019.00
+  [DBG g=2] AFTER  stored_obj=721356.0 recomputed=721356.0 diff=0.0000
+  [DBG g=0] winner=19 K=2 delta=-4564.0 s_sol_obj=741954.0 winner_old_sc=741954.0 winner_new_sc=737390.0
+  [DBG g=0] WINNER tid=19 local_obj=737390.0 s_sol_obj_before=741954.0 delta=-4564.00
+  [DBG g=0] AFTER  stored_obj=737390.0 recomputed=737390.0 diff=0.0000
+  [DBG g=1] winner=33 K=3 delta=-13936.0 s_sol_obj=737390.0 winner_old_sc=737390.0 winner_new_sc=723454.0
+  [DBG g=1] WINNER tid=33 local_obj=723454.0 s_sol_obj_before=737390.0 delta=-13936.00
+  [DBG g=1] AFTER  stored_obj=723454.0 recomputed=723454.0 diff=0.0000
+  [DBG g=2] winner=75 K=2 delta=-7408.0 s_sol_obj=723454.0 winner_old_sc=723454.0 winner_new_sc=716046.0
+  [DBG g=2] WINNER tid=75 local_obj=716046.0 s_sol_obj_before=723454.0 delta=-7408.00
+  [DBG g=2] AFTER  stored_obj=716046.0 recomputed=716046.0 diff=0.0000
+  [  200] 531734.0
+  [DBG g=0] winner=13 K=3 delta=-10525.0 s_sol_obj=744054.0 winner_old_sc=744054.0 winner_new_sc=733529.0
+  [DBG g=0] WINNER tid=13 local_obj=733529.0 s_sol_obj_before=744054.0 delta=-10525.00
+  [DBG g=0] AFTER  stored_obj=733529.0 recomputed=733529.0 diff=0.0000
+  [DBG g=1] winner=91 K=3 delta=-15470.0 s_sol_obj=733529.0 winner_old_sc=733529.0 winner_new_sc=718059.0
+  [DBG g=1] WINNER tid=91 local_obj=718059.0 s_sol_obj_before=733529.0 delta=-15470.00
+  [DBG g=1] AFTER  stored_obj=718059.0 recomputed=718059.0 diff=0.0000
+  [DBG g=2] winner=11 K=2 delta=-10736.0 s_sol_obj=718059.0 winner_old_sc=718059.0 winner_new_sc=707323.0
+  [DBG g=2] WINNER tid=11 local_obj=707323.0 s_sol_obj_before=718059.0 delta=-10736.00
+  [DBG g=2] AFTER  stored_obj=707323.0 recomputed=707323.0 diff=0.0000
+  [DBG g=0] winner=1 K=3 delta=-10027.0 s_sol_obj=750213.0 winner_old_sc=750213.0 winner_new_sc=740186.0
+  [DBG g=0] WINNER tid=1 local_obj=740186.0 s_sol_obj_before=750213.0 delta=-10027.00
+  [DBG g=0] AFTER  stored_obj=740186.0 recomputed=740186.0 diff=0.0000
+  [DBG g=1] winner=48 K=1 delta=-3840.0 s_sol_obj=740186.0 winner_old_sc=740186.0 winner_new_sc=736346.0
+  [DBG g=1] WINNER tid=48 local_obj=736346.0 s_sol_obj_before=740186.0 delta=-3840.00
+  [DBG g=1] AFTER  stored_obj=736346.0 recomputed=736346.0 diff=0.0000
+  [DBG g=2] winner=11 K=1 delta=-8230.0 s_sol_obj=736346.0 winner_old_sc=736346.0 winner_new_sc=728116.0
+  [DBG g=2] WINNER tid=11 local_obj=728116.0 s_sol_obj_before=736346.0 delta=-8230.00
+  [DBG g=2] AFTER  stored_obj=728116.0 recomputed=728116.0 diff=0.0000
+  [  300] 531734.0
+  [DBG g=0] winner=47 K=2 delta=-15037.0 s_sol_obj=740793.0 winner_old_sc=740793.0 winner_new_sc=725756.0
+  [DBG g=0] WINNER tid=47 local_obj=725756.0 s_sol_obj_before=740793.0 delta=-15037.00
+  [DBG g=0] AFTER  stored_obj=725756.0 recomputed=725756.0 diff=0.0000
+  [DBG g=1] winner=47 K=3 delta=-15198.0 s_sol_obj=725756.0 winner_old_sc=725756.0 winner_new_sc=710558.0
+  [DBG g=1] WINNER tid=47 local_obj=710558.0 s_sol_obj_before=725756.0 delta=-15198.00
+  [DBG g=1] AFTER  stored_obj=710558.0 recomputed=710558.0 diff=0.0000
+  [DBG g=2] winner=42 K=1 delta=-6006.0 s_sol_obj=710558.0 winner_old_sc=-710558.0 winner_new_sc=-716564.0
+  [DBG g=2] WINNER tid=42 local_obj=716564.0 s_sol_obj_before=710558.0 delta=-6006.00
+  [DBG g=2] AFTER  stored_obj=716564.0 recomputed=716564.0 diff=0.0000
+  [DBG g=0] winner=9 K=3 delta=-7116.0 s_sol_obj=708029.0 winner_old_sc=708029.0 winner_new_sc=700913.0
+  [DBG g=0] WINNER tid=9 local_obj=700913.0 s_sol_obj_before=708029.0 delta=-7116.00
+  [DBG g=0] AFTER  stored_obj=700913.0 recomputed=700913.0 diff=0.0000
+  [DBG g=1] winner=46 K=3 delta=-13568.0 s_sol_obj=700913.0 winner_old_sc=700913.0 winner_new_sc=687345.0
+  [DBG g=1] WINNER tid=46 local_obj=687345.0 s_sol_obj_before=700913.0 delta=-13568.00
+  [DBG g=1] AFTER  stored_obj=687345.0 recomputed=687345.0 diff=0.0000
+  [DBG g=2] winner=104 K=3 delta=-3731.0 s_sol_obj=687345.0 winner_old_sc=687345.0 winner_new_sc=683614.0
+  [DBG g=2] WINNER tid=104 local_obj=683614.0 s_sol_obj_before=687345.0 delta=-3731.00
+  [DBG g=2] AFTER  stored_obj=683614.0 recomputed=683614.0 diff=0.0000
+  [  400] 531734.0
+  [DBG g=0] winner=114 K=1 delta=-9432.0 s_sol_obj=704716.0 winner_old_sc=-704716.0 winner_new_sc=-714148.0
+  [DBG g=0] WINNER tid=114 local_obj=714148.0 s_sol_obj_before=704716.0 delta=-9432.00
+  [DBG g=0] AFTER  stored_obj=714148.0 recomputed=714148.0 diff=0.0000
+  [DBG g=1] winner=46 K=3 delta=-10125.0 s_sol_obj=714148.0 winner_old_sc=714148.0 winner_new_sc=704023.0
+  [DBG g=1] WINNER tid=46 local_obj=704023.0 s_sol_obj_before=714148.0 delta=-10125.00
+  [DBG g=1] AFTER  stored_obj=704023.0 recomputed=704023.0 diff=0.0000
+  [DBG g=2] winner=18 K=1 delta=-6107.0 s_sol_obj=704023.0 winner_old_sc=704023.0 winner_new_sc=697916.0
+  [DBG g=2] WINNER tid=18 local_obj=697916.0 s_sol_obj_before=704023.0 delta=-6107.00
+  [DBG g=2] AFTER  stored_obj=697916.0 recomputed=697916.0 diff=0.0000
+  [DBG g=0] winner=60 K=2 delta=-8127.0 s_sol_obj=739782.0 winner_old_sc=739782.0 winner_new_sc=731655.0
+  [DBG g=0] WINNER tid=60 local_obj=731655.0 s_sol_obj_before=739782.0 delta=-8127.00
+  [DBG g=0] AFTER  stored_obj=731655.0 recomputed=731655.0 diff=0.0000
+  [DBG g=1] winner=94 K=3 delta=-14593.0 s_sol_obj=731655.0 winner_old_sc=731655.0 winner_new_sc=717062.0
+  [DBG g=1] WINNER tid=94 local_obj=717062.0 s_sol_obj_before=731655.0 delta=-14593.00
+  [DBG g=1] AFTER  stored_obj=717062.0 recomputed=717062.0 diff=0.0000
+  [DBG g=2] winner=26 K=1 delta=-5906.0 s_sol_obj=717062.0 winner_old_sc=717062.0 winner_new_sc=711156.0
+  [DBG g=2] WINNER tid=26 local_obj=711156.0 s_sol_obj_before=717062.0 delta=-5906.00
+  [DBG g=2] AFTER  stored_obj=711156.0 recomputed=711156.0 diff=0.0000
+  [  500] 531734.0
+  [DBG g=0] winner=57 K=1 delta=-7517.0 s_sol_obj=736278.0 winner_old_sc=736278.0 winner_new_sc=728761.0
+  [DBG g=0] WINNER tid=57 local_obj=728761.0 s_sol_obj_before=736278.0 delta=-7517.00
+  [DBG g=0] AFTER  stored_obj=728761.0 recomputed=728761.0 diff=0.0000
+  [DBG g=1] winner=104 K=2 delta=-7231.0 s_sol_obj=728761.0 winner_old_sc=728761.0 winner_new_sc=721530.0
+  [DBG g=1] WINNER tid=104 local_obj=721530.0 s_sol_obj_before=728761.0 delta=-7231.00
+  [DBG g=1] AFTER  stored_obj=721530.0 recomputed=721530.0 diff=0.0000
+  [DBG g=2] winner=5 K=1 delta=-5012.0 s_sol_obj=721530.0 winner_old_sc=721530.0 winner_new_sc=716518.0
+  [DBG g=2] WINNER tid=5 local_obj=716518.0 s_sol_obj_before=721530.0 delta=-5012.00
+  [DBG g=2] AFTER  stored_obj=716518.0 recomputed=716518.0 diff=0.0000
+  [DBG g=0] winner=28 K=2 delta=-5329.0 s_sol_obj=674852.0 winner_old_sc=674852.0 winner_new_sc=669523.0
+  [DBG g=0] WINNER tid=28 local_obj=669523.0 s_sol_obj_before=674852.0 delta=-5329.00
+  [DBG g=0] AFTER  stored_obj=669523.0 recomputed=669523.0 diff=0.0000
+  [DBG g=1] winner=118 K=1 delta=-6632.0 s_sol_obj=669523.0 winner_old_sc=669523.0 winner_new_sc=662891.0
+  [DBG g=1] WINNER tid=118 local_obj=662891.0 s_sol_obj_before=669523.0 delta=-6632.00
+  [DBG g=1] AFTER  stored_obj=662891.0 recomputed=662891.0 diff=0.0000
+  [DBG g=2] winner=43 K=3 delta=-7658.0 s_sol_obj=662891.0 winner_old_sc=-662891.0 winner_new_sc=-670549.0
+  [DBG g=2] WINNER tid=43 local_obj=670549.0 s_sol_obj_before=662891.0 delta=-7658.00
+  [DBG g=2] AFTER  stored_obj=670549.0 recomputed=670549.0 diff=0.0000
+  [  600] 531734.0
+  [DBG g=0] winner=35 K=1 delta=-9612.0 s_sol_obj=711567.0 winner_old_sc=711567.0 winner_new_sc=701955.0
+  [DBG g=0] WINNER tid=35 local_obj=701955.0 s_sol_obj_before=711567.0 delta=-9612.00
+  [DBG g=0] AFTER  stored_obj=701955.0 recomputed=701955.0 diff=0.0000
+  [DBG g=1] winner=103 K=3 delta=-7759.0 s_sol_obj=701955.0 winner_old_sc=701955.0 winner_new_sc=694196.0
+  [DBG g=1] WINNER tid=103 local_obj=694196.0 s_sol_obj_before=701955.0 delta=-7759.00
+  [DBG g=1] AFTER  stored_obj=694196.0 recomputed=694196.0 diff=0.0000
+  [DBG g=2] winner=127 K=1 delta=-6653.0 s_sol_obj=694196.0 winner_old_sc=694196.0 winner_new_sc=687543.0
+  [DBG g=2] WINNER tid=127 local_obj=687543.0 s_sol_obj_before=694196.0 delta=-6653.00
+  [DBG g=2] AFTER  stored_obj=687543.0 recomputed=687543.0 diff=0.0000
+  [DBG g=0] winner=109 K=1 delta=-22530.0 s_sol_obj=759979.0 winner_old_sc=759979.0 winner_new_sc=737449.0
+  [DBG g=0] WINNER tid=109 local_obj=737449.0 s_sol_obj_before=759979.0 delta=-22530.00
+  [DBG g=0] AFTER  stored_obj=737449.0 recomputed=737449.0 diff=0.0000
+  [DBG g=1] winner=38 K=3 delta=-7635.0 s_sol_obj=737449.0 winner_old_sc=737449.0 winner_new_sc=729814.0
+  [DBG g=1] WINNER tid=38 local_obj=729814.0 s_sol_obj_before=737449.0 delta=-7635.00
+  [DBG g=1] AFTER  stored_obj=729814.0 recomputed=729814.0 diff=0.0000
+  [DBG g=2] winner=34 K=3 delta=-13535.0 s_sol_obj=729814.0 winner_old_sc=-729814.0 winner_new_sc=-743349.0
+  [DBG g=2] WINNER tid=34 local_obj=743349.0 s_sol_obj_before=729814.0 delta=-13535.00
+  [DBG g=2] AFTER  stored_obj=743349.0 recomputed=743349.0 diff=0.0000
+  [  700] 531734.0
+  [DBG g=0] winner=103 K=3 delta=-13633.0 s_sol_obj=727814.0 winner_old_sc=727814.0 winner_new_sc=714181.0
+  [DBG g=0] WINNER tid=103 local_obj=714181.0 s_sol_obj_before=727814.0 delta=-13633.00
+  [DBG g=0] AFTER  stored_obj=714181.0 recomputed=714181.0 diff=0.0000
+  [DBG g=1] winner=80 K=2 delta=-3354.0 s_sol_obj=714181.0 winner_old_sc=714181.0 winner_new_sc=710827.0
+  [DBG g=1] WINNER tid=80 local_obj=710827.0 s_sol_obj_before=714181.0 delta=-3354.00
+  [DBG g=1] AFTER  stored_obj=710827.0 recomputed=710827.0 diff=0.0000
+  [DBG g=2] winner=19 K=3 delta=-9710.0 s_sol_obj=710827.0 winner_old_sc=710827.0 winner_new_sc=701117.0
+  [DBG g=2] WINNER tid=19 local_obj=701117.0 s_sol_obj_before=710827.0 delta=-9710.00
+  [DBG g=2] AFTER  stored_obj=701117.0 recomputed=701117.0 diff=0.0000
+  [DBG g=0] winner=24 K=1 delta=-7098.0 s_sol_obj=747521.0 winner_old_sc=747521.0 winner_new_sc=740423.0
+  [DBG g=0] WINNER tid=24 local_obj=740423.0 s_sol_obj_before=747521.0 delta=-7098.00
+  [DBG g=0] AFTER  stored_obj=740423.0 recomputed=740423.0 diff=0.0000
+  [DBG g=1] winner=39 K=2 delta=-19234.0 s_sol_obj=740423.0 winner_old_sc=740423.0 winner_new_sc=721189.0
+  [DBG g=1] WINNER tid=39 local_obj=721189.0 s_sol_obj_before=740423.0 delta=-19234.00
+  [DBG g=1] AFTER  stored_obj=721189.0 recomputed=721189.0 diff=0.0000
+  [DBG g=2] winner=63 K=3 delta=-6427.0 s_sol_obj=721189.0 winner_old_sc=721189.0 winner_new_sc=714762.0
+  [DBG g=2] WINNER tid=63 local_obj=714762.0 s_sol_obj_before=721189.0 delta=-6427.00
+  [DBG g=2] AFTER  stored_obj=714762.0 recomputed=714762.0 diff=0.0000
+  [  800] 531734.0
+  [DBG g=0] winner=4 K=3 delta=-15948.0 s_sol_obj=745513.0 winner_old_sc=745513.0 winner_new_sc=729565.0
+  [DBG g=0] WINNER tid=4 local_obj=729565.0 s_sol_obj_before=745513.0 delta=-15948.00
+  [DBG g=0] AFTER  stored_obj=729565.0 recomputed=729565.0 diff=0.0000
+  [DBG g=1] winner=88 K=2 delta=-6291.0 s_sol_obj=729565.0 winner_old_sc=729565.0 winner_new_sc=723274.0
+  [DBG g=1] WINNER tid=88 local_obj=723274.0 s_sol_obj_before=729565.0 delta=-6291.00
+  [DBG g=1] AFTER  stored_obj=723274.0 recomputed=723274.0 diff=0.0000
+  [DBG g=2] winner=97 K=3 delta=-12379.0 s_sol_obj=723274.0 winner_old_sc=-723274.0 winner_new_sc=-735653.0
+  [DBG g=2] WINNER tid=97 local_obj=735653.0 s_sol_obj_before=723274.0 delta=-12379.00
+  [DBG g=2] AFTER  stored_obj=735653.0 recomputed=735653.0 diff=0.0000
+  [DBG g=0] winner=5 K=2 delta=-15373.0 s_sol_obj=717604.0 winner_old_sc=-717604.0 winner_new_sc=-732977.0
+  [DBG g=0] WINNER tid=5 local_obj=732977.0 s_sol_obj_before=717604.0 delta=-15373.00
+  [DBG g=0] AFTER  stored_obj=732977.0 recomputed=732977.0 diff=0.0000
+  [DBG g=1] winner=98 K=3 delta=-10715.0 s_sol_obj=732977.0 winner_old_sc=732977.0 winner_new_sc=722262.0
+  [DBG g=1] WINNER tid=98 local_obj=722262.0 s_sol_obj_before=732977.0 delta=-10715.00
+  [DBG g=1] AFTER  stored_obj=722262.0 recomputed=722262.0 diff=0.0000
+  [DBG g=2] winner=0 K=1 delta=-8169.0 s_sol_obj=722262.0 winner_old_sc=722262.0 winner_new_sc=714093.0
+  [DBG g=2] WINNER tid=0 local_obj=714093.0 s_sol_obj_before=722262.0 delta=-8169.00
+  [DBG g=2] AFTER  stored_obj=714093.0 recomputed=714093.0 diff=0.0000
+  [  900] 531734.0
+  [DBG g=0] winner=104 K=2 delta=-8371.0 s_sol_obj=755758.0 winner_old_sc=755758.0 winner_new_sc=747387.0
+  [DBG g=0] WINNER tid=104 local_obj=747387.0 s_sol_obj_before=755758.0 delta=-8371.00
+  [DBG g=0] AFTER  stored_obj=747387.0 recomputed=747387.0 diff=0.0000
+  [DBG g=1] winner=24 K=2 delta=-11105.0 s_sol_obj=747387.0 winner_old_sc=747387.0 winner_new_sc=736282.0
+  [DBG g=1] WINNER tid=24 local_obj=736282.0 s_sol_obj_before=747387.0 delta=-11105.00
+  [DBG g=1] AFTER  stored_obj=736282.0 recomputed=736282.0 diff=0.0000
+  [DBG g=2] winner=42 K=2 delta=-11087.0 s_sol_obj=736282.0 winner_old_sc=-736282.0 winner_new_sc=-747369.0
+  [DBG g=2] WINNER tid=42 local_obj=747369.0 s_sol_obj_before=736282.0 delta=-11087.00
+  [DBG g=2] AFTER  stored_obj=747369.0 recomputed=747369.0 diff=0.0000
+  [DBG g=0] winner=14 K=3 delta=-3430.0 s_sol_obj=725124.0 winner_old_sc=725124.0 winner_new_sc=721694.0
+  [DBG g=0] WINNER tid=14 local_obj=721694.0 s_sol_obj_before=725124.0 delta=-3430.00
+  [DBG g=0] AFTER  stored_obj=721694.0 recomputed=721694.0 diff=0.0000
+  [DBG g=1] winner=113 K=3 delta=-6113.0 s_sol_obj=721694.0 winner_old_sc=721694.0 winner_new_sc=715581.0
+  [DBG g=1] WINNER tid=113 local_obj=715581.0 s_sol_obj_before=721694.0 delta=-6113.00
+  [DBG g=1] AFTER  stored_obj=715581.0 recomputed=715581.0 diff=0.0000
+  [DBG g=2] winner=13 K=1 delta=-11578.0 s_sol_obj=715581.0 winner_old_sc=715581.0 winner_new_sc=704003.0
+  [DBG g=2] WINNER tid=13 local_obj=704003.0 s_sol_obj_before=715581.0 delta=-11578.00
+  [DBG g=2] AFTER  stored_obj=704003.0 recomputed=704003.0 diff=0.0000
+  [ 1000] 531734.0
+  [DBG g=0] winner=3 K=2 delta=-11784.0 s_sol_obj=733065.0 winner_old_sc=733065.0 winner_new_sc=721281.0
+  [DBG g=0] WINNER tid=3 local_obj=721281.0 s_sol_obj_before=733065.0 delta=-11784.00
+  [DBG g=0] AFTER  stored_obj=721281.0 recomputed=721281.0 diff=0.0000
+  [DBG g=1] winner=117 K=3 delta=-5543.0 s_sol_obj=721281.0 winner_old_sc=721281.0 winner_new_sc=715738.0
+  [DBG g=1] WINNER tid=117 local_obj=715738.0 s_sol_obj_before=721281.0 delta=-5543.00
+  [DBG g=1] AFTER  stored_obj=715738.0 recomputed=715738.0 diff=0.0000
+  [DBG g=2] winner=75 K=1 delta=-5658.0 s_sol_obj=715738.0 winner_old_sc=715738.0 winner_new_sc=710080.0
+  [DBG g=2] WINNER tid=75 local_obj=710080.0 s_sol_obj_before=715738.0 delta=-5658.00
+  [DBG g=2] AFTER  stored_obj=710080.0 recomputed=710080.0 diff=0.0000
+  [DBG g=0] winner=13 K=2 delta=-7394.0 s_sol_obj=693197.0 winner_old_sc=693197.0 winner_new_sc=685803.0
+  [DBG g=0] WINNER tid=13 local_obj=685803.0 s_sol_obj_before=693197.0 delta=-7394.00
+  [DBG g=0] AFTER  stored_obj=685803.0 recomputed=685803.0 diff=0.0000
+  [DBG g=1] winner=85 K=3 delta=-6300.0 s_sol_obj=685803.0 winner_old_sc=685803.0 winner_new_sc=679503.0
+  [DBG g=1] WINNER tid=85 local_obj=679503.0 s_sol_obj_before=685803.0 delta=-6300.00
+  [DBG g=1] AFTER  stored_obj=679503.0 recomputed=679503.0 diff=0.0000
+  [DBG g=2] winner=111 K=2 delta=-10420.0 s_sol_obj=679503.0 winner_old_sc=-679503.0 winner_new_sc=-689923.0
+  [DBG g=2] WINNER tid=111 local_obj=689923.0 s_sol_obj_before=679503.0 delta=-10420.00
+  [DBG g=2] AFTER  stored_obj=689923.0 recomputed=689923.0 diff=0.0000
+  [ 1100] 531734.0
+  [DBG g=0] winner=59 K=3 delta=-13611.0 s_sol_obj=748173.0 winner_old_sc=748173.0 winner_new_sc=734562.0
+  [DBG g=0] WINNER tid=59 local_obj=734562.0 s_sol_obj_before=748173.0 delta=-13611.00
+  [DBG g=0] AFTER  stored_obj=734562.0 recomputed=734562.0 diff=0.0000
+  [DBG g=1] winner=98 K=2 delta=-15102.0 s_sol_obj=734562.0 winner_old_sc=734562.0 winner_new_sc=719460.0
+  [DBG g=1] WINNER tid=98 local_obj=719460.0 s_sol_obj_before=734562.0 delta=-15102.00
+  [DBG g=1] AFTER  stored_obj=719460.0 recomputed=719460.0 diff=0.0000
+  [DBG g=2] winner=121 K=3 delta=-8664.0 s_sol_obj=719460.0 winner_old_sc=719460.0 winner_new_sc=710796.0
+  [DBG g=2] WINNER tid=121 local_obj=710796.0 s_sol_obj_before=719460.0 delta=-8664.00
+  [DBG g=2] AFTER  stored_obj=710796.0 recomputed=710796.0 diff=0.0000
+  [DBG g=0] winner=4 K=3 delta=-7752.0 s_sol_obj=726513.0 winner_old_sc=726513.0 winner_new_sc=718761.0
+  [DBG g=0] WINNER tid=4 local_obj=718761.0 s_sol_obj_before=726513.0 delta=-7752.00
+  [DBG g=0] AFTER  stored_obj=718761.0 recomputed=718761.0 diff=0.0000
+  [DBG g=1] winner=43 K=1 delta=-6713.0 s_sol_obj=718761.0 winner_old_sc=718761.0 winner_new_sc=712048.0
+  [DBG g=1] WINNER tid=43 local_obj=712048.0 s_sol_obj_before=718761.0 delta=-6713.00
+  [DBG g=1] AFTER  stored_obj=712048.0 recomputed=712048.0 diff=0.0000
+  [DBG g=2] winner=115 K=3 delta=-5246.0 s_sol_obj=712048.0 winner_old_sc=712048.0 winner_new_sc=706802.0
+  [DBG g=2] WINNER tid=115 local_obj=706802.0 s_sol_obj_before=712048.0 delta=-5246.00
+  [DBG g=2] AFTER  stored_obj=706802.0 recomputed=706802.0 diff=0.0000
+  [ 1200] 531734.0
+  [DBG g=0] winner=49 K=1 delta=-7951.0 s_sol_obj=754740.0 winner_old_sc=754740.0 winner_new_sc=746789.0
+  [DBG g=0] WINNER tid=49 local_obj=746789.0 s_sol_obj_before=754740.0 delta=-7951.00
+  [DBG g=0] AFTER  stored_obj=746789.0 recomputed=746789.0 diff=0.0000
+  [DBG g=1] winner=26 K=3 delta=-8335.0 s_sol_obj=746789.0 winner_old_sc=746789.0 winner_new_sc=738454.0
+  [DBG g=1] WINNER tid=26 local_obj=738454.0 s_sol_obj_before=746789.0 delta=-8335.00
+  [DBG g=1] AFTER  stored_obj=738454.0 recomputed=738454.0 diff=0.0000
+  [DBG g=2] winner=89 K=1 delta=-12009.0 s_sol_obj=738454.0 winner_old_sc=738454.0 winner_new_sc=726445.0
+  [DBG g=2] WINNER tid=89 local_obj=726445.0 s_sol_obj_before=738454.0 delta=-12009.00
+  [DBG g=2] AFTER  stored_obj=726445.0 recomputed=726445.0 diff=0.0000
+  [DBG g=0] winner=124 K=2 delta=-19086.0 s_sol_obj=742241.0 winner_old_sc=742241.0 winner_new_sc=723155.0
+  [DBG g=0] WINNER tid=124 local_obj=723155.0 s_sol_obj_before=742241.0 delta=-19086.00
+  [DBG g=0] AFTER  stored_obj=723155.0 recomputed=723155.0 diff=0.0000
+  [DBG g=1] winner=72 K=3 delta=-6687.0 s_sol_obj=723155.0 winner_old_sc=723155.0 winner_new_sc=716468.0
+  [DBG g=1] WINNER tid=72 local_obj=716468.0 s_sol_obj_before=723155.0 delta=-6687.00
+  [DBG g=1] AFTER  stored_obj=716468.0 recomputed=716468.0 diff=0.0000
+  [DBG g=2] winner=30 K=2 delta=-19007.0 s_sol_obj=716468.0 winner_old_sc=-716468.0 winner_new_sc=-735475.0
+  [DBG g=2] WINNER tid=30 local_obj=735475.0 s_sol_obj_before=716468.0 delta=-19007.00
+  [DBG g=2] AFTER  stored_obj=735475.0 recomputed=735475.0 diff=0.0000
+  [ 1300] 531734.0
+  [DBG g=0] winner=71 K=3 delta=-11376.0 s_sol_obj=768020.0 winner_old_sc=768020.0 winner_new_sc=756644.0
+  [DBG g=0] WINNER tid=71 local_obj=756644.0 s_sol_obj_before=768020.0 delta=-11376.00
+  [DBG g=0] AFTER  stored_obj=756644.0 recomputed=756644.0 diff=0.0000
+  [DBG g=1] winner=82 K=1 delta=-12294.0 s_sol_obj=756644.0 winner_old_sc=756644.0 winner_new_sc=744350.0
+  [DBG g=1] WINNER tid=82 local_obj=744350.0 s_sol_obj_before=756644.0 delta=-12294.00
+  [DBG g=1] AFTER  stored_obj=744350.0 recomputed=744350.0 diff=0.0000
+  [DBG g=2] winner=89 K=2 delta=-13017.0 s_sol_obj=744350.0 winner_old_sc=744350.0 winner_new_sc=731333.0
+  [DBG g=2] WINNER tid=89 local_obj=731333.0 s_sol_obj_before=744350.0 delta=-13017.00
+  [DBG g=2] AFTER  stored_obj=731333.0 recomputed=731333.0 diff=0.0000
+  [DBG g=0] winner=92 K=1 delta=-12555.0 s_sol_obj=733764.0 winner_old_sc=733764.0 winner_new_sc=721209.0
+  [DBG g=0] WINNER tid=92 local_obj=721209.0 s_sol_obj_before=733764.0 delta=-12555.00
+  [DBG g=0] AFTER  stored_obj=721209.0 recomputed=721209.0 diff=0.0000
+  [DBG g=1] winner=68 K=2 delta=-6824.0 s_sol_obj=721209.0 winner_old_sc=-721209.0 winner_new_sc=-728033.0
+  [DBG g=1] WINNER tid=68 local_obj=728033.0 s_sol_obj_before=721209.0 delta=-6824.00
+  [DBG g=1] AFTER  stored_obj=728033.0 recomputed=728033.0 diff=0.0000
+  [DBG g=2] winner=85 K=3 delta=-14239.0 s_sol_obj=728033.0 winner_old_sc=-728033.0 winner_new_sc=-742272.0
+  [DBG g=2] WINNER tid=85 local_obj=742272.0 s_sol_obj_before=728033.0 delta=-14239.00
+  [DBG g=2] AFTER  stored_obj=742272.0 recomputed=742272.0 diff=0.0000
+  [ 1400] 531734.0
+  [DBG g=0] winner=45 K=2 delta=-29448.0 s_sol_obj=732927.0 winner_old_sc=-732927.0 winner_new_sc=-762375.0
+  [DBG g=0] WINNER tid=45 local_obj=762375.0 s_sol_obj_before=732927.0 delta=-29448.00
+  [DBG g=0] AFTER  stored_obj=762375.0 recomputed=762375.0 diff=0.0000
+  [DBG g=1] winner=27 K=3 delta=-10262.0 s_sol_obj=762375.0 winner_old_sc=762375.0 winner_new_sc=752113.0
+  [DBG g=1] WINNER tid=27 local_obj=752113.0 s_sol_obj_before=762375.0 delta=-10262.00
+  [DBG g=1] AFTER  stored_obj=752113.0 recomputed=752113.0 diff=0.0000
+  [DBG g=2] winner=37 K=2 delta=-8694.0 s_sol_obj=752113.0 winner_old_sc=752113.0 winner_new_sc=743419.0
+  [DBG g=2] WINNER tid=37 local_obj=743419.0 s_sol_obj_before=752113.0 delta=-8694.00
+  [DBG g=2] AFTER  stored_obj=743419.0 recomputed=743419.0 diff=0.0000
+  [DBG g=0] winner=123 K=3 delta=-23070.0 s_sol_obj=757882.0 winner_old_sc=757882.0 winner_new_sc=734812.0
+  [DBG g=0] WINNER tid=123 local_obj=734812.0 s_sol_obj_before=757882.0 delta=-23070.00
+  [DBG g=0] AFTER  stored_obj=734812.0 recomputed=734812.0 diff=0.0000
+  [DBG g=1] winner=29 K=2 delta=-13632.0 s_sol_obj=734812.0 winner_old_sc=734812.0 winner_new_sc=721180.0
+  [DBG g=1] WINNER tid=29 local_obj=721180.0 s_sol_obj_before=734812.0 delta=-13632.00
+  [DBG g=1] AFTER  stored_obj=721180.0 recomputed=721180.0 diff=0.0000
+  [DBG g=2] winner=107 K=2 delta=-5760.0 s_sol_obj=721180.0 winner_old_sc=721180.0 winner_new_sc=715420.0
+  [DBG g=2] WINNER tid=107 local_obj=715420.0 s_sol_obj_before=721180.0 delta=-5760.00
+  [DBG g=2] AFTER  stored_obj=715420.0 recomputed=715420.0 diff=0.0000
+  [ 1500] 531734.0
+  [DBG g=0] winner=122 K=1 delta=-14216.0 s_sol_obj=531734.0 winner_old_sc=-531734.0 winner_new_sc=-545950.0
+  [DBG g=0] WINNER tid=122 local_obj=545950.0 s_sol_obj_before=531734.0 delta=-14216.00
+  [DBG g=0] AFTER  stored_obj=545950.0 recomputed=545950.0 diff=0.0000
+  [DBG g=1] winner=122 K=1 delta=-4096.0 s_sol_obj=545950.0 winner_old_sc=-545950.0 winner_new_sc=-550046.0
+  [DBG g=1] WINNER tid=122 local_obj=550046.0 s_sol_obj_before=545950.0 delta=-4096.00
+  [DBG g=1] AFTER  stored_obj=550046.0 recomputed=550046.0 diff=0.0000
+  [DBG g=2] winner=90 K=1 delta=-18506.0 s_sol_obj=550046.0 winner_old_sc=-550046.0 winner_new_sc=-568552.0
+  [DBG g=2] WINNER tid=90 local_obj=568552.0 s_sol_obj_before=550046.0 delta=-18506.00
+  [DBG g=2] AFTER  stored_obj=568552.0 recomputed=568552.0 diff=0.0000
+  [DBG g=0] winner=119 K=3 delta=-15997.0 s_sol_obj=745759.0 winner_old_sc=745759.0 winner_new_sc=729762.0
+  [DBG g=0] WINNER tid=119 local_obj=729762.0 s_sol_obj_before=745759.0 delta=-15997.00
+  [DBG g=0] AFTER  stored_obj=729762.0 recomputed=729762.0 diff=0.0000
+  [DBG g=1] winner=93 K=1 delta=-17014.0 s_sol_obj=729762.0 winner_old_sc=729762.0 winner_new_sc=712748.0
+  [DBG g=1] WINNER tid=93 local_obj=712748.0 s_sol_obj_before=729762.0 delta=-17014.00
+  [DBG g=1] AFTER  stored_obj=712748.0 recomputed=712748.0 diff=0.0000
+  [DBG g=2] winner=64 K=3 delta=-10849.0 s_sol_obj=712748.0 winner_old_sc=-712748.0 winner_new_sc=-723597.0
+  [DBG g=2] WINNER tid=64 local_obj=723597.0 s_sol_obj_before=712748.0 delta=-10849.00
+  [DBG g=2] AFTER  stored_obj=723597.0 recomputed=723597.0 diff=0.0000
+  [ 1600] 531734.0
+  [DBG g=0] winner=67 K=1 delta=-12878.0 s_sol_obj=738471.0 winner_old_sc=738471.0 winner_new_sc=725593.0
+  [DBG g=0] WINNER tid=67 local_obj=725593.0 s_sol_obj_before=738471.0 delta=-12878.00
+  [DBG g=0] AFTER  stored_obj=725593.0 recomputed=725593.0 diff=0.0000
+  [DBG g=1] winner=22 K=2 delta=-7188.0 s_sol_obj=725593.0 winner_old_sc=725593.0 winner_new_sc=718405.0
+  [DBG g=1] WINNER tid=22 local_obj=718405.0 s_sol_obj_before=725593.0 delta=-7188.00
+  [DBG g=1] AFTER  stored_obj=718405.0 recomputed=718405.0 diff=0.0000
+  [DBG g=2] winner=95 K=1 delta=-5380.0 s_sol_obj=718405.0 winner_old_sc=718405.0 winner_new_sc=713025.0
+  [DBG g=2] WINNER tid=95 local_obj=713025.0 s_sol_obj_before=718405.0 delta=-5380.00
+  [DBG g=2] AFTER  stored_obj=713025.0 recomputed=713025.0 diff=0.0000
+  [DBG g=0] winner=18 K=1 delta=-16705.0 s_sol_obj=740954.0 winner_old_sc=740954.0 winner_new_sc=724249.0
+  [DBG g=0] WINNER tid=18 local_obj=724249.0 s_sol_obj_before=740954.0 delta=-16705.00
+  [DBG g=0] AFTER  stored_obj=724249.0 recomputed=724249.0 diff=0.0000
+  [DBG g=1] winner=22 K=3 delta=-12291.0 s_sol_obj=724249.0 winner_old_sc=724249.0 winner_new_sc=711958.0
+  [DBG g=1] WINNER tid=22 local_obj=711958.0 s_sol_obj_before=724249.0 delta=-12291.00
+  [DBG g=1] AFTER  stored_obj=711958.0 recomputed=711958.0 diff=0.0000
+  [DBG g=2] winner=115 K=2 delta=-9214.0 s_sol_obj=711958.0 winner_old_sc=-711958.0 winner_new_sc=-721172.0
+  [DBG g=2] WINNER tid=115 local_obj=721172.0 s_sol_obj_before=711958.0 delta=-9214.00
+  [DBG g=2] AFTER  stored_obj=721172.0 recomputed=721172.0 diff=0.0000
+  [ 1700] 531734.0
+  [DBG g=0] winner=45 K=3 delta=-12431.0 s_sol_obj=733309.0 winner_old_sc=733309.0 winner_new_sc=720878.0
+  [DBG g=0] WINNER tid=45 local_obj=720878.0 s_sol_obj_before=733309.0 delta=-12431.00
+  [DBG g=0] AFTER  stored_obj=720878.0 recomputed=720878.0 diff=0.0000
+  [DBG g=1] winner=101 K=2 delta=-12967.0 s_sol_obj=720878.0 winner_old_sc=720878.0 winner_new_sc=707911.0
+  [DBG g=1] WINNER tid=101 local_obj=707911.0 s_sol_obj_before=720878.0 delta=-12967.00
+  [DBG g=1] AFTER  stored_obj=707911.0 recomputed=707911.0 diff=0.0000
+  [DBG g=2] winner=42 K=2 delta=-23454.0 s_sol_obj=707911.0 winner_old_sc=-707911.0 winner_new_sc=-731365.0
+  [DBG g=2] WINNER tid=42 local_obj=731365.0 s_sol_obj_before=707911.0 delta=-23454.00
+  [DBG g=2] AFTER  stored_obj=731365.0 recomputed=731365.0 diff=0.0000
+  [DBG g=0] winner=15 K=2 delta=-10720.0 s_sol_obj=734495.0 winner_old_sc=734495.0 winner_new_sc=723775.0
+  [DBG g=0] WINNER tid=15 local_obj=723775.0 s_sol_obj_before=734495.0 delta=-10720.00
+  [DBG g=0] AFTER  stored_obj=723775.0 recomputed=723775.0 diff=0.0000
+  [DBG g=1] winner=96 K=1 delta=-3536.0 s_sol_obj=723775.0 winner_old_sc=723775.0 winner_new_sc=720239.0
+  [DBG g=1] WINNER tid=96 local_obj=720239.0 s_sol_obj_before=723775.0 delta=-3536.00
+  [DBG g=1] AFTER  stored_obj=720239.0 recomputed=720239.0 diff=0.0000
+  [DBG g=2] winner=127 K=2 delta=-6204.0 s_sol_obj=720239.0 winner_old_sc=720239.0 winner_new_sc=714035.0
+  [DBG g=2] WINNER tid=127 local_obj=714035.0 s_sol_obj_before=720239.0 delta=-6204.00
+  [DBG g=2] AFTER  stored_obj=714035.0 recomputed=714035.0 diff=0.0000
+  [ 1800] 531734.0
+  [DBG g=0] winner=29 K=3 delta=-6653.0 s_sol_obj=733748.0 winner_old_sc=733748.0 winner_new_sc=727095.0
+  [DBG g=0] WINNER tid=29 local_obj=727095.0 s_sol_obj_before=733748.0 delta=-6653.00
+  [DBG g=0] AFTER  stored_obj=727095.0 recomputed=727095.0 diff=0.0000
+  [DBG g=1] winner=51 K=2 delta=-8550.0 s_sol_obj=727095.0 winner_old_sc=727095.0 winner_new_sc=718545.0
+  [DBG g=1] WINNER tid=51 local_obj=718545.0 s_sol_obj_before=727095.0 delta=-8550.00
+  [DBG g=1] AFTER  stored_obj=718545.0 recomputed=718545.0 diff=0.0000
+  [DBG g=2] winner=115 K=1 delta=-9220.0 s_sol_obj=718545.0 winner_old_sc=-718545.0 winner_new_sc=-727765.0
+  [DBG g=2] WINNER tid=115 local_obj=727765.0 s_sol_obj_before=718545.0 delta=-9220.00
+  [DBG g=2] AFTER  stored_obj=727765.0 recomputed=727765.0 diff=0.0000
+  [DBG g=0] winner=63 K=3 delta=-4643.0 s_sol_obj=719535.0 winner_old_sc=719535.0 winner_new_sc=714892.0
+  [DBG g=0] WINNER tid=63 local_obj=714892.0 s_sol_obj_before=719535.0 delta=-4643.00
+  [DBG g=0] AFTER  stored_obj=714892.0 recomputed=714892.0 diff=0.0000
+  [DBG g=1] winner=50 K=3 delta=-4465.0 s_sol_obj=714892.0 winner_old_sc=714892.0 winner_new_sc=710427.0
+  [DBG g=1] WINNER tid=50 local_obj=710427.0 s_sol_obj_before=714892.0 delta=-4465.00
+  [DBG g=1] AFTER  stored_obj=710427.0 recomputed=710427.0 diff=0.0000
+  [DBG g=2] winner=86 K=3 delta=-8715.0 s_sol_obj=710427.0 winner_old_sc=710427.0 winner_new_sc=701712.0
+  [DBG g=2] WINNER tid=86 local_obj=701712.0 s_sol_obj_before=710427.0 delta=-8715.00
+  [DBG g=2] AFTER  stored_obj=701712.0 recomputed=701712.0 diff=0.0000
+  [ 1900] 531734.0
+  [DBG g=0] winner=0 K=3 delta=-11539.0 s_sol_obj=756056.0 winner_old_sc=756056.0 winner_new_sc=744517.0
+  [DBG g=0] WINNER tid=0 local_obj=744517.0 s_sol_obj_before=756056.0 delta=-11539.00
+  [DBG g=0] AFTER  stored_obj=744517.0 recomputed=744517.0 diff=0.0000
+  [DBG g=1] winner=123 K=3 delta=-6095.0 s_sol_obj=744517.0 winner_old_sc=744517.0 winner_new_sc=738422.0
+  [DBG g=1] WINNER tid=123 local_obj=738422.0 s_sol_obj_before=744517.0 delta=-6095.00
+  [DBG g=1] AFTER  stored_obj=738422.0 recomputed=738422.0 diff=0.0000
+  [DBG g=2] winner=105 K=2 delta=-15079.0 s_sol_obj=738422.0 winner_old_sc=738422.0 winner_new_sc=723343.0
+  [DBG g=2] WINNER tid=105 local_obj=723343.0 s_sol_obj_before=738422.0 delta=-15079.00
+  [DBG g=2] AFTER  stored_obj=723343.0 recomputed=723343.0 diff=0.0000
+  [DBG g=0] winner=4 K=3 delta=-16474.0 s_sol_obj=720405.0 winner_old_sc=720405.0 winner_new_sc=703931.0
+  [DBG g=0] WINNER tid=4 local_obj=703931.0 s_sol_obj_before=720405.0 delta=-16474.00
+  [DBG g=0] AFTER  stored_obj=703931.0 recomputed=703931.0 diff=0.0000
+  [DBG g=1] winner=39 K=3 delta=-5502.0 s_sol_obj=703931.0 winner_old_sc=703931.0 winner_new_sc=698429.0
+  [DBG g=1] WINNER tid=39 local_obj=698429.0 s_sol_obj_before=703931.0 delta=-5502.00
+  [DBG g=1] AFTER  stored_obj=698429.0 recomputed=698429.0 diff=0.0000
+  [DBG g=2] winner=104 K=3 delta=-17133.0 s_sol_obj=698429.0 winner_old_sc=-698429.0 winner_new_sc=-715562.0
+  [DBG g=2] WINNER tid=104 local_obj=715562.0 s_sol_obj_before=698429.0 delta=-17133.00
+  [DBG g=2] AFTER  stored_obj=715562.0 recomputed=715562.0 diff=0.0000
+  [ 2000] 531734.0
+  [DBG g=0] winner=28 K=1 delta=-2199.0 s_sol_obj=531734.0 winner_old_sc=531734.0 winner_new_sc=529535.0
+  [DBG g=0] WINNER tid=28 local_obj=529535.0 s_sol_obj_before=531734.0 delta=-2199.00
+  [DBG g=0] AFTER  stored_obj=529535.0 recomputed=529535.0 diff=0.0000
+  [DBG g=1] winner=89 K=1 delta=-3205.0 s_sol_obj=529535.0 winner_old_sc=529535.0 winner_new_sc=526330.0
+  [DBG g=1] WINNER tid=89 local_obj=526330.0 s_sol_obj_before=529535.0 delta=-3205.00
+  [DBG g=1] AFTER  stored_obj=526330.0 recomputed=526330.0 diff=0.0000
+  [DBG g=2] winner=114 K=1 delta=-1980.0 s_sol_obj=526330.0 winner_old_sc=526330.0 winner_new_sc=524350.0
+  [DBG g=2] WINNER tid=114 local_obj=524350.0 s_sol_obj_before=526330.0 delta=-1980.00
+  [DBG g=2] AFTER  stored_obj=524350.0 recomputed=524350.0 diff=0.0000
+  [DBG g=0] winner=80 K=3 delta=-11294.0 s_sol_obj=725761.0 winner_old_sc=725761.0 winner_new_sc=714467.0
+  [DBG g=0] WINNER tid=80 local_obj=714467.0 s_sol_obj_before=725761.0 delta=-11294.00
+  [DBG g=0] AFTER  stored_obj=714467.0 recomputed=714467.0 diff=0.0000
+  [DBG g=1] winner=116 K=1 delta=-7989.0 s_sol_obj=714467.0 winner_old_sc=714467.0 winner_new_sc=706478.0
+  [DBG g=1] WINNER tid=116 local_obj=706478.0 s_sol_obj_before=714467.0 delta=-7989.00
+  [DBG g=1] AFTER  stored_obj=706478.0 recomputed=706478.0 diff=0.0000
+  [DBG g=2] winner=15 K=3 delta=-4792.0 s_sol_obj=706478.0 winner_old_sc=706478.0 winner_new_sc=701686.0
+  [DBG g=2] WINNER tid=15 local_obj=701686.0 s_sol_obj_before=706478.0 delta=-4792.00
+  [DBG g=2] AFTER  stored_obj=701686.0 recomputed=701686.0 diff=0.0000
+  [ 2100] 531734.0
+  [DBG g=0] winner=21 K=3 delta=-11824.0 s_sol_obj=744470.0 winner_old_sc=744470.0 winner_new_sc=732646.0
+  [DBG g=0] WINNER tid=21 local_obj=732646.0 s_sol_obj_before=744470.0 delta=-11824.00
+  [DBG g=0] AFTER  stored_obj=732646.0 recomputed=732646.0 diff=0.0000
+  [DBG g=1] winner=70 K=1 delta=-5027.0 s_sol_obj=732646.0 winner_old_sc=732646.0 winner_new_sc=727619.0
+  [DBG g=1] WINNER tid=70 local_obj=727619.0 s_sol_obj_before=732646.0 delta=-5027.00
+  [DBG g=1] AFTER  stored_obj=727619.0 recomputed=727619.0 diff=0.0000
+  [DBG g=2] winner=84 K=1 delta=-11523.0 s_sol_obj=727619.0 winner_old_sc=-727619.0 winner_new_sc=-739142.0
+  [DBG g=2] WINNER tid=84 local_obj=739142.0 s_sol_obj_before=727619.0 delta=-11523.00
+  [DBG g=2] AFTER  stored_obj=739142.0 recomputed=739142.0 diff=0.0000
+  [DBG g=0] winner=9 K=2 delta=-7593.0 s_sol_obj=753966.0 winner_old_sc=753966.0 winner_new_sc=746373.0
+  [DBG g=0] WINNER tid=9 local_obj=746373.0 s_sol_obj_before=753966.0 delta=-7593.00
+  [DBG g=0] AFTER  stored_obj=746373.0 recomputed=746373.0 diff=0.0000
+  [DBG g=1] winner=50 K=3 delta=-19333.0 s_sol_obj=746373.0 winner_old_sc=746373.0 winner_new_sc=727040.0
+  [DBG g=1] WINNER tid=50 local_obj=727040.0 s_sol_obj_before=746373.0 delta=-19333.00
+  [DBG g=1] AFTER  stored_obj=727040.0 recomputed=727040.0 diff=0.0000
+  [DBG g=2] winner=84 K=2 delta=-14758.0 s_sol_obj=727040.0 winner_old_sc=727040.0 winner_new_sc=712282.0
+  [DBG g=2] WINNER tid=84 local_obj=712282.0 s_sol_obj_before=727040.0 delta=-14758.00
+  [DBG g=2] AFTER  stored_obj=712282.0 recomputed=712282.0 diff=0.0000
+  [ 2200] 531734.0
+  [DBG g=0] winner=52 K=3 delta=-21495.0 s_sol_obj=770101.0 winner_old_sc=770101.0 winner_new_sc=748606.0
+  [DBG g=0] WINNER tid=52 local_obj=748606.0 s_sol_obj_before=770101.0 delta=-21495.00
+  [DBG g=0] AFTER  stored_obj=748606.0 recomputed=748606.0 diff=0.0000
+  [DBG g=1] winner=59 K=2 delta=-15062.0 s_sol_obj=748606.0 winner_old_sc=748606.0 winner_new_sc=733544.0
+  [DBG g=1] WINNER tid=59 local_obj=733544.0 s_sol_obj_before=748606.0 delta=-15062.00
+  [DBG g=1] AFTER  stored_obj=733544.0 recomputed=733544.0 diff=0.0000
+  [DBG g=2] winner=100 K=2 delta=-12138.0 s_sol_obj=733544.0 winner_old_sc=-733544.0 winner_new_sc=-745682.0
+  [DBG g=2] WINNER tid=100 local_obj=745682.0 s_sol_obj_before=733544.0 delta=-12138.00
+  [DBG g=2] AFTER  stored_obj=745682.0 recomputed=745682.0 diff=0.0000
+  [DBG g=0] winner=109 K=3 delta=-17155.0 s_sol_obj=763615.0 winner_old_sc=763615.0 winner_new_sc=746460.0
+  [DBG g=0] WINNER tid=109 local_obj=746460.0 s_sol_obj_before=763615.0 delta=-17155.00
+  [DBG g=0] AFTER  stored_obj=746460.0 recomputed=746460.0 diff=0.0000
+  [DBG g=1] winner=56 K=1 delta=-14922.0 s_sol_obj=746460.0 winner_old_sc=746460.0 winner_new_sc=731538.0
+  [DBG g=1] WINNER tid=56 local_obj=731538.0 s_sol_obj_before=746460.0 delta=-14922.00
+  [DBG g=1] AFTER  stored_obj=731538.0 recomputed=731538.0 diff=0.0000
+  [DBG g=2] winner=53 K=1 delta=-7146.0 s_sol_obj=731538.0 winner_old_sc=-731538.0 winner_new_sc=-738684.0
+  [DBG g=2] WINNER tid=53 local_obj=738684.0 s_sol_obj_before=731538.0 delta=-7146.00
+  [DBG g=2] AFTER  stored_obj=738684.0 recomputed=738684.0 diff=0.0000
+  [ 2300] 531734.0
+  [DBG g=0] winner=48 K=2 delta=-6779.0 s_sol_obj=734759.0 winner_old_sc=734759.0 winner_new_sc=727980.0
+  [DBG g=0] WINNER tid=48 local_obj=727980.0 s_sol_obj_before=734759.0 delta=-6779.00
+  [DBG g=0] AFTER  stored_obj=727980.0 recomputed=727980.0 diff=0.0000
+  [DBG g=1] winner=64 K=3 delta=-10249.0 s_sol_obj=727980.0 winner_old_sc=727980.0 winner_new_sc=717731.0
+  [DBG g=1] WINNER tid=64 local_obj=717731.0 s_sol_obj_before=727980.0 delta=-10249.00
+  [DBG g=1] AFTER  stored_obj=717731.0 recomputed=717731.0 diff=0.0000
+  [DBG g=2] winner=46 K=3 delta=-8560.0 s_sol_obj=717731.0 winner_old_sc=-717731.0 winner_new_sc=-726291.0
+  [DBG g=2] WINNER tid=46 local_obj=726291.0 s_sol_obj_before=717731.0 delta=-8560.00
+  [DBG g=2] AFTER  stored_obj=726291.0 recomputed=726291.0 diff=0.0000
+  [DBG g=0] winner=8 K=1 delta=-16692.0 s_sol_obj=768520.0 winner_old_sc=768520.0 winner_new_sc=751828.0
+  [DBG g=0] WINNER tid=8 local_obj=751828.0 s_sol_obj_before=768520.0 delta=-16692.00
+  [DBG g=0] AFTER  stored_obj=751828.0 recomputed=751828.0 diff=0.0000
+  [DBG g=1] winner=62 K=3 delta=-15775.0 s_sol_obj=751828.0 winner_old_sc=751828.0 winner_new_sc=736053.0
+  [DBG g=1] WINNER tid=62 local_obj=736053.0 s_sol_obj_before=751828.0 delta=-15775.00
+  [DBG g=1] AFTER  stored_obj=736053.0 recomputed=736053.0 diff=0.0000
+  [DBG g=2] winner=43 K=1 delta=-10376.0 s_sol_obj=736053.0 winner_old_sc=736053.0 winner_new_sc=725677.0
+  [DBG g=2] WINNER tid=43 local_obj=725677.0 s_sol_obj_before=736053.0 delta=-10376.00
+  [DBG g=2] AFTER  stored_obj=725677.0 recomputed=725677.0 diff=0.0000
+  [ 2400] 531734.0
+  [DBG g=0] winner=104 K=3 delta=-13455.0 s_sol_obj=745059.0 winner_old_sc=745059.0 winner_new_sc=731604.0
+  [DBG g=0] WINNER tid=104 local_obj=731604.0 s_sol_obj_before=745059.0 delta=-13455.00
+  [DBG g=0] AFTER  stored_obj=731604.0 recomputed=731604.0 diff=0.0000
+  [DBG g=1] winner=63 K=3 delta=-10690.0 s_sol_obj=731604.0 winner_old_sc=731604.0 winner_new_sc=720914.0
+  [DBG g=1] WINNER tid=63 local_obj=720914.0 s_sol_obj_before=731604.0 delta=-10690.00
+  [DBG g=1] AFTER  stored_obj=720914.0 recomputed=720914.0 diff=0.0000
+  [DBG g=2] winner=39 K=2 delta=-5753.0 s_sol_obj=720914.0 winner_old_sc=-720914.0 winner_new_sc=-726667.0
+  [DBG g=2] WINNER tid=39 local_obj=726667.0 s_sol_obj_before=720914.0 delta=-5753.00
+  [DBG g=2] AFTER  stored_obj=726667.0 recomputed=726667.0 diff=0.0000
+  [DBG g=0] winner=22 K=1 delta=-19486.0 s_sol_obj=753923.0 winner_old_sc=753923.0 winner_new_sc=734437.0
+  [DBG g=0] WINNER tid=22 local_obj=734437.0 s_sol_obj_before=753923.0 delta=-19486.00
+  [DBG g=0] AFTER  stored_obj=734437.0 recomputed=734437.0 diff=0.0000
+  [DBG g=1] winner=75 K=3 delta=-11051.0 s_sol_obj=734437.0 winner_old_sc=734437.0 winner_new_sc=723386.0
+  [DBG g=1] WINNER tid=75 local_obj=723386.0 s_sol_obj_before=734437.0 delta=-11051.00
+  [DBG g=1] AFTER  stored_obj=723386.0 recomputed=723386.0 diff=0.0000
+  [DBG g=2] winner=64 K=2 delta=-6978.0 s_sol_obj=723386.0 winner_old_sc=723386.0 winner_new_sc=716408.0
+  [DBG g=2] WINNER tid=64 local_obj=716408.0 s_sol_obj_before=723386.0 delta=-6978.00
+  [DBG g=2] AFTER  stored_obj=716408.0 recomputed=716408.0 diff=0.0000
+  [ 2500] 531734.0
+  [DBG g=0] winner=50 K=2 delta=-10398.0 s_sol_obj=753725.0 winner_old_sc=753725.0 winner_new_sc=743327.0
+  [DBG g=0] WINNER tid=50 local_obj=743327.0 s_sol_obj_before=753725.0 delta=-10398.00
+  [DBG g=0] AFTER  stored_obj=743327.0 recomputed=743327.0 diff=0.0000
+  [DBG g=1] winner=113 K=2 delta=-5946.0 s_sol_obj=743327.0 winner_old_sc=743327.0 winner_new_sc=737381.0
+  [DBG g=1] WINNER tid=113 local_obj=737381.0 s_sol_obj_before=743327.0 delta=-5946.00
+  [DBG g=1] AFTER  stored_obj=737381.0 recomputed=737381.0 diff=0.0000
+  [DBG g=2] winner=89 K=1 delta=-5381.0 s_sol_obj=737381.0 winner_old_sc=737381.0 winner_new_sc=732000.0
+  [DBG g=2] WINNER tid=89 local_obj=732000.0 s_sol_obj_before=737381.0 delta=-5381.00
+  [DBG g=2] AFTER  stored_obj=732000.0 recomputed=732000.0 diff=0.0000
+  [DBG g=0] winner=12 K=3 delta=-17113.0 s_sol_obj=762518.0 winner_old_sc=762518.0 winner_new_sc=745405.0
+  [DBG g=0] WINNER tid=12 local_obj=745405.0 s_sol_obj_before=762518.0 delta=-17113.00
+  [DBG g=0] AFTER  stored_obj=745405.0 recomputed=745405.0 diff=0.0000
+  [DBG g=1] winner=97 K=3 delta=-14894.0 s_sol_obj=745405.0 winner_old_sc=745405.0 winner_new_sc=730511.0
+  [DBG g=1] WINNER tid=97 local_obj=730511.0 s_sol_obj_before=745405.0 delta=-14894.00
+  [DBG g=1] AFTER  stored_obj=730511.0 recomputed=730511.0 diff=0.0000
+  [DBG g=2] winner=74 K=2 delta=-26161.0 s_sol_obj=730511.0 winner_old_sc=730511.0 winner_new_sc=704350.0
+  [DBG g=2] WINNER tid=74 local_obj=704350.0 s_sol_obj_before=730511.0 delta=-26161.00
+  [DBG g=2] AFTER  stored_obj=704350.0 recomputed=704350.0 diff=0.0000
+  [ 2600] 531734.0
+  [DBG g=0] winner=88 K=3 delta=-22104.0 s_sol_obj=741273.0 winner_old_sc=-741273.0 winner_new_sc=-763377.0
+  [DBG g=0] WINNER tid=88 local_obj=763377.0 s_sol_obj_before=741273.0 delta=-22104.00
+  [DBG g=0] AFTER  stored_obj=763377.0 recomputed=763377.0 diff=0.0000
+  [DBG g=1] winner=83 K=2 delta=-10451.0 s_sol_obj=763377.0 winner_old_sc=763377.0 winner_new_sc=752926.0
+  [DBG g=1] WINNER tid=83 local_obj=752926.0 s_sol_obj_before=763377.0 delta=-10451.00
+  [DBG g=1] AFTER  stored_obj=752926.0 recomputed=752926.0 diff=0.0000
+  [DBG g=2] winner=78 K=2 delta=-12886.0 s_sol_obj=752926.0 winner_old_sc=752926.0 winner_new_sc=740040.0
+  [DBG g=2] WINNER tid=78 local_obj=740040.0 s_sol_obj_before=752926.0 delta=-12886.00
+  [DBG g=2] AFTER  stored_obj=740040.0 recomputed=740040.0 diff=0.0000
+  [DBG g=0] winner=118 K=1 delta=-9425.0 s_sol_obj=736230.0 winner_old_sc=736230.0 winner_new_sc=726805.0
+  [DBG g=0] WINNER tid=118 local_obj=726805.0 s_sol_obj_before=736230.0 delta=-9425.00
+  [DBG g=0] AFTER  stored_obj=726805.0 recomputed=726805.0 diff=0.0000
+  [DBG g=1] winner=59 K=3 delta=-15939.0 s_sol_obj=726805.0 winner_old_sc=726805.0 winner_new_sc=710866.0
+  [DBG g=1] WINNER tid=59 local_obj=710866.0 s_sol_obj_before=726805.0 delta=-15939.00
+  [DBG g=1] AFTER  stored_obj=710866.0 recomputed=710866.0 diff=0.0000
+  [DBG g=2] winner=124 K=1 delta=-8147.0 s_sol_obj=710866.0 winner_old_sc=710866.0 winner_new_sc=702719.0
+  [DBG g=2] WINNER tid=124 local_obj=702719.0 s_sol_obj_before=710866.0 delta=-8147.00
+  [DBG g=2] AFTER  stored_obj=702719.0 recomputed=702719.0 diff=0.0000
+  [ 2700] 531734.0
+  [DBG g=0] winner=42 K=3 delta=-14585.0 s_sol_obj=756576.0 winner_old_sc=756576.0 winner_new_sc=741991.0
+  [DBG g=0] WINNER tid=42 local_obj=741991.0 s_sol_obj_before=756576.0 delta=-14585.00
+  [DBG g=0] AFTER  stored_obj=741991.0 recomputed=741991.0 diff=0.0000
+  [DBG g=1] winner=98 K=3 delta=-13853.0 s_sol_obj=741991.0 winner_old_sc=741991.0 winner_new_sc=728138.0
+  [DBG g=1] WINNER tid=98 local_obj=728138.0 s_sol_obj_before=741991.0 delta=-13853.00
+  [DBG g=1] AFTER  stored_obj=728138.0 recomputed=728138.0 diff=0.0000
+  [DBG g=2] winner=48 K=1 delta=-7272.0 s_sol_obj=728138.0 winner_old_sc=-728138.0 winner_new_sc=-735410.0
+  [DBG g=2] WINNER tid=48 local_obj=735410.0 s_sol_obj_before=728138.0 delta=-7272.00
+  [DBG g=2] AFTER  stored_obj=735410.0 recomputed=735410.0 diff=0.0000
+  [DBG g=0] winner=7 K=1 delta=-8352.0 s_sol_obj=717646.0 winner_old_sc=717646.0 winner_new_sc=709294.0
+  [DBG g=0] WINNER tid=7 local_obj=709294.0 s_sol_obj_before=717646.0 delta=-8352.00
+  [DBG g=0] AFTER  stored_obj=709294.0 recomputed=709294.0 diff=0.0000
+  [DBG g=1] winner=1 K=1 delta=-9186.0 s_sol_obj=709294.0 winner_old_sc=-709294.0 winner_new_sc=-718480.0
+  [DBG g=1] WINNER tid=1 local_obj=718480.0 s_sol_obj_before=709294.0 delta=-9186.00
+  [DBG g=1] AFTER  stored_obj=718480.0 recomputed=718480.0 diff=0.0000
+  [DBG g=2] winner=71 K=1 delta=-10186.0 s_sol_obj=718480.0 winner_old_sc=718480.0 winner_new_sc=708294.0
+  [DBG g=2] WINNER tid=71 local_obj=708294.0 s_sol_obj_before=718480.0 delta=-10186.00
+  [DBG g=2] AFTER  stored_obj=708294.0 recomputed=708294.0 diff=0.0000
+  [ 2800] 531734.0
+  [DBG g=0] winner=40 K=3 delta=-10578.0 s_sol_obj=751437.0 winner_old_sc=751437.0 winner_new_sc=740859.0
+  [DBG g=0] WINNER tid=40 local_obj=740859.0 s_sol_obj_before=751437.0 delta=-10578.00
+  [DBG g=0] AFTER  stored_obj=740859.0 recomputed=740859.0 diff=0.0000
+  [DBG g=1] winner=18 K=2 delta=-18123.0 s_sol_obj=740859.0 winner_old_sc=740859.0 winner_new_sc=722736.0
+  [DBG g=1] WINNER tid=18 local_obj=722736.0 s_sol_obj_before=740859.0 delta=-18123.00
+  [DBG g=1] AFTER  stored_obj=722736.0 recomputed=722736.0 diff=0.0000
+  [DBG g=2] winner=15 K=3 delta=-7390.0 s_sol_obj=722736.0 winner_old_sc=-722736.0 winner_new_sc=-730126.0
+  [DBG g=2] WINNER tid=15 local_obj=730126.0 s_sol_obj_before=722736.0 delta=-7390.00
+  [DBG g=2] AFTER  stored_obj=730126.0 recomputed=730126.0 diff=0.0000
+  [DBG g=0] winner=44 K=3 delta=-14192.0 s_sol_obj=741862.0 winner_old_sc=-741862.0 winner_new_sc=-756054.0
+  [DBG g=0] WINNER tid=44 local_obj=756054.0 s_sol_obj_before=741862.0 delta=-14192.00
+  [DBG g=0] AFTER  stored_obj=756054.0 recomputed=756054.0 diff=0.0000
+  [DBG g=1] winner=27 K=1 delta=-9583.0 s_sol_obj=756054.0 winner_old_sc=756054.0 winner_new_sc=746471.0
+  [DBG g=1] WINNER tid=27 local_obj=746471.0 s_sol_obj_before=756054.0 delta=-9583.00
+  [DBG g=1] AFTER  stored_obj=746471.0 recomputed=746471.0 diff=0.0000
+  [DBG g=2] winner=103 K=3 delta=-10104.0 s_sol_obj=746471.0 winner_old_sc=746471.0 winner_new_sc=736367.0
+  [DBG g=2] WINNER tid=103 local_obj=736367.0 s_sol_obj_before=746471.0 delta=-10104.00
+  [DBG g=2] AFTER  stored_obj=736367.0 recomputed=736367.0 diff=0.0000
+  [ 2900] 531734.0
+  [DBG g=0] winner=35 K=1 delta=-14488.0 s_sol_obj=750317.0 winner_old_sc=750317.0 winner_new_sc=735829.0
+  [DBG g=0] WINNER tid=35 local_obj=735829.0 s_sol_obj_before=750317.0 delta=-14488.00
+  [DBG g=0] AFTER  stored_obj=735829.0 recomputed=735829.0 diff=0.0000
+  [DBG g=1] winner=24 K=3 delta=-14694.0 s_sol_obj=735829.0 winner_old_sc=735829.0 winner_new_sc=721135.0
+  [DBG g=1] WINNER tid=24 local_obj=721135.0 s_sol_obj_before=735829.0 delta=-14694.00
+  [DBG g=1] AFTER  stored_obj=721135.0 recomputed=721135.0 diff=0.0000
+  [DBG g=2] winner=127 K=1 delta=-11623.0 s_sol_obj=721135.0 winner_old_sc=721135.0 winner_new_sc=709512.0
+  [DBG g=2] WINNER tid=127 local_obj=709512.0 s_sol_obj_before=721135.0 delta=-11623.00
+  [DBG g=2] AFTER  stored_obj=709512.0 recomputed=709512.0 diff=0.0000
+  [DBG g=0] winner=21 K=1 delta=-7106.0 s_sol_obj=732609.0 winner_old_sc=732609.0 winner_new_sc=725503.0
+  [DBG g=0] WINNER tid=21 local_obj=725503.0 s_sol_obj_before=732609.0 delta=-7106.00
+  [DBG g=0] AFTER  stored_obj=725503.0 recomputed=725503.0 diff=0.0000
+  [DBG g=1] winner=38 K=3 delta=-9425.0 s_sol_obj=725503.0 winner_old_sc=725503.0 winner_new_sc=716078.0
+  [DBG g=1] WINNER tid=38 local_obj=716078.0 s_sol_obj_before=725503.0 delta=-9425.00
+  [DBG g=1] AFTER  stored_obj=716078.0 recomputed=716078.0 diff=0.0000
+  [DBG g=2] winner=58 K=3 delta=-13048.0 s_sol_obj=716078.0 winner_old_sc=-716078.0 winner_new_sc=-729126.0
+  [DBG g=2] WINNER tid=58 local_obj=729126.0 s_sol_obj_before=716078.0 delta=-13048.00
+  [DBG g=2] AFTER  stored_obj=729126.0 recomputed=729126.0 diff=0.0000
+  [ 3000] 531734.0
+  [DBG g=0] winner=73 K=3 delta=-10609.0 s_sol_obj=749946.0 winner_old_sc=749946.0 winner_new_sc=739337.0
+  [DBG g=0] WINNER tid=73 local_obj=739337.0 s_sol_obj_before=749946.0 delta=-10609.00
+  [DBG g=0] AFTER  stored_obj=739337.0 recomputed=739337.0 diff=0.0000
+  [DBG g=1] winner=44 K=1 delta=-10707.0 s_sol_obj=739337.0 winner_old_sc=-739337.0 winner_new_sc=-750044.0
+  [DBG g=1] WINNER tid=44 local_obj=750044.0 s_sol_obj_before=739337.0 delta=-10707.00
+  [DBG g=1] AFTER  stored_obj=750044.0 recomputed=750044.0 diff=0.0000
+  [DBG g=2] winner=44 K=1 delta=-14181.0 s_sol_obj=750044.0 winner_old_sc=-750044.0 winner_new_sc=-764225.0
+  [DBG g=2] WINNER tid=44 local_obj=764225.0 s_sol_obj_before=750044.0 delta=-14181.00
+  [DBG g=2] AFTER  stored_obj=764225.0 recomputed=764225.0 diff=0.0000
+  [DBG g=0] winner=6 K=3 delta=-7124.0 s_sol_obj=734261.0 winner_old_sc=734261.0 winner_new_sc=727137.0
+  [DBG g=0] WINNER tid=6 local_obj=727137.0 s_sol_obj_before=734261.0 delta=-7124.00
+  [DBG g=0] AFTER  stored_obj=727137.0 recomputed=727137.0 diff=0.0000
+  [DBG g=1] winner=68 K=3 delta=-13364.0 s_sol_obj=727137.0 winner_old_sc=727137.0 winner_new_sc=713773.0
+  [DBG g=1] WINNER tid=68 local_obj=713773.0 s_sol_obj_before=727137.0 delta=-13364.00
+  [DBG g=1] AFTER  stored_obj=713773.0 recomputed=713773.0 diff=0.0000
+  [DBG g=2] winner=47 K=1 delta=-10116.0 s_sol_obj=713773.0 winner_old_sc=-713773.0 winner_new_sc=-723889.0
+  [DBG g=2] WINNER tid=47 local_obj=723889.0 s_sol_obj_before=713773.0 delta=-10116.00
+  [DBG g=2] AFTER  stored_obj=723889.0 recomputed=723889.0 diff=0.0000
+  [ 3100] 531734.0
+  [DBG g=0] winner=119 K=1 delta=-18597.0 s_sol_obj=769279.0 winner_old_sc=769279.0 winner_new_sc=750682.0
+  [DBG g=0] WINNER tid=119 local_obj=750682.0 s_sol_obj_before=769279.0 delta=-18597.00
+  [DBG g=0] AFTER  stored_obj=750682.0 recomputed=750682.0 diff=0.0000
+  [DBG g=1] winner=59 K=2 delta=-7952.0 s_sol_obj=750682.0 winner_old_sc=750682.0 winner_new_sc=742730.0
+  [DBG g=1] WINNER tid=59 local_obj=742730.0 s_sol_obj_before=750682.0 delta=-7952.00
+  [DBG g=1] AFTER  stored_obj=742730.0 recomputed=742730.0 diff=0.0000
+  [DBG g=2] winner=5 K=2 delta=-8347.0 s_sol_obj=742730.0 winner_old_sc=742730.0 winner_new_sc=734383.0
+  [DBG g=2] WINNER tid=5 local_obj=734383.0 s_sol_obj_before=742730.0 delta=-8347.00
+  [DBG g=2] AFTER  stored_obj=734383.0 recomputed=734383.0 diff=0.0000
+  [DBG g=0] winner=30 K=2 delta=-4568.0 s_sol_obj=702902.0 winner_old_sc=702902.0 winner_new_sc=698334.0
+  [DBG g=0] WINNER tid=30 local_obj=698334.0 s_sol_obj_before=702902.0 delta=-4568.00
+  [DBG g=0] AFTER  stored_obj=698334.0 recomputed=698334.0 diff=0.0000
+  [DBG g=1] winner=111 K=1 delta=-8884.0 s_sol_obj=698334.0 winner_old_sc=698334.0 winner_new_sc=689450.0
+  [DBG g=1] WINNER tid=111 local_obj=689450.0 s_sol_obj_before=698334.0 delta=-8884.00
+  [DBG g=1] AFTER  stored_obj=689450.0 recomputed=689450.0 diff=0.0000
+  [DBG g=2] winner=3 K=2 delta=-4483.0 s_sol_obj=689450.0 winner_old_sc=689450.0 winner_new_sc=684967.0
+  [DBG g=2] WINNER tid=3 local_obj=684967.0 s_sol_obj_before=689450.0 delta=-4483.00
+  [DBG g=2] AFTER  stored_obj=684967.0 recomputed=684967.0 diff=0.0000
+  [ 3200] 531734.0
+  [DBG g=0] winner=125 K=3 delta=-11898.0 s_sol_obj=738112.0 winner_old_sc=738112.0 winner_new_sc=726214.0
+  [DBG g=0] WINNER tid=125 local_obj=726214.0 s_sol_obj_before=738112.0 delta=-11898.00
+  [DBG g=0] AFTER  stored_obj=726214.0 recomputed=726214.0 diff=0.0000
+  [DBG g=1] winner=47 K=1 delta=-10486.0 s_sol_obj=726214.0 winner_old_sc=-726214.0 winner_new_sc=-736700.0
+  [DBG g=1] WINNER tid=47 local_obj=736700.0 s_sol_obj_before=726214.0 delta=-10486.00
+  [DBG g=1] AFTER  stored_obj=736700.0 recomputed=736700.0 diff=0.0000
+  [DBG g=2] winner=123 K=3 delta=-9568.0 s_sol_obj=736700.0 winner_old_sc=736700.0 winner_new_sc=727132.0
+  [DBG g=2] WINNER tid=123 local_obj=727132.0 s_sol_obj_before=736700.0 delta=-9568.00
+  [DBG g=2] AFTER  stored_obj=727132.0 recomputed=727132.0 diff=0.0000
+  [DBG g=0] winner=89 K=3 delta=-8160.0 s_sol_obj=738932.0 winner_old_sc=738932.0 winner_new_sc=730772.0
+  [DBG g=0] WINNER tid=89 local_obj=730772.0 s_sol_obj_before=738932.0 delta=-8160.00
+  [DBG g=0] AFTER  stored_obj=730772.0 recomputed=730772.0 diff=0.0000
+  [DBG g=1] winner=12 K=3 delta=-11358.0 s_sol_obj=730772.0 winner_old_sc=730772.0 winner_new_sc=719414.0
+  [DBG g=1] WINNER tid=12 local_obj=719414.0 s_sol_obj_before=730772.0 delta=-11358.00
+  [DBG g=1] AFTER  stored_obj=719414.0 recomputed=719414.0 diff=0.0000
+  [DBG g=2] winner=94 K=1 delta=-5701.0 s_sol_obj=719414.0 winner_old_sc=719414.0 winner_new_sc=713713.0
+  [DBG g=2] WINNER tid=94 local_obj=713713.0 s_sol_obj_before=719414.0 delta=-5701.00
+  [DBG g=2] AFTER  stored_obj=713713.0 recomputed=713713.0 diff=0.0000
+  [ 3300] 531734.0
+  [DBG g=0] winner=22 K=1 delta=-13414.0 s_sol_obj=749102.0 winner_old_sc=749102.0 winner_new_sc=735688.0
+  [DBG g=0] WINNER tid=22 local_obj=735688.0 s_sol_obj_before=749102.0 delta=-13414.00
+  [DBG g=0] AFTER  stored_obj=735688.0 recomputed=735688.0 diff=0.0000
+  [DBG g=1] winner=114 K=1 delta=-7527.0 s_sol_obj=735688.0 winner_old_sc=735688.0 winner_new_sc=728161.0
+  [DBG g=1] WINNER tid=114 local_obj=728161.0 s_sol_obj_before=735688.0 delta=-7527.00
+  [DBG g=1] AFTER  stored_obj=728161.0 recomputed=728161.0 diff=0.0000
+  [DBG g=2] winner=77 K=3 delta=-6824.0 s_sol_obj=728161.0 winner_old_sc=728161.0 winner_new_sc=721337.0
+  [DBG g=2] WINNER tid=77 local_obj=721337.0 s_sol_obj_before=728161.0 delta=-6824.00
+  [DBG g=2] AFTER  stored_obj=721337.0 recomputed=721337.0 diff=0.0000
+  [DBG g=0] winner=114 K=1 delta=-2981.0 s_sol_obj=531734.0 winner_old_sc=531734.0 winner_new_sc=528753.0
+  [DBG g=0] WINNER tid=114 local_obj=528753.0 s_sol_obj_before=531734.0 delta=-2981.00
+  [DBG g=0] AFTER  stored_obj=528753.0 recomputed=528753.0 diff=0.0000
+  [DBG g=1] winner=4 K=2 delta=-4143.0 s_sol_obj=528753.0 winner_old_sc=528753.0 winner_new_sc=524610.0
+  [DBG g=1] WINNER tid=4 local_obj=524610.0 s_sol_obj_before=528753.0 delta=-4143.00
+  [DBG g=1] AFTER  stored_obj=524610.0 recomputed=524610.0 diff=0.0000
+  [DBG g=2] winner=113 K=3 delta=-14574.0 s_sol_obj=524610.0 winner_old_sc=-524610.0 winner_new_sc=-539184.0
+  [DBG g=2] WINNER tid=113 local_obj=539184.0 s_sol_obj_before=524610.0 delta=-14574.00
+  [DBG g=2] AFTER  stored_obj=539184.0 recomputed=539184.0 diff=0.0000
+  [ 3400] 531734.0
+  [DBG g=0] winner=91 K=3 delta=-21775.0 s_sol_obj=767377.0 winner_old_sc=767377.0 winner_new_sc=745602.0
+  [DBG g=0] WINNER tid=91 local_obj=745602.0 s_sol_obj_before=767377.0 delta=-21775.00
+  [DBG g=0] AFTER  stored_obj=745602.0 recomputed=745602.0 diff=0.0000
+  [DBG g=1] winner=11 K=3 delta=-8182.0 s_sol_obj=745602.0 winner_old_sc=745602.0 winner_new_sc=737420.0
+  [DBG g=1] WINNER tid=11 local_obj=737420.0 s_sol_obj_before=745602.0 delta=-8182.00
+  [DBG g=1] AFTER  stored_obj=737420.0 recomputed=737420.0 diff=0.0000
+  [DBG g=2] winner=103 K=3 delta=-25251.0 s_sol_obj=737420.0 winner_old_sc=-737420.0 winner_new_sc=-762671.0
+  [DBG g=2] WINNER tid=103 local_obj=762671.0 s_sol_obj_before=737420.0 delta=-25251.00
+  [DBG g=2] AFTER  stored_obj=762671.0 recomputed=762671.0 diff=0.0000
+  [DBG g=0] winner=18 K=2 delta=-18928.0 s_sol_obj=728080.0 winner_old_sc=728080.0 winner_new_sc=709152.0
+  [DBG g=0] WINNER tid=18 local_obj=709152.0 s_sol_obj_before=728080.0 delta=-18928.00
+  [DBG g=0] AFTER  stored_obj=709152.0 recomputed=709152.0 diff=0.0000
+  [DBG g=1] winner=69 K=1 delta=-9218.0 s_sol_obj=709152.0 winner_old_sc=709152.0 winner_new_sc=699934.0
+  [DBG g=1] WINNER tid=69 local_obj=699934.0 s_sol_obj_before=709152.0 delta=-9218.00
+  [DBG g=1] AFTER  stored_obj=699934.0 recomputed=699934.0 diff=0.0000
+  [DBG g=2] winner=15 K=3 delta=-18908.0 s_sol_obj=699934.0 winner_old_sc=-699934.0 winner_new_sc=-718842.0
+  [DBG g=2] WINNER tid=15 local_obj=718842.0 s_sol_obj_before=699934.0 delta=-18908.00
+  [DBG g=2] AFTER  stored_obj=718842.0 recomputed=718842.0 diff=0.0000
+  [ 3500] 531734.0
+  [DBG g=0] winner=122 K=2 delta=-14892.0 s_sol_obj=764403.0 winner_old_sc=764403.0 winner_new_sc=749511.0
+  [DBG g=0] WINNER tid=122 local_obj=749511.0 s_sol_obj_before=764403.0 delta=-14892.00
+  [DBG g=0] AFTER  stored_obj=749511.0 recomputed=749511.0 diff=0.0000
+  [DBG g=1] winner=86 K=3 delta=-11003.0 s_sol_obj=749511.0 winner_old_sc=-749511.0 winner_new_sc=-760514.0
+  [DBG g=1] WINNER tid=86 local_obj=760514.0 s_sol_obj_before=749511.0 delta=-11003.00
+  [DBG g=1] AFTER  stored_obj=760514.0 recomputed=760514.0 diff=0.0000
+  [DBG g=2] winner=119 K=1 delta=-8183.0 s_sol_obj=760514.0 winner_old_sc=760514.0 winner_new_sc=752331.0
+  [DBG g=2] WINNER tid=119 local_obj=752331.0 s_sol_obj_before=760514.0 delta=-8183.00
+  [DBG g=2] AFTER  stored_obj=752331.0 recomputed=752331.0 diff=0.0000
+  [DBG g=0] winner=41 K=3 delta=-8619.0 s_sol_obj=733365.0 winner_old_sc=733365.0 winner_new_sc=724746.0
+  [DBG g=0] WINNER tid=41 local_obj=724746.0 s_sol_obj_before=733365.0 delta=-8619.00
+  [DBG g=0] AFTER  stored_obj=724746.0 recomputed=724746.0 diff=0.0000
+  [DBG g=1] winner=62 K=1 delta=-6824.0 s_sol_obj=724746.0 winner_old_sc=724746.0 winner_new_sc=717922.0
+  [DBG g=1] WINNER tid=62 local_obj=717922.0 s_sol_obj_before=724746.0 delta=-6824.00
+  [DBG g=1] AFTER  stored_obj=717922.0 recomputed=717922.0 diff=0.0000
+  [DBG g=2] winner=93 K=1 delta=-12684.0 s_sol_obj=717922.0 winner_old_sc=717922.0 winner_new_sc=705238.0
+  [DBG g=2] WINNER tid=93 local_obj=705238.0 s_sol_obj_before=717922.0 delta=-12684.00
+  [DBG g=2] AFTER  stored_obj=705238.0 recomputed=705238.0 diff=0.0000
+  [ 3600] 531734.0
+  [DBG g=0] winner=32 K=2 delta=-19908.0 s_sol_obj=767549.0 winner_old_sc=767549.0 winner_new_sc=747641.0
+  [DBG g=0] WINNER tid=32 local_obj=747641.0 s_sol_obj_before=767549.0 delta=-19908.00
+  [DBG g=0] AFTER  stored_obj=747641.0 recomputed=747641.0 diff=0.0000
+  [DBG g=1] winner=36 K=3 delta=-13908.0 s_sol_obj=747641.0 winner_old_sc=747641.0 winner_new_sc=733733.0
+  [DBG g=1] WINNER tid=36 local_obj=733733.0 s_sol_obj_before=747641.0 delta=-13908.00
+  [DBG g=1] AFTER  stored_obj=733733.0 recomputed=733733.0 diff=0.0000
+  [DBG g=2] winner=107 K=1 delta=-9209.0 s_sol_obj=733733.0 winner_old_sc=733733.0 winner_new_sc=724524.0
+  [DBG g=2] WINNER tid=107 local_obj=724524.0 s_sol_obj_before=733733.0 delta=-9209.00
+  [DBG g=2] AFTER  stored_obj=724524.0 recomputed=724524.0 diff=0.0000
+  [DBG g=0] winner=72 K=1 delta=-13260.0 s_sol_obj=754351.0 winner_old_sc=754351.0 winner_new_sc=741091.0
+  [DBG g=0] WINNER tid=72 local_obj=741091.0 s_sol_obj_before=754351.0 delta=-13260.00
+  [DBG g=0] AFTER  stored_obj=741091.0 recomputed=741091.0 diff=0.0000
+  [DBG g=1] winner=112 K=3 delta=-8920.0 s_sol_obj=741091.0 winner_old_sc=-741091.0 winner_new_sc=-750011.0
+  [DBG g=1] WINNER tid=112 local_obj=750011.0 s_sol_obj_before=741091.0 delta=-8920.00
+  [DBG g=1] AFTER  stored_obj=750011.0 recomputed=750011.0 diff=0.0000
+  [DBG g=2] winner=81 K=3 delta=-9968.0 s_sol_obj=750011.0 winner_old_sc=750011.0 winner_new_sc=740043.0
+  [DBG g=2] WINNER tid=81 local_obj=740043.0 s_sol_obj_before=750011.0 delta=-9968.00
+  [DBG g=2] AFTER  stored_obj=740043.0 recomputed=740043.0 diff=0.0000
+  [ 3700] 531734.0
+  [DBG g=0] winner=106 K=1 delta=-13545.0 s_sol_obj=739142.0 winner_old_sc=739142.0 winner_new_sc=725597.0
+  [DBG g=0] WINNER tid=106 local_obj=725597.0 s_sol_obj_before=739142.0 delta=-13545.00
+  [DBG g=0] AFTER  stored_obj=725597.0 recomputed=725597.0 diff=0.0000
+  [DBG g=1] winner=114 K=2 delta=-5915.0 s_sol_obj=725597.0 winner_old_sc=725597.0 winner_new_sc=719682.0
+  [DBG g=1] WINNER tid=114 local_obj=719682.0 s_sol_obj_before=725597.0 delta=-5915.00
+  [DBG g=1] AFTER  stored_obj=719682.0 recomputed=719682.0 diff=0.0000
+  [DBG g=2] winner=88 K=2 delta=-6829.0 s_sol_obj=719682.0 winner_old_sc=-719682.0 winner_new_sc=-726511.0
+  [DBG g=2] WINNER tid=88 local_obj=726511.0 s_sol_obj_before=719682.0 delta=-6829.00
+  [DBG g=2] AFTER  stored_obj=726511.0 recomputed=726511.0 diff=0.0000
+  [DBG g=0] winner=48 K=1 delta=-9476.0 s_sol_obj=747220.0 winner_old_sc=747220.0 winner_new_sc=737744.0
+  [DBG g=0] WINNER tid=48 local_obj=737744.0 s_sol_obj_before=747220.0 delta=-9476.00
+  [DBG g=0] AFTER  stored_obj=737744.0 recomputed=737744.0 diff=0.0000
+  [DBG g=1] winner=75 K=2 delta=-10940.0 s_sol_obj=737744.0 winner_old_sc=737744.0 winner_new_sc=726804.0
+  [DBG g=1] WINNER tid=75 local_obj=726804.0 s_sol_obj_before=737744.0 delta=-10940.00
+  [DBG g=1] AFTER  stored_obj=726804.0 recomputed=726804.0 diff=0.0000
+  [DBG g=2] winner=53 K=2 delta=-4854.0 s_sol_obj=726804.0 winner_old_sc=726804.0 winner_new_sc=721950.0
+  [DBG g=2] WINNER tid=53 local_obj=721950.0 s_sol_obj_before=726804.0 delta=-4854.00
+  [DBG g=2] AFTER  stored_obj=721950.0 recomputed=721950.0 diff=0.0000
+  [ 3800] 531734.0
+  [DBG g=0] winner=57 K=3 delta=-5669.0 s_sol_obj=756474.0 winner_old_sc=756474.0 winner_new_sc=750805.0
+  [DBG g=0] WINNER tid=57 local_obj=750805.0 s_sol_obj_before=756474.0 delta=-5669.00
+  [DBG g=0] AFTER  stored_obj=750805.0 recomputed=750805.0 diff=0.0000
+  [DBG g=1] winner=96 K=1 delta=-16366.0 s_sol_obj=750805.0 winner_old_sc=750805.0 winner_new_sc=734439.0
+  [DBG g=1] WINNER tid=96 local_obj=734439.0 s_sol_obj_before=750805.0 delta=-16366.00
+  [DBG g=1] AFTER  stored_obj=734439.0 recomputed=734439.0 diff=0.0000
+  [DBG g=2] winner=36 K=3 delta=-6430.0 s_sol_obj=734439.0 winner_old_sc=734439.0 winner_new_sc=728009.0
+  [DBG g=2] WINNER tid=36 local_obj=728009.0 s_sol_obj_before=734439.0 delta=-6430.00
+  [DBG g=2] AFTER  stored_obj=728009.0 recomputed=728009.0 diff=0.0000
+  [DBG g=0] winner=46 K=1 delta=-9561.0 s_sol_obj=746269.0 winner_old_sc=746269.0 winner_new_sc=736708.0
+  [DBG g=0] WINNER tid=46 local_obj=736708.0 s_sol_obj_before=746269.0 delta=-9561.00
+  [DBG g=0] AFTER  stored_obj=736708.0 recomputed=736708.0 diff=0.0000
+  [DBG g=1] winner=84 K=3 delta=-9306.0 s_sol_obj=736708.0 winner_old_sc=736708.0 winner_new_sc=727402.0
+  [DBG g=1] WINNER tid=84 local_obj=727402.0 s_sol_obj_before=736708.0 delta=-9306.00
+  [DBG g=1] AFTER  stored_obj=727402.0 recomputed=727402.0 diff=0.0000
+  [DBG g=2] winner=51 K=3 delta=-8317.0 s_sol_obj=727402.0 winner_old_sc=727402.0 winner_new_sc=719085.0
+  [DBG g=2] WINNER tid=51 local_obj=719085.0 s_sol_obj_before=727402.0 delta=-8317.00
+  [DBG g=2] AFTER  stored_obj=719085.0 recomputed=719085.0 diff=0.0000
+  [ 3900] 531734.0
+  [DBG g=0] winner=118 K=3 delta=-8129.0 s_sol_obj=753039.0 winner_old_sc=753039.0 winner_new_sc=744910.0
+  [DBG g=0] WINNER tid=118 local_obj=744910.0 s_sol_obj_before=753039.0 delta=-8129.00
+  [DBG g=0] AFTER  stored_obj=744910.0 recomputed=744910.0 diff=0.0000
+  [DBG g=1] winner=14 K=1 delta=-12273.0 s_sol_obj=744910.0 winner_old_sc=744910.0 winner_new_sc=732637.0
+  [DBG g=1] WINNER tid=14 local_obj=732637.0 s_sol_obj_before=744910.0 delta=-12273.00
+  [DBG g=1] AFTER  stored_obj=732637.0 recomputed=732637.0 diff=0.0000
+  [DBG g=2] winner=29 K=3 delta=-6578.0 s_sol_obj=732637.0 winner_old_sc=732637.0 winner_new_sc=726059.0
+  [DBG g=2] WINNER tid=29 local_obj=726059.0 s_sol_obj_before=732637.0 delta=-6578.00
+  [DBG g=2] AFTER  stored_obj=726059.0 recomputed=726059.0 diff=0.0000
+  [DBG g=0] winner=22 K=2 delta=-6098.0 s_sol_obj=718740.0 winner_old_sc=718740.0 winner_new_sc=712642.0
+  [DBG g=0] WINNER tid=22 local_obj=712642.0 s_sol_obj_before=718740.0 delta=-6098.00
+  [DBG g=0] AFTER  stored_obj=712642.0 recomputed=712642.0 diff=0.0000
+  [DBG g=1] winner=60 K=1 delta=-13468.0 s_sol_obj=712642.0 winner_old_sc=712642.0 winner_new_sc=699174.0
+  [DBG g=1] WINNER tid=60 local_obj=699174.0 s_sol_obj_before=712642.0 delta=-13468.00
+  [DBG g=1] AFTER  stored_obj=699174.0 recomputed=699174.0 diff=0.0000
+  [DBG g=2] winner=64 K=3 delta=-11397.0 s_sol_obj=699174.0 winner_old_sc=-699174.0 winner_new_sc=-710571.0
+  [DBG g=2] WINNER tid=64 local_obj=710571.0 s_sol_obj_before=699174.0 delta=-11397.00
+  [DBG g=2] AFTER  stored_obj=710571.0 recomputed=710571.0 diff=0.0000
+  [ 4000] 531734.0
+  [DBG g=0] winner=91 K=1 delta=-8340.0 s_sol_obj=748665.0 winner_old_sc=748665.0 winner_new_sc=740325.0
+  [DBG g=0] WINNER tid=91 local_obj=740325.0 s_sol_obj_before=748665.0 delta=-8340.00
+  [DBG g=0] AFTER  stored_obj=740325.0 recomputed=740325.0 diff=0.0000
+  [DBG g=1] winner=65 K=2 delta=-20851.0 s_sol_obj=740325.0 winner_old_sc=740325.0 winner_new_sc=719474.0
+  [DBG g=1] WINNER tid=65 local_obj=719474.0 s_sol_obj_before=740325.0 delta=-20851.00
+  [DBG g=1] AFTER  stored_obj=719474.0 recomputed=719474.0 diff=0.0000
+  [DBG g=2] winner=80 K=1 delta=-8492.0 s_sol_obj=719474.0 winner_old_sc=-719474.0 winner_new_sc=-727966.0
+  [DBG g=2] WINNER tid=80 local_obj=727966.0 s_sol_obj_before=719474.0 delta=-8492.00
+  [DBG g=2] AFTER  stored_obj=727966.0 recomputed=727966.0 diff=0.0000
+  [DBG g=0] winner=111 K=2 delta=-6475.0 s_sol_obj=726389.0 winner_old_sc=726389.0 winner_new_sc=719914.0
+  [DBG g=0] WINNER tid=111 local_obj=719914.0 s_sol_obj_before=726389.0 delta=-6475.00
+  [DBG g=0] AFTER  stored_obj=719914.0 recomputed=719914.0 diff=0.0000
+  [DBG g=1] winner=106 K=1 delta=-6391.0 s_sol_obj=719914.0 winner_old_sc=719914.0 winner_new_sc=713523.0
+  [DBG g=1] WINNER tid=106 local_obj=713523.0 s_sol_obj_before=719914.0 delta=-6391.00
+  [DBG g=1] AFTER  stored_obj=713523.0 recomputed=713523.0 diff=0.0000
+  [DBG g=2] winner=21 K=3 delta=-6916.0 s_sol_obj=713523.0 winner_old_sc=-713523.0 winner_new_sc=-720439.0
+  [DBG g=2] WINNER tid=21 local_obj=720439.0 s_sol_obj_before=713523.0 delta=-6916.00
+  [DBG g=2] AFTER  stored_obj=720439.0 recomputed=720439.0 diff=0.0000
+  [ 4100] 531734.0
+  [DBG g=0] winner=24 K=3 delta=-8362.0 s_sol_obj=747221.0 winner_old_sc=747221.0 winner_new_sc=738859.0
+  [DBG g=0] WINNER tid=24 local_obj=738859.0 s_sol_obj_before=747221.0 delta=-8362.00
+  [DBG g=0] AFTER  stored_obj=738859.0 recomputed=738859.0 diff=0.0000
+  [DBG g=1] winner=44 K=3 delta=-7983.0 s_sol_obj=738859.0 winner_old_sc=738859.0 winner_new_sc=730876.0
+  [DBG g=1] WINNER tid=44 local_obj=730876.0 s_sol_obj_before=738859.0 delta=-7983.00
+  [DBG g=1] AFTER  stored_obj=730876.0 recomputed=730876.0 diff=0.0000
+  [DBG g=2] winner=47 K=1 delta=-5713.0 s_sol_obj=730876.0 winner_old_sc=730876.0 winner_new_sc=725163.0
+  [DBG g=2] WINNER tid=47 local_obj=725163.0 s_sol_obj_before=730876.0 delta=-5713.00
+  [DBG g=2] AFTER  stored_obj=725163.0 recomputed=725163.0 diff=0.0000
+  [DBG g=0] winner=99 K=1 delta=-8084.0 s_sol_obj=724504.0 winner_old_sc=724504.0 winner_new_sc=716420.0
+  [DBG g=0] WINNER tid=99 local_obj=716420.0 s_sol_obj_before=724504.0 delta=-8084.00
+  [DBG g=0] AFTER  stored_obj=716420.0 recomputed=716420.0 diff=0.0000
+  [DBG g=1] winner=88 K=2 delta=-11611.0 s_sol_obj=716420.0 winner_old_sc=716420.0 winner_new_sc=704809.0
+  [DBG g=1] WINNER tid=88 local_obj=704809.0 s_sol_obj_before=716420.0 delta=-11611.00
+  [DBG g=1] AFTER  stored_obj=704809.0 recomputed=704809.0 diff=0.0000
+  [DBG g=2] winner=114 K=3 delta=-5859.0 s_sol_obj=704809.0 winner_old_sc=704809.0 winner_new_sc=698950.0
+  [DBG g=2] WINNER tid=114 local_obj=698950.0 s_sol_obj_before=704809.0 delta=-5859.00
+  [DBG g=2] AFTER  stored_obj=698950.0 recomputed=698950.0 diff=0.0000
+  [ 4200] 531734.0
+  [DBG g=0] winner=96 K=3 delta=-6108.0 s_sol_obj=748997.0 winner_old_sc=748997.0 winner_new_sc=742889.0
+  [DBG g=0] WINNER tid=96 local_obj=742889.0 s_sol_obj_before=748997.0 delta=-6108.00
+  [DBG g=0] AFTER  stored_obj=742889.0 recomputed=742889.0 diff=0.0000
+  [DBG g=1] winner=90 K=3 delta=-15816.0 s_sol_obj=742889.0 winner_old_sc=742889.0 winner_new_sc=727073.0
+  [DBG g=1] WINNER tid=90 local_obj=727073.0 s_sol_obj_before=742889.0 delta=-15816.00
+  [DBG g=1] AFTER  stored_obj=727073.0 recomputed=727073.0 diff=0.0000
+  [DBG g=2] winner=58 K=3 delta=-13568.0 s_sol_obj=727073.0 winner_old_sc=727073.0 winner_new_sc=713505.0
+  [DBG g=2] WINNER tid=58 local_obj=713505.0 s_sol_obj_before=727073.0 delta=-13568.00
+  [DBG g=2] AFTER  stored_obj=713505.0 recomputed=713505.0 diff=0.0000
+  [DBG g=0] winner=122 K=1 delta=-13626.0 s_sol_obj=760054.0 winner_old_sc=760054.0 winner_new_sc=746428.0
+  [DBG g=0] WINNER tid=122 local_obj=746428.0 s_sol_obj_before=760054.0 delta=-13626.00
+  [DBG g=0] AFTER  stored_obj=746428.0 recomputed=746428.0 diff=0.0000
+  [DBG g=1] winner=28 K=2 delta=-9408.0 s_sol_obj=746428.0 winner_old_sc=746428.0 winner_new_sc=737020.0
+  [DBG g=1] WINNER tid=28 local_obj=737020.0 s_sol_obj_before=746428.0 delta=-9408.00
+  [DBG g=1] AFTER  stored_obj=737020.0 recomputed=737020.0 diff=0.0000
+  [DBG g=2] winner=126 K=2 delta=-18838.0 s_sol_obj=737020.0 winner_old_sc=737020.0 winner_new_sc=718182.0
+  [DBG g=2] WINNER tid=126 local_obj=718182.0 s_sol_obj_before=737020.0 delta=-18838.00
+  [DBG g=2] AFTER  stored_obj=718182.0 recomputed=718182.0 diff=0.0000
+  [ 4300] 531734.0
+  [DBG g=0] winner=60 K=1 delta=-15182.0 s_sol_obj=702921.0 winner_old_sc=702921.0 winner_new_sc=687739.0
+  [DBG g=0] WINNER tid=60 local_obj=687739.0 s_sol_obj_before=702921.0 delta=-15182.00
+  [DBG g=0] AFTER  stored_obj=687739.0 recomputed=687739.0 diff=0.0000
+  [DBG g=1] winner=29 K=1 delta=-5586.0 s_sol_obj=687739.0 winner_old_sc=687739.0 winner_new_sc=682153.0
+  [DBG g=1] WINNER tid=29 local_obj=682153.0 s_sol_obj_before=687739.0 delta=-5586.00
+  [DBG g=1] AFTER  stored_obj=682153.0 recomputed=682153.0 diff=0.0000
+  [DBG g=2] winner=126 K=3 delta=-10304.0 s_sol_obj=682153.0 winner_old_sc=-682153.0 winner_new_sc=-692457.0
+  [DBG g=2] WINNER tid=126 local_obj=692457.0 s_sol_obj_before=682153.0 delta=-10304.00
+  [DBG g=2] AFTER  stored_obj=692457.0 recomputed=692457.0 diff=0.0000
+  [DBG g=0] winner=62 K=2 delta=-10974.0 s_sol_obj=756871.0 winner_old_sc=756871.0 winner_new_sc=745897.0
+  [DBG g=0] WINNER tid=62 local_obj=745897.0 s_sol_obj_before=756871.0 delta=-10974.00
+  [DBG g=0] AFTER  stored_obj=745897.0 recomputed=745897.0 diff=0.0000
+  [DBG g=1] winner=85 K=3 delta=-8251.0 s_sol_obj=745897.0 winner_old_sc=745897.0 winner_new_sc=737646.0
+  [DBG g=1] WINNER tid=85 local_obj=737646.0 s_sol_obj_before=745897.0 delta=-8251.00
+  [DBG g=1] AFTER  stored_obj=737646.0 recomputed=737646.0 diff=0.0000
+  [DBG g=2] winner=31 K=1 delta=-18008.0 s_sol_obj=737646.0 winner_old_sc=-737646.0 winner_new_sc=-755654.0
+  [DBG g=2] WINNER tid=31 local_obj=755654.0 s_sol_obj_before=737646.0 delta=-18008.00
+  [DBG g=2] AFTER  stored_obj=755654.0 recomputed=755654.0 diff=0.0000
+  [ 4400] 531734.0
+  [DBG g=0] winner=87 K=2 delta=-12968.0 s_sol_obj=749263.0 winner_old_sc=749263.0 winner_new_sc=736295.0
+  [DBG g=0] WINNER tid=87 local_obj=736295.0 s_sol_obj_before=749263.0 delta=-12968.00
+  [DBG g=0] AFTER  stored_obj=736295.0 recomputed=736295.0 diff=0.0000
+  [DBG g=1] winner=110 K=2 delta=-5584.0 s_sol_obj=736295.0 winner_old_sc=736295.0 winner_new_sc=730711.0
+  [DBG g=1] WINNER tid=110 local_obj=730711.0 s_sol_obj_before=736295.0 delta=-5584.00
+  [DBG g=1] AFTER  stored_obj=730711.0 recomputed=730711.0 diff=0.0000
+  [DBG g=2] winner=6 K=2 delta=-6846.0 s_sol_obj=730711.0 winner_old_sc=730711.0 winner_new_sc=723865.0
+  [DBG g=2] WINNER tid=6 local_obj=723865.0 s_sol_obj_before=730711.0 delta=-6846.00
+  [DBG g=2] AFTER  stored_obj=723865.0 recomputed=723865.0 diff=0.0000
+  [DBG g=0] winner=78 K=1 delta=-14459.0 s_sol_obj=759741.0 winner_old_sc=759741.0 winner_new_sc=745282.0
+  [DBG g=0] WINNER tid=78 local_obj=745282.0 s_sol_obj_before=759741.0 delta=-14459.00
+  [DBG g=0] AFTER  stored_obj=745282.0 recomputed=745282.0 diff=0.0000
+  [DBG g=1] winner=19 K=3 delta=-10920.0 s_sol_obj=745282.0 winner_old_sc=745282.0 winner_new_sc=734362.0
+  [DBG g=1] WINNER tid=19 local_obj=734362.0 s_sol_obj_before=745282.0 delta=-10920.00
+  [DBG g=1] AFTER  stored_obj=734362.0 recomputed=734362.0 diff=0.0000
+  [DBG g=2] winner=52 K=3 delta=-13969.0 s_sol_obj=734362.0 winner_old_sc=734362.0 winner_new_sc=720393.0
+  [DBG g=2] WINNER tid=52 local_obj=720393.0 s_sol_obj_before=734362.0 delta=-13969.00
+  [DBG g=2] AFTER  stored_obj=720393.0 recomputed=720393.0 diff=0.0000
+  [ 4500] 531734.0
+  [DBG g=0] winner=29 K=1 delta=-6612.0 s_sol_obj=736514.0 winner_old_sc=736514.0 winner_new_sc=729902.0
+  [DBG g=0] WINNER tid=29 local_obj=729902.0 s_sol_obj_before=736514.0 delta=-6612.00
+  [DBG g=0] AFTER  stored_obj=729902.0 recomputed=729902.0 diff=0.0000
+  [DBG g=1] winner=40 K=1 delta=-7134.0 s_sol_obj=729902.0 winner_old_sc=-729902.0 winner_new_sc=-737036.0
+  [DBG g=1] WINNER tid=40 local_obj=737036.0 s_sol_obj_before=729902.0 delta=-7134.00
+  [DBG g=1] AFTER  stored_obj=737036.0 recomputed=737036.0 diff=0.0000
+  [DBG g=2] winner=42 K=2 delta=-9806.0 s_sol_obj=737036.0 winner_old_sc=737036.0 winner_new_sc=727230.0
+  [DBG g=2] WINNER tid=42 local_obj=727230.0 s_sol_obj_before=737036.0 delta=-9806.00
+  [DBG g=2] AFTER  stored_obj=727230.0 recomputed=727230.0 diff=0.0000
+  [DBG g=0] winner=55 K=3 delta=-15109.0 s_sol_obj=760306.0 winner_old_sc=760306.0 winner_new_sc=745197.0
+  [DBG g=0] WINNER tid=55 local_obj=745197.0 s_sol_obj_before=760306.0 delta=-15109.00
+  [DBG g=0] AFTER  stored_obj=745197.0 recomputed=745197.0 diff=0.0000
+  [DBG g=1] winner=94 K=3 delta=-10163.0 s_sol_obj=745197.0 winner_old_sc=-745197.0 winner_new_sc=-755360.0
+  [DBG g=1] WINNER tid=94 local_obj=755360.0 s_sol_obj_before=745197.0 delta=-10163.00
+  [DBG g=1] AFTER  stored_obj=755360.0 recomputed=755360.0 diff=0.0000
+  [DBG g=2] winner=31 K=2 delta=-12682.0 s_sol_obj=755360.0 winner_old_sc=755360.0 winner_new_sc=742678.0
+  [DBG g=2] WINNER tid=31 local_obj=742678.0 s_sol_obj_before=755360.0 delta=-12682.00
+  [DBG g=2] AFTER  stored_obj=742678.0 recomputed=742678.0 diff=0.0000
+  [ 4600] 531734.0
+  [DBG g=0] winner=125 K=3 delta=-12205.0 s_sol_obj=757784.0 winner_old_sc=757784.0 winner_new_sc=745579.0
+  [DBG g=0] WINNER tid=125 local_obj=745579.0 s_sol_obj_before=757784.0 delta=-12205.00
+  [DBG g=0] AFTER  stored_obj=745579.0 recomputed=745579.0 diff=0.0000
+  [DBG g=1] winner=28 K=3 delta=-12369.0 s_sol_obj=745579.0 winner_old_sc=745579.0 winner_new_sc=733210.0
+  [DBG g=1] WINNER tid=28 local_obj=733210.0 s_sol_obj_before=745579.0 delta=-12369.00
+  [DBG g=1] AFTER  stored_obj=733210.0 recomputed=733210.0 diff=0.0000
+  [DBG g=2] winner=18 K=3 delta=-7328.0 s_sol_obj=733210.0 winner_old_sc=-733210.0 winner_new_sc=-740538.0
+  [DBG g=2] WINNER tid=18 local_obj=740538.0 s_sol_obj_before=733210.0 delta=-7328.00
+  [DBG g=2] AFTER  stored_obj=740538.0 recomputed=740538.0 diff=0.0000
+  [DBG g=0] winner=97 K=2 delta=-17353.0 s_sol_obj=742757.0 winner_old_sc=742757.0 winner_new_sc=725404.0
+  [DBG g=0] WINNER tid=97 local_obj=725404.0 s_sol_obj_before=742757.0 delta=-17353.00
+  [DBG g=0] AFTER  stored_obj=725404.0 recomputed=725404.0 diff=0.0000
+  [DBG g=1] winner=32 K=2 delta=-12022.0 s_sol_obj=725404.0 winner_old_sc=725404.0 winner_new_sc=713382.0
+  [DBG g=1] WINNER tid=32 local_obj=713382.0 s_sol_obj_before=725404.0 delta=-12022.00
+  [DBG g=1] AFTER  stored_obj=713382.0 recomputed=713382.0 diff=0.0000
+  [DBG g=2] winner=37 K=2 delta=-10886.0 s_sol_obj=713382.0 winner_old_sc=713382.0 winner_new_sc=702496.0
+  [DBG g=2] WINNER tid=37 local_obj=702496.0 s_sol_obj_before=713382.0 delta=-10886.00
+  [DBG g=2] AFTER  stored_obj=702496.0 recomputed=702496.0 diff=0.0000
+  [ 4700] 531734.0
+  [DBG g=0] winner=111 K=3 delta=-10689.0 s_sol_obj=730069.0 winner_old_sc=730069.0 winner_new_sc=719380.0
+  [DBG g=0] WINNER tid=111 local_obj=719380.0 s_sol_obj_before=730069.0 delta=-10689.00
+  [DBG g=0] AFTER  stored_obj=719380.0 recomputed=719380.0 diff=0.0000
+  [DBG g=1] winner=125 K=3 delta=-13169.0 s_sol_obj=719380.0 winner_old_sc=-719380.0 winner_new_sc=-732549.0
+  [DBG g=1] WINNER tid=125 local_obj=732549.0 s_sol_obj_before=719380.0 delta=-13169.00
+  [DBG g=1] AFTER  stored_obj=732549.0 recomputed=732549.0 diff=0.0000
+  [DBG g=2] winner=42 K=3 delta=-11217.0 s_sol_obj=732549.0 winner_old_sc=732549.0 winner_new_sc=721332.0
+  [DBG g=2] WINNER tid=42 local_obj=721332.0 s_sol_obj_before=732549.0 delta=-11217.00
+  [DBG g=2] AFTER  stored_obj=721332.0 recomputed=721332.0 diff=0.0000
+  [DBG g=0] winner=25 K=1 delta=-9048.0 s_sol_obj=727228.0 winner_old_sc=727228.0 winner_new_sc=718180.0
+  [DBG g=0] WINNER tid=25 local_obj=718180.0 s_sol_obj_before=727228.0 delta=-9048.00
+  [DBG g=0] AFTER  stored_obj=718180.0 recomputed=718180.0 diff=0.0000
+  [DBG g=1] winner=27 K=2 delta=-6297.0 s_sol_obj=718180.0 winner_old_sc=718180.0 winner_new_sc=711883.0
+  [DBG g=1] WINNER tid=27 local_obj=711883.0 s_sol_obj_before=718180.0 delta=-6297.00
+  [DBG g=1] AFTER  stored_obj=711883.0 recomputed=711883.0 diff=0.0000
+  [DBG g=2] winner=82 K=2 delta=-15875.0 s_sol_obj=711883.0 winner_old_sc=-711883.0 winner_new_sc=-727758.0
+  [DBG g=2] WINNER tid=82 local_obj=727758.0 s_sol_obj_before=711883.0 delta=-15875.00
+  [DBG g=2] AFTER  stored_obj=727758.0 recomputed=727758.0 diff=0.0000
+  [ 4800] 531734.0
+  [DBG g=0] winner=105 K=1 delta=-5831.0 s_sol_obj=531734.0 winner_old_sc=-531734.0 winner_new_sc=-537565.0
+  [DBG g=0] WINNER tid=105 local_obj=537565.0 s_sol_obj_before=531734.0 delta=-5831.00
+  [DBG g=0] AFTER  stored_obj=537565.0 recomputed=537565.0 diff=0.0000
+  [DBG g=1] winner=105 K=1 delta=-14960.0 s_sol_obj=537565.0 winner_old_sc=-537565.0 winner_new_sc=-552525.0
+  [DBG g=1] WINNER tid=105 local_obj=552525.0 s_sol_obj_before=537565.0 delta=-14960.00
+  [DBG g=1] AFTER  stored_obj=552525.0 recomputed=552525.0 diff=0.0000
+  [DBG g=2] winner=36 K=2 delta=-7360.0 s_sol_obj=552525.0 winner_old_sc=-552525.0 winner_new_sc=-559885.0
+  [DBG g=2] WINNER tid=36 local_obj=559885.0 s_sol_obj_before=552525.0 delta=-7360.00
+  [DBG g=2] AFTER  stored_obj=559885.0 recomputed=559885.0 diff=0.0000
+  [DBG g=0] winner=54 K=2 delta=-8347.0 s_sol_obj=725087.0 winner_old_sc=725087.0 winner_new_sc=716740.0
+  [DBG g=0] WINNER tid=54 local_obj=716740.0 s_sol_obj_before=725087.0 delta=-8347.00
+  [DBG g=0] AFTER  stored_obj=716740.0 recomputed=716740.0 diff=0.0000
+  [DBG g=1] winner=30 K=1 delta=-9907.0 s_sol_obj=716740.0 winner_old_sc=716740.0 winner_new_sc=706833.0
+  [DBG g=1] WINNER tid=30 local_obj=706833.0 s_sol_obj_before=716740.0 delta=-9907.00
+  [DBG g=1] AFTER  stored_obj=706833.0 recomputed=706833.0 diff=0.0000
+  [DBG g=2] winner=109 K=3 delta=-6081.0 s_sol_obj=706833.0 winner_old_sc=706833.0 winner_new_sc=700752.0
+  [DBG g=2] WINNER tid=109 local_obj=700752.0 s_sol_obj_before=706833.0 delta=-6081.00
+  [DBG g=2] AFTER  stored_obj=700752.0 recomputed=700752.0 diff=0.0000
+  [ 4900] 531734.0
+  [DBG g=0] winner=33 K=3 delta=-6748.0 s_sol_obj=734461.0 winner_old_sc=734461.0 winner_new_sc=727713.0
+  [DBG g=0] WINNER tid=33 local_obj=727713.0 s_sol_obj_before=734461.0 delta=-6748.00
+  [DBG g=0] AFTER  stored_obj=727713.0 recomputed=727713.0 diff=0.0000
+  [DBG g=1] winner=120 K=1 delta=-8839.0 s_sol_obj=727713.0 winner_old_sc=727713.0 winner_new_sc=718874.0
+  [DBG g=1] WINNER tid=120 local_obj=718874.0 s_sol_obj_before=727713.0 delta=-8839.00
+  [DBG g=1] AFTER  stored_obj=718874.0 recomputed=718874.0 diff=0.0000
+  [DBG g=2] winner=43 K=2 delta=-8224.0 s_sol_obj=718874.0 winner_old_sc=718874.0 winner_new_sc=710650.0
+  [DBG g=2] WINNER tid=43 local_obj=710650.0 s_sol_obj_before=718874.0 delta=-8224.00
+  [DBG g=2] AFTER  stored_obj=710650.0 recomputed=710650.0 diff=0.0000
+  [DBG g=0] winner=68 K=3 delta=-6391.0 s_sol_obj=750128.0 winner_old_sc=750128.0 winner_new_sc=743737.0
+  [DBG g=0] WINNER tid=68 local_obj=743737.0 s_sol_obj_before=750128.0 delta=-6391.00
+  [DBG g=0] AFTER  stored_obj=743737.0 recomputed=743737.0 diff=0.0000
+  [DBG g=1] winner=59 K=1 delta=-13567.0 s_sol_obj=743737.0 winner_old_sc=743737.0 winner_new_sc=730170.0
+  [DBG g=1] WINNER tid=59 local_obj=730170.0 s_sol_obj_before=743737.0 delta=-13567.00
+  [DBG g=1] AFTER  stored_obj=730170.0 recomputed=730170.0 diff=0.0000
+  [DBG g=2] winner=54 K=3 delta=-10293.0 s_sol_obj=730170.0 winner_old_sc=730170.0 winner_new_sc=719877.0
+  [DBG g=2] WINNER tid=54 local_obj=719877.0 s_sol_obj_before=730170.0 delta=-10293.00
+  [DBG g=2] AFTER  stored_obj=719877.0 recomputed=719877.0 diff=0.0000
+  [ 5000] 531734.0
+  Result: obj0=531734.00  15400ms 5000gen
+  row[0]: 95 15 309 275 226 242 316 313 185 280 221 293 167 429 361 131 5 148 406 172 ...(442)
+  AOS K-step weights: K1=0.800 K2=0.150 K3=0.050
+  AOS seq weights: [0]=0.165 [1]=0.165 [2]=0.165 [3]=0.165 [4]=0.165 [20]=0.063 [21]=0.063 [22]=0.050

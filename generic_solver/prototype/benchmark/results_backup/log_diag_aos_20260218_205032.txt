@@ -1,0 +1,7 @@
+GPU: Tesla T4 (SM=40, Shared=48KB, Compute=7.5)
+Warming up GPU...
+Warmup done.
+
+[diag_aos] Time-aware AOS on kroA100
+
+All requested experiments completed.
