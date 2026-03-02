@@ -10,4 +10,4 @@ The user only needs to define:
 1. **Problem data** (distance matrix, constraints, etc.)
 2. **Evaluation function** (array → objective value)
 
-The framework handles all GPU parallelization, population management, and search scheduling.
+The framework handles all GPU parallelization, population management, and search scheduling. 
