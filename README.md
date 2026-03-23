@@ -187,6 +187,7 @@ generic_solver/
 
 ### Python Package
 
+coming soon～
 ```bash
 pip install cugenopt
 ```
