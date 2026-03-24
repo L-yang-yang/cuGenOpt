@@ -116,25 +116,6 @@ Define your own problem by inheriting `ProblemBase` and implementing `compute_ob
 
 ---
 
-## Project Structure
-
-```
-generic_solver/
-├── prototype/              # Core framework (header-only .cuh files)
-│   ├── core/              #   Solver, operators, population, types
-│   └── problems/          #   12+ problem implementations
-├── python/                 # Python wrapper (pip install cugenopt)
-│   ├── cugenopt/          #   Python package (built-ins + JIT compiler)
-│   └── tests/             #   Test suite
-├── benchmark/              # Experiments and benchmarks
-│   ├── experiments/       #   E0-E13: 14 experiment groups
-│   ├── data/              #   Standard instances (TSPLIB, Solomon, QAPLIB)
-│   └── results/           #   Experimental reports
-├── paper_v3_en/            # Paper source (LaTeX)
-├── STATUS.md               # Project status and roadmap
-└── README.md               # This file
-```
-
 ---
 
 ## Performance Highlights
