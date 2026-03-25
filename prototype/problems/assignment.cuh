@@ -1,7 +1,7 @@
 /**
- * assignment.cuh - 指派问题
- * 
- * 继承 ProblemBase，使用 ObjDef 目标注册机制
+ * assignment.cuh - assignment problem
+ *
+ * Extends ProblemBase with ObjDef objective registration.
  */
 
 #pragma once
@@ -11,10 +11,10 @@
 
 struct AssignmentProblem : ProblemBase<AssignmentProblem, 1, 16> {
     const float* d_cost;
-    const float* h_cost;  // host 端成本矩阵（用于 init_relation_matrix）
+    const float* h_cost;  // host cost matrix (for init_relation_matrix)
     int n;
     
-    // ---- 目标计算 ----
+    // ---- objective evaluation ----
     __device__ float calc_total_cost(const Sol& sol) const {
         float total = 0.0f;
         const int* assign = sol.data[0];
@@ -24,7 +24,7 @@ struct AssignmentProblem : ProblemBase<AssignmentProblem, 1, 16> {
         return total;
     }
     
-    // ---- 目标定义（OBJ_DEFS 与 compute_obj 必须一一对应）----
+    // ---- objective defs (OBJ_DEFS must match compute_obj one-to-one) ----
     static constexpr ObjDef OBJ_DEFS[] = {
         {ObjDir::Minimize, 1.0f, 0.0f},   // case 0: calc_total_cost
     };
@@ -47,7 +47,7 @@ struct AssignmentProblem : ProblemBase<AssignmentProblem, 1, 16> {
         return cfg;
     }
     
-    // ---- shared memory 接口 ----
+    // ---- shared memory interface ----
     static constexpr size_t SMEM_LIMIT = 48 * 1024;
     
     size_t shared_mem_bytes() const {
@@ -66,12 +66,12 @@ struct AssignmentProblem : ProblemBase<AssignmentProblem, 1, 16> {
         d_cost = sc;
     }
     
-    // 成本先验：task j 和 task k 如果被相似 agent 偏好，G 值高
-    // O 矩阵：task j 在位置 i 成本低 → O[j][k] 略高（j 倾向排在 k 前面的位置）
+    // Cost prior: if tasks j and k are similarly preferred by agents, G is high
+    // O matrix: low cost for task j at slot i → slightly higher O[j][k] (j tends before k)
     void init_relation_matrix(float* G, float* O, int N) const {
         if (!h_cost || N != n) return;
-        // 对每个 task，构建成本向量，task 间余弦相似度 → G
-        // 简化：成本列向量的相关性
+        // Per task, build cost vectors; cosine similarity between tasks → G
+        // Simplified: correlation of cost columns
         float max_c = 0.0f;
         for (int i = 0; i < N * N; i++)
             if (h_cost[i] > max_c) max_c = h_cost[i];
@@ -80,7 +80,7 @@ struct AssignmentProblem : ProblemBase<AssignmentProblem, 1, 16> {
         for (int j = 0; j < N; j++)
             for (int k = 0; k < N; k++) {
                 if (j == k) continue;
-                // G: 两个 task 的成本向量越相似 → 越可能互换
+                // G: more similar cost columns → more likely to swap tasks
                 float dot = 0.0f, nj = 0.0f, nk = 0.0f;
                 for (int i = 0; i < N; i++) {
                     float cj = h_cost[i * N + j] / max_c;

@@ -1,7 +1,7 @@
 /**
- * tsp_large.cuh - 大规模 TSP 问题定义 (最多 256 城市)
- * 
- * 继承 ProblemBase，逻辑与 tsp.cuh 一致，仅 D2 上限不同
+ * tsp_large.cuh - large-scale TSP definition (up to 256 cities)
+ *
+ * Same logic as tsp.cuh under ProblemBase; only D2 cap differs.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ struct TSPLargeProblem : ProblemBase<TSPLargeProblem, 1, 256> {
     const float* h_dist;
     int n;
     
-    // ---- 目标计算 ----
+    // ---- objective evaluation ----
     __device__ float calc_total_distance(const Sol& sol) const {
         float total = 0.0f;
         const int* route = sol.data[0];
@@ -24,7 +24,7 @@ struct TSPLargeProblem : ProblemBase<TSPLargeProblem, 1, 256> {
         return total;
     }
     
-    // ---- 目标定义（OBJ_DEFS 与 compute_obj 必须一一对应）----
+    // ---- objective defs (OBJ_DEFS must match compute_obj one-to-one) ----
     static constexpr ObjDef OBJ_DEFS[] = {
         {ObjDir::Minimize, 1.0f, 0.0f},   // case 0: calc_total_distance
     };
@@ -54,7 +54,7 @@ struct TSPLargeProblem : ProblemBase<TSPLargeProblem, 1, 256> {
         return need <= SMEM_LIMIT ? need : 0;
     }
     
-    // 距离矩阵的实际大小（不管是否放进 smem）
+    // Actual distance matrix size (whether or not placed in smem)
     size_t working_set_bytes() const {
         return (size_t)n * n * sizeof(float);
     }

@@ -6,7 +6,7 @@
 [![CUDA](https://img.shields.io/badge/CUDA-11.0%2B-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 
-**Paper**: [cuGenOpt: A GPU-Accelerated General-Purpose Metaheuristic Framework for Combinatorial Optimization](http://arxiv.org/abs/2603.19163) 
+**Paper**: [cuGenOpt: A GPU-Accelerated General-Purpose Metaheuristic Framework for Combinatorial Optimization](https://arxiv.org/abs/2603.19163) 
 
 ---
 
@@ -114,28 +114,7 @@ Define your own problem by inheriting `ProblemBase` and implementing `compute_ob
 └─────────────────────────────────────────────────────────┘
 ```
 
----
 
-## Project Structure
-
-```
-generic_solver/
-├── prototype/              # Core framework (header-only .cuh files)
-│   ├── core/              #   Solver, operators, population, types
-│   └── problems/          #   12+ problem implementations
-├── python/                 # Python wrapper (pip install cugenopt)
-│   ├── cugenopt/          #   Python package (built-ins + JIT compiler)
-│   └── tests/             #   Test suite
-├── benchmark/              # Experiments and benchmarks
-│   ├── experiments/       #   E0-E13: 14 experiment groups
-│   ├── data/              #   Standard instances (TSPLIB, Solomon, QAPLIB)
-│   └── results/           #   Experimental reports
-├── paper_v3_en/            # Paper source (LaTeX)
-├── STATUS.md               # Project status and roadmap
-└── README.md               # This file
-```
-
----
 
 ## Performance Highlights
 
@@ -186,8 +165,7 @@ generic_solver/
 ## Installation
 
 ### Python Package
-
-coming soon～
+come soon
 ```bash
 pip install cugenopt
 ```
@@ -207,18 +185,7 @@ cd prototype
 make all
 ```
 
----
 
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| [STATUS.md](STATUS.md) | Project status, roadmap, and design decisions |
-| [Python API Guide](python/README.md) | Detailed Python API documentation |
-| [Benchmark Design](benchmark/DESIGN.md) | Experimental methodology |
-| [Paper](paper_v3_en/) | Full technical details and evaluation |
-
----
 
 ## Citation
 

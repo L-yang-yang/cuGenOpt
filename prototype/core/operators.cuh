@@ -1,40 +1,40 @@
 /**
- * operators.cuh - 四层搜索算子体系（Device 端）
+ * operators.cuh - Four-layer search operator hierarchy (device side)
  *
- * v1.0: 二维通用编码的完整算子层次
+ * v1.0: Full operator hierarchy for 2D universal encoding
  *
- * 层次结构（所有算子只看 data[D1][D2] + dim2_sizes，不感知问题语义）：
+ * Hierarchy (all operators only see data[D1][D2] + dim2_sizes, no problem semantics):
  *
- *   第 1 层 - 元素级（Element）: 操作单个元素
- *     行内: swap, reverse(2-opt), insert, flip
- *     跨行: cross_relocate（单元素移行）, cross_swap（单元素换行）
+ *   Layer 1 - Element: operate on single elements
+ *     Within row: swap, reverse(2-opt), insert, flip
+ *     Cross-row: cross_relocate (move one element across rows), cross_swap (swap one element per row)
  *
- *   第 2 层 - 片段级（Segment）: 操作连续片段
- *     行内: or_opt（移动连续 k 个元素到行内新位置）
- *     跨行: seg_relocate（片段从一行移到另一行）
- *            seg_swap（两行各取一段互换，即 2-opt*）
+ *   Layer 2 - Segment: operate on contiguous segments
+ *     Within row: or_opt (move contiguous k elements to a new position in the row)
+ *     Cross-row: seg_relocate (move a segment from one row to another)
+ *            seg_swap (swap two segments from two rows each, i.e. 2-opt*)
  *
- *   第 3 层 - 行级（Row）: 操作整行
- *     row_swap（交换两行全部内容和长度）
- *     row_reverse（反转行的排列顺序）
- *     row_split（一行拆成两行）
- *     row_merge（两行合并为一行）
+ *   Layer 3 - Row: operate on whole rows
+ *     row_swap (swap full contents and lengths of two rows)
+ *     row_reverse (reverse row order)
+ *     row_split (split one row into two)
+ *     row_merge (merge two rows into one)
  *
- *   第 4 层 - 交叉（Crossover）: 组合两个解
- *     row_crossover（从父代 A/B 各取若干行组成子代）
- *     uniform_crossover（逐元素从两个父代中选）
+ *   Layer 4 - Crossover: combine two solutions
+ *     row_crossover (child takes some rows from parent A and B)
+ *     uniform_crossover (pick per element from two parents)
  *
- * Move 描述符：
- *   row, row2: 行索引（row2=-1 表示行内）
- *   op:        操作码
- *   pos1, pos2: 位置参数
- *   seg_len:   片段长度（第 2 层使用）
+ * Move descriptor:
+ *   row, row2: row indices (row2=-1 means within-row)
+ *   op:        operation code
+ *   pos1, pos2: position parameters
+ *   seg_len:   segment length (used by layer 2)
  *
- * 设计原则：
- *   - 所有算子对问题类型无感知，只操作二维数组
- *   - 每个算子都有对应的 undo 操作
- *   - 空行安全：自动降级为 no-op
- *   - 编码类型决定可用算子集
+ * Design principles:
+ *   - All operators are problem-agnostic; they only manipulate a 2D array
+ *   - Each operator has a corresponding undo
+ *   - Empty-row safe: automatically degrades to no-op
+ *   - Encoding type determines the available operator set
  */
 
 #pragma once
@@ -44,61 +44,61 @@
 namespace ops {
 
 // ============================================================
-// Op 码常量 — 按层次编号，避免冲突
+// Op code constants — numbered by layer to avoid collisions
 // ============================================================
 
-// 通用
+// General
 constexpr int OP_NOOP             = -1;
 
-// --- 第 1 层：元素级 ---
-// Permutation 行内
-constexpr int PERM_SWAP           = 0;   // 交换两个位置
-constexpr int PERM_REVERSE        = 1;   // 反转区间（2-opt）
-constexpr int PERM_INSERT         = 2;   // 移动单个元素到新位置
-// Permutation 跨行
-constexpr int PERM_CROSS_RELOCATE = 3;   // 单元素从一行移到另一行
-constexpr int PERM_CROSS_SWAP     = 4;   // 两行各一个元素互换
-// Binary 行内
-constexpr int BIN_FLIP            = 0;   // 翻转一个位
-constexpr int BIN_SWAP            = 1;   // 交换两个位
-// Binary 跨行
-constexpr int BIN_CROSS_SWAP      = 2;   // 两行各一个位互换
+// --- Layer 1: element ---
+// Permutation within row
+constexpr int PERM_SWAP           = 0;   // swap two positions
+constexpr int PERM_REVERSE        = 1;   // reverse interval (2-opt)
+constexpr int PERM_INSERT         = 2;   // move one element to a new position
+// Permutation cross-row
+constexpr int PERM_CROSS_RELOCATE = 3;   // move one element from one row to another
+constexpr int PERM_CROSS_SWAP     = 4;   // swap one element per row between two rows
+// Binary within row
+constexpr int BIN_FLIP            = 0;   // flip one bit
+constexpr int BIN_SWAP            = 1;   // swap two bits
+// Binary cross-row
+constexpr int BIN_CROSS_SWAP      = 2;   // swap one bit per row between two rows
 
-// --- 第 1 层（续）：排列行内 ---
-constexpr int PERM_3OPT           = 5;   // 3-opt：断 3 条边重连
+// --- Layer 1 (cont.): permutation within row ---
+constexpr int PERM_3OPT           = 5;   // 3-opt: break 3 edges and reconnect
 
-// --- 第 2 层：片段级 ---
-constexpr int PERM_OR_OPT         = 10;  // 行内：移动连续 k 个元素
-constexpr int PERM_SEG_RELOCATE   = 11;  // 跨行：片段从一行移到另一行
-constexpr int PERM_SEG_SWAP       = 12;  // 跨行：两行各取一段互换（2-opt*）
-constexpr int PERM_CROSS_EXCHANGE = 15;  // 跨行：两行各取一段互换（保持各自内部顺序）
-constexpr int BIN_SEG_FLIP        = 13;  // 行内：翻转连续 k 个位
-constexpr int BIN_SEG_CROSS_SWAP  = 14;  // 跨行：两行各取一段互换
-constexpr int BIN_K_FLIP          = 16;  // 行内：同时翻转 k 个随机位
+// --- Layer 2: segment ---
+constexpr int PERM_OR_OPT         = 10;  // within row: move contiguous k elements
+constexpr int PERM_SEG_RELOCATE   = 11;  // cross-row: move segment from one row to another
+constexpr int PERM_SEG_SWAP       = 12;  // cross-row: swap two segments from two rows each (2-opt*)
+constexpr int PERM_CROSS_EXCHANGE = 15;  // cross-row: swap two segments (preserve internal order each)
+constexpr int BIN_SEG_FLIP        = 13;  // within row: flip contiguous k bits
+constexpr int BIN_SEG_CROSS_SWAP  = 14;  // cross-row: swap two segments from two rows each
+constexpr int BIN_K_FLIP          = 16;  // within row: flip k random bits at once
 
-// --- 第 3 层：行级 ---
-constexpr int ROW_SWAP            = 20;  // 交换两行全部内容
-constexpr int ROW_REVERSE         = 21;  // 反转行的排列顺序（行号重排）
-constexpr int ROW_SPLIT           = 22;  // 一行拆成两行
-constexpr int ROW_MERGE           = 23;  // 两行合并为一行
+// --- Layer 3: row ---
+constexpr int ROW_SWAP            = 20;  // swap full contents of two rows
+constexpr int ROW_REVERSE         = 21;  // reverse row order (row index permutation)
+constexpr int ROW_SPLIT           = 22;  // split one row into two
+constexpr int ROW_MERGE           = 23;  // merge two rows into one
 
-// --- 特殊：扰动（连续多步 move，不可 undo，用于跳出局部最优）---
+// --- Special: perturbation (multi-step moves, no undo, escape local optima) ---
 constexpr int PERTURBATION        = 40;
 
-// --- 第 4 层：交叉 ---
-constexpr int CROSS_ROW           = 30;  // 行级交叉：从两个父代各取若干行
-constexpr int CROSS_UNIFORM       = 31;  // 均匀交叉：逐元素从两个父代选
+// --- Layer 4: crossover ---
+constexpr int CROSS_ROW           = 30;  // row crossover: take some rows from each parent
+constexpr int CROSS_UNIFORM       = 31;  // uniform crossover: pick per element from two parents
 
 // ============================================================
-// Move 描述符 — 编码级别的变动描述
+// Move descriptor — encoding-level change description
 // ============================================================
 
 struct Move {
-    int row;            // 源行（或第一行）
-    int row2;           // 目标行（-1 = 行内）
-    int op;             // 操作码
-    int pos1, pos2;     // 位置参数
-    int seg_len;        // 片段长度（第 2 层使用，其他层 = 0）
+    int row;            // source row (or first row)
+    int row2;           // target row (-1 = within-row)
+    int op;             // operation code
+    int pos1, pos2;     // position parameters
+    int seg_len;        // segment length (layer 2; 0 for other layers)
 };
 
 }  // namespace ops
@@ -106,10 +106,10 @@ struct Move {
 namespace ops {
 
 // ============================================================
-// 第 1 层：元素级底层操作
+// Layer 1: element-level primitives
 // ============================================================
 
-// --- Permutation 行内 ---
+// --- Permutation within row ---
 
 __device__ inline void perm_swap(int* row, int i, int j) {
     int tmp = row[i]; row[i] = row[j]; row[j] = tmp;
@@ -126,9 +126,9 @@ __device__ inline void perm_insert(int* row, int from, int to, int size) {
     row[to] = val;
 }
 
-// --- Permutation 跨行 ---
+// --- Permutation cross-row ---
 
-/// cross_relocate: 从 src_row[src_pos] 取出元素，插入 dst_row[dst_pos]
+/// cross_relocate: take element from src_row[src_pos], insert at dst_row[dst_pos]
 __device__ inline void perm_cross_relocate(int* src_row, int& src_size,
                                             int* dst_row, int& dst_size,
                                             int src_pos, int dst_pos) {
@@ -142,24 +142,24 @@ __device__ inline void perm_cross_relocate(int* src_row, int& src_size,
     dst_size++;
 }
 
-/// cross_swap: 交换 rowA[posA] 和 rowB[posB]
+/// cross_swap: swap rowA[posA] and rowB[posB]
 __device__ inline void cross_swap_elem(int* rowA, int posA, int* rowB, int posB) {
     int tmp = rowA[posA]; rowA[posA] = rowB[posB]; rowB[posB] = tmp;
 }
 
-// --- Permutation 行内：3-opt ---
-// 断开 3 条边，选择最佳重连方式（共 8 种组合，取随机一种非恒等变换）
-// 参数：3 个断点 i < j < k，将路线分为 seg0=[0,i] seg1=[i+1,j] seg2=[j+1,k] seg3=[k+1,end]
-// 实现：随机选一种重连（reverse seg1, reverse seg2, 或两者都反转）
-// pos1=i, pos2=j, seg_len 编码 k
+// --- Permutation within row: 3-opt ---
+// Break 3 edges and pick a reconnection (8 combinations; pick one random non-identity)
+// Args: three breakpoints i < j < k, route splits seg0=[0,i] seg1=[i+1,j] seg2=[j+1,k] seg3=[k+1,end]
+// Impl: random reconnection (reverse seg1, reverse seg2, or both)
+// pos1=i, pos2=j, seg_len encodes k
 __device__ inline void perm_3opt(int* row, int size, int i, int j, int k) {
-    // 3-opt 有多种重连方式，这里实现最常用的 3 种非恒等变换：
-    //   type 1: reverse [i+1, j]                    — 等价于 2-opt(i+1, j)
-    //   type 2: reverse [j+1, k]                    — 等价于 2-opt(j+1, k)
-    //   type 3: reverse [i+1, j] + reverse [j+1, k] — 真正的 3-opt move
-    //   type 4: 将 seg1 和 seg2 互换位置（不反转）  — or-opt 的泛化
-    // 我们随机选 type 3 或 type 4（type 1/2 已被 2-opt 覆盖）
-    // 这里固定做 type 3（双反转），因为它是 2-opt 无法达到的唯一新邻域
+    // 3-opt has several reconnections; here we use the most common non-identity variants:
+    //   type 1: reverse [i+1, j]                    — same as 2-opt(i+1, j)
+    //   type 2: reverse [j+1, k]                    — same as 2-opt(j+1, k)
+    //   type 3: reverse [i+1, j] + reverse [j+1, k] — true 3-opt move
+    //   type 4: swap seg1 and seg2 (no reverse)     — generalization of or-opt
+    // We would randomize type 3 or 4 (types 1/2 are covered by 2-opt)
+    // Here we fix type 3 (double reverse) as the only new neighborhood 2-opt cannot reach
     // reverse [i+1, j]
     int lo = i + 1, hi = j;
     while (lo < hi) { int t = row[lo]; row[lo] = row[hi]; row[hi] = t; lo++; hi--; }
@@ -168,12 +168,12 @@ __device__ inline void perm_3opt(int* row, int size, int i, int j, int k) {
     while (lo < hi) { int t = row[lo]; row[lo] = row[hi]; row[hi] = t; lo++; hi--; }
 }
 
-// 3-opt undo: 再做一次相同操作即可恢复（双反转是自反的）
+// 3-opt undo: repeat the same move to restore (double reverse is self-inverse)
 __device__ inline void perm_3opt_undo(int* row, int size, int i, int j, int k) {
-    perm_3opt(row, size, i, j, k);  // 自反
+    perm_3opt(row, size, i, j, k);  // self-inverse
 }
 
-// --- Binary 行内 ---
+// --- Binary within row ---
 
 __device__ inline void bin_flip(int* row, int i) { row[i] = 1 - row[i]; }
 
@@ -182,51 +182,51 @@ __device__ inline void bin_swap(int* row, int i, int j) {
 }
 
 // ============================================================
-// 第 2 层：片段级底层操作
+// Layer 2: segment-level primitives
 // ============================================================
 
-/// or_opt: 行内移动连续 seg_len 个元素（从 from 开始）到 to 位置
-/// 等价于：取出 [from, from+seg_len)，插入到 to 之前
-/// 约束：from + seg_len <= size, to 不在 [from, from+seg_len) 内
+/// or_opt: within row, move contiguous seg_len elements (starting at from) to position to
+/// Same as: take [from, from+seg_len), insert before to
+/// Constraints: from + seg_len <= size, to not in [from, from+seg_len)
 __device__ inline void perm_or_opt(int* row, int size, int from, int to, int seg_len) {
-    // 临时缓冲（片段最大长度受限于寄存器，实际 seg_len 通常 <= 4）
-    int buf[8];  // 足够覆盖常见 seg_len
+    // Temp buffer (max segment length limited by registers; seg_len usually <= 4)
+    int buf[8];  // enough for typical seg_len
     int actual_len = (seg_len > 8) ? 8 : seg_len;
     
-    // 保存片段
+    // Save segment
     for (int i = 0; i < actual_len; i++) buf[i] = row[from + i];
     
-    // 移除片段（左移填补空洞）
+    // Remove segment (shift left to close gap)
     int new_size = size - actual_len;
     for (int k = from; k < new_size; k++) row[k] = row[k + actual_len];
     
-    // 计算插入位置（移除后的坐标系）
+    // Insert position after removal (coords after removal)
     int ins = (to > from) ? to - actual_len : to;
     if (ins < 0) ins = 0;
     if (ins > new_size) ins = new_size;
     
-    // 插入片段（右移腾位）
+    // Insert segment (shift right to make room)
     for (int k = new_size - 1; k >= ins; k--) row[k + actual_len] = row[k];
     for (int i = 0; i < actual_len; i++) row[ins + i] = buf[i];
 }
 
-/// seg_relocate: 从 src_row 取出连续 seg_len 个元素，插入 dst_row 的 dst_pos
-/// src_size 减 seg_len，dst_size 加 seg_len
+/// seg_relocate: take contiguous seg_len elements from src_row, insert at dst_pos in dst_row
+/// src_size -= seg_len, dst_size += seg_len
 __device__ inline void perm_seg_relocate(int* src_row, int& src_size,
                                           int* dst_row, int& dst_size,
                                           int src_pos, int dst_pos, int seg_len) {
     int buf[8];
     int actual_len = (seg_len > 8) ? 8 : seg_len;
     
-    // 保存片段
+    // Save segment
     for (int i = 0; i < actual_len; i++) buf[i] = src_row[src_pos + i];
     
-    // 源行：移除（左移）
+    // Source row: remove (shift left)
     for (int k = src_pos; k < src_size - actual_len; k++)
         src_row[k] = src_row[k + actual_len];
     src_size -= actual_len;
     
-    // 目标行：插入（右移）
+    // Destination row: insert (shift right)
     for (int k = dst_size - 1; k >= dst_pos; k--)
         dst_row[k + actual_len] = dst_row[k];
     for (int i = 0; i < actual_len; i++)
@@ -234,29 +234,29 @@ __device__ inline void perm_seg_relocate(int* src_row, int& src_size,
     dst_size += actual_len;
 }
 
-/// seg_swap: 两行各取一段互换（2-opt* 的通用形式）
+/// seg_swap: swap one segment from each row (general 2-opt*)
 /// rowA[posA..posA+lenA) <-> rowB[posB..posB+lenB)
-/// 行长变化：sizeA += (lenB - lenA), sizeB += (lenA - lenB)
+/// Row lengths: sizeA += (lenB - lenA), sizeB += (lenA - lenB)
 __device__ inline void perm_seg_swap(int* rowA, int& sizeA, int posA, int lenA,
                                       int* rowB, int& sizeB, int posB, int lenB) {
     int bufA[8], bufB[8];
     int aLen = (lenA > 8) ? 8 : lenA;
     int bLen = (lenB > 8) ? 8 : lenB;
     
-    // 保存两段
+    // Save both segments
     for (int i = 0; i < aLen; i++) bufA[i] = rowA[posA + i];
     for (int i = 0; i < bLen; i++) bufB[i] = rowB[posB + i];
     
-    // 从 rowA 移除 segA，腾出空间插入 segB
-    // 先移除
+    // Remove segA from rowA to make room for segB
+    // Remove first
     int newSizeA = sizeA - aLen;
     for (int k = posA; k < newSizeA; k++) rowA[k] = rowA[k + aLen];
-    // 再插入 segB
+    // Then insert segB
     for (int k = newSizeA - 1; k >= posA; k--) rowA[k + bLen] = rowA[k];
     for (int i = 0; i < bLen; i++) rowA[posA + i] = bufB[i];
     sizeA = newSizeA + bLen;
     
-    // 从 rowB 移除 segB，腾出空间插入 segA
+    // Remove segB from rowB to make room for segA
     int newSizeB = sizeB - bLen;
     for (int k = posB; k < newSizeB; k++) rowB[k] = rowB[k + bLen];
     for (int k = newSizeB - 1; k >= posB; k--) rowB[k + aLen] = rowB[k];
@@ -264,10 +264,10 @@ __device__ inline void perm_seg_swap(int* rowA, int& sizeA, int posA, int lenA,
     sizeB = newSizeB + aLen;
 }
 
-/// cross_exchange: 两行各取一段互换，保持各自内部顺序
-/// 与 seg_swap 的区别：seg_swap 是等长互换，cross_exchange 允许不等长
+/// cross_exchange: swap one segment from each row, preserving internal order each
+/// Unlike seg_swap: seg_swap is equal-length swap; cross_exchange allows unequal lengths
 /// rowA[posA..posA+lenA) <-> rowB[posB..posB+lenB)
-/// 行长变化：sizeA += (lenB - lenA), sizeB += (lenA - lenB)
+/// Row lengths: sizeA += (lenB - lenA), sizeB += (lenA - lenB)
 __device__ inline void perm_cross_exchange(int* rowA, int& sizeA, int posA, int lenA,
                                             int* rowB, int& sizeB, int posB, int lenB) {
     int bufA[8], bufB[8];
@@ -277,14 +277,14 @@ __device__ inline void perm_cross_exchange(int* rowA, int& sizeA, int posA, int 
     for (int i = 0; i < aLen; i++) bufA[i] = rowA[posA + i];
     for (int i = 0; i < bLen; i++) bufB[i] = rowB[posB + i];
     
-    // rowA: 移除 segA，插入 segB
+    // rowA: remove segA, insert segB
     int newSizeA = sizeA - aLen;
     for (int k = posA; k < newSizeA; k++) rowA[k] = rowA[k + aLen];
     for (int k = newSizeA - 1; k >= posA; k--) rowA[k + bLen] = rowA[k];
     for (int i = 0; i < bLen; i++) rowA[posA + i] = bufB[i];
     sizeA = newSizeA + bLen;
     
-    // rowB: 移除 segB，插入 segA
+    // rowB: remove segB, insert segA
     int newSizeB = sizeB - bLen;
     for (int k = posB; k < newSizeB; k++) rowB[k] = rowB[k + bLen];
     for (int k = newSizeB - 1; k >= posB; k--) rowB[k + aLen] = rowB[k];
@@ -292,8 +292,8 @@ __device__ inline void perm_cross_exchange(int* rowA, int& sizeA, int posA, int 
     sizeB = newSizeB + aLen;
 }
 
-/// k-bit flip: 同时翻转 k 个随机位（Binary 编码）
-/// positions 数组存储要翻转的位置，k = 实际翻转数
+/// k-bit flip: flip k random bits at once (Binary encoding)
+/// positions array holds indices to flip; k = number of flips
 __device__ inline void bin_k_flip(int* row, int size, int k, curandState* rng) {
     for (int i = 0; i < k; i++) {
         int pos = rand_int(rng, size);
@@ -301,12 +301,12 @@ __device__ inline void bin_k_flip(int* row, int size, int k, curandState* rng) {
     }
 }
 
-/// seg_flip: 翻转行内连续 seg_len 个位（Binary 编码）
+/// seg_flip: flip contiguous seg_len bits within row (Binary encoding)
 __device__ inline void bin_seg_flip(int* row, int pos, int seg_len) {
     for (int i = 0; i < seg_len; i++) row[pos + i] = 1 - row[pos + i];
 }
 
-/// seg_cross_swap: 两行各取一段互换（Binary 编码，等长）
+/// seg_cross_swap: swap one segment from each row (Binary encoding, equal length)
 __device__ inline void bin_seg_cross_swap(int* rowA, int posA,
                                            int* rowB, int posB, int seg_len) {
     for (int i = 0; i < seg_len; i++) {
@@ -317,23 +317,23 @@ __device__ inline void bin_seg_cross_swap(int* rowA, int posA,
 }
 
 // ============================================================
-// Integer 编码底层操作
+// Integer encoding primitives
 // ============================================================
 
-/// int_clamp: 将值限制在 [lb, ub] 范围内
+/// int_clamp: clamp value to [lb, ub]
 __device__ inline int int_clamp(int v, int lb, int ub) {
     if (v < lb) return lb;
     if (v > ub) return ub;
     return v;
 }
 
-/// int_random_reset: 随机一个位置重置为 [lb, ub] 内随机值
+/// int_random_reset: reset one random position to uniform random in [lb, ub]
 __device__ inline void int_random_reset(int* row, int pos, int lb, int ub,
                                          curandState* rng) {
     row[pos] = lb + (curand(rng) % (ub - lb + 1));
 }
 
-/// int_delta: 随机一个位置 ±k（clamp 到 [lb, ub]）
+/// int_delta: random position, add ±k (clamped to [lb, ub])
 __device__ inline void int_delta(int* row, int pos, int lb, int ub,
                                   curandState* rng) {
     int range = ub - lb + 1;
@@ -343,7 +343,7 @@ __device__ inline void int_delta(int* row, int pos, int lb, int ub,
     row[pos] = int_clamp(row[pos] + step, lb, ub);
 }
 
-/// int_seg_reset: 连续 k 个位置全部重置为 [lb, ub] 内随机值
+/// int_seg_reset: reset k contiguous positions to uniform random in [lb, ub]
 __device__ inline void int_seg_reset(int* row, int pos, int seg_len,
                                       int lb, int ub, curandState* rng) {
     int range = ub - lb + 1;
@@ -351,7 +351,7 @@ __device__ inline void int_seg_reset(int* row, int pos, int seg_len,
         row[pos + i] = lb + (curand(rng) % range);
 }
 
-/// int_k_delta: 随机 k 个位置各自 ±1
+/// int_k_delta: k random positions, each ±1
 __device__ inline void int_k_delta(int* row, int size, int k,
                                     int lb, int ub, curandState* rng) {
     for (int i = 0; i < k; i++) {
@@ -362,21 +362,21 @@ __device__ inline void int_k_delta(int* row, int size, int k,
 }
 
 // ============================================================
-// 第 3 层：行级底层操作
+// Layer 3: row-level primitives
 // ============================================================
 
-/// row_swap: 交换两行的全部内容和长度
+/// row_swap: swap full contents and lengths of two rows
 template<typename Sol>
 __device__ inline void row_swap(Sol& sol, int r1, int r2) {
-    // 交换长度
+    // Swap lengths
     int tmp_size = sol.dim2_sizes[r1];
     sol.dim2_sizes[r1] = sol.dim2_sizes[r2];
     sol.dim2_sizes[r2] = tmp_size;
-    // 交换数据（取两行中较长的长度）
+    // Swap data (use the longer of the two row lengths)
     int max_len = (sol.dim2_sizes[r1] > sol.dim2_sizes[r2]) 
                   ? sol.dim2_sizes[r1] : sol.dim2_sizes[r2];
-    // 交换后 r1 的长度是原 r2 的，r2 的长度是原 r1 的
-    // 所以需要交换 max(原r1长度, 原r2长度) 个元素
+    // After swap, r1 has old r2 length and r2 has old r1 length
+    // So swap max(old r1 len, old r2 len) elements
     max_len = (tmp_size > max_len) ? tmp_size : max_len;
     for (int c = 0; c < max_len; c++) {
         int tmp = sol.data[r1][c];
@@ -385,8 +385,8 @@ __device__ inline void row_swap(Sol& sol, int r1, int r2) {
     }
 }
 
-/// row_reverse: 反转 [r1, r2] 范围内的行排列顺序
-/// 例如 row_reverse(sol, 1, 4) 把行 1,2,3,4 变成 4,3,2,1
+/// row_reverse: reverse row order in [r1, r2]
+/// e.g. row_reverse(sol, 1, 4) turns rows 1,2,3,4 into 4,3,2,1
 template<typename Sol>
 __device__ inline void row_reverse_range(Sol& sol, int r1, int r2) {
     while (r1 < r2) {
@@ -395,23 +395,23 @@ __device__ inline void row_reverse_range(Sol& sol, int r1, int r2) {
     }
 }
 
-/// row_split: 将 row 从 split_pos 处拆成两行
-/// row 保留 [0, split_pos)，empty_row 接收 [split_pos, size)
-/// 要求 empty_row 当前为空或有足够空间
+/// row_split: split row at split_pos into two rows
+/// row keeps [0, split_pos), empty_row gets [split_pos, size)
+/// requires empty_row empty or with enough space
 template<typename Sol>
 __device__ inline void row_split(Sol& sol, int row, int empty_row, int split_pos) {
     int orig_size = sol.dim2_sizes[row];
     int move_count = orig_size - split_pos;
-    // 复制后半段到 empty_row
+    // Copy tail to empty_row
     for (int i = 0; i < move_count; i++)
         sol.data[empty_row][i] = sol.data[row][split_pos + i];
     sol.dim2_sizes[empty_row] = move_count;
     sol.dim2_sizes[row] = split_pos;
 }
 
-/// row_merge: 将 src_row 的全部内容追加到 dst_row 末尾
-/// src_row 清空，dst_row 长度增加
-/// 要求 dst_size + src_size <= DIM2
+/// row_merge: append full contents of src_row to end of dst_row
+/// src_row cleared, dst_row length increased
+/// requires dst_size + src_size <= DIM2
 template<typename Sol>
 __device__ inline void row_merge(Sol& sol, int dst_row, int src_row) {
     int dst_size = sol.dim2_sizes[dst_row];
@@ -423,33 +423,33 @@ __device__ inline void row_merge(Sol& sol, int dst_row, int src_row) {
 }
 
 // ============================================================
-// 第 4 层：交叉底层操作
+// Layer 4: crossover primitives
 // ============================================================
 //
-// 排列编码：OX 家族（统一框架）
-//   核心逻辑：A 中标记一组"保留位置"不动，空位按 B 的全局顺序填充
-//   三个变体只是"怎么选保留集"不同，填充逻辑完全共享
-//   天然保证唯一性：从 B 中按序取不在保留集中的元素，不会重复
-//   行长度不变（= A 的行长度），行边界不变
+// Permutation encoding: OX family (unified framework)
+//   Core: mark "kept" positions from A; fill gaps in B's global order
+//   Three variants differ only in how the keep set is chosen; fill logic is shared
+//   Uniqueness: take from B in order elements not in keep set, no duplicates
+//   Row lengths unchanged (= A's row lengths), row boundaries unchanged
 //
-// Binary 编码：uniform_crossover（逐元素随机选）
+// Binary encoding: uniform_crossover (random pick per element)
 //
 // ============================================================
 
-// ---- OX 核心填充逻辑 ----
-// keep[r][c] = true 表示 child[r][c] 保留 A 的值，false 表示空位
-// 空位按 B 中元素的出现顺序（逐行扫描）填充
-// 要求：child 已拷贝自 A，dim2_sizes 已设为 A 的行长度
+// ---- OX core fill logic ----
+// keep[r][c] = true means child[r][c] keeps A's value; false = gap to fill
+// Gaps filled in order of appearance of elements in B (row-major scan)
+// Requires: child copied from A, dim2_sizes set to A's row lengths
 //
-// 参数 total_elements: 分区模式下的总元素数，非分区模式下 = 单行长度
-//   用于确定 B 中扫描的元素范围
+// total_elements: total elements in partitioned mode; in non-partitioned = single row length
+//   Used to bound the scan range in B
 
 template<typename Sol>
 __device__ inline void ox_fill_from_b(Sol& child, const Sol& parentB,
                                        const bool* keep_flat,
                                        int dim1, int total_elements) {
-    // 统计 A 中保留位置的每个值的出现次数（支持多重集排列）
-    // keep_flat 是按行展平的：keep_flat[r * DIM2 + c]
+    // Count occurrences of each value at kept positions in A (multiset permutations)
+    // keep_flat is row-major flat: keep_flat[r * DIM2 + c]
     int keep_count[512];
     for (int i = 0; i < total_elements; i++) keep_count[i] = 0;
     
@@ -460,21 +460,21 @@ __device__ inline void ox_fill_from_b(Sol& child, const Sol& parentB,
                 if (v >= 0 && v < total_elements) keep_count[v]++;
             }
     
-    // 从 B 中按行扫描顺序收集：每个值只取"需要填充"的份数
-    // 标准排列：每个值最多 1 份，多重集：每个值最多 repeat_count 份
+    // Collect from B in row scan order: take only as many of each value as needed to fill
+    // Standard permutation: at most 1 of each value; multiset: up to repeat_count each
     int fill_buf[512];
     int fill_count = 0;
     for (int r = 0; r < dim1; r++)
         for (int c = 0; c < parentB.dim2_sizes[r]; c++) {
             int val = parentB.data[r][c];
             if (val >= 0 && val < total_elements && keep_count[val] > 0) {
-                keep_count[val]--;  // 消耗一个保留名额
+                keep_count[val]--;  // consume one kept slot
             } else if (val >= 0 && val < total_elements) {
                 fill_buf[fill_count++] = val;
             }
         }
     
-    // 按空位顺序（逐行从左到右）填入
+    // Fill gaps in order (row by row, left to right)
     int fi = 0;
     for (int r = 0; r < dim1; r++)
         for (int c = 0; c < child.dim2_sizes[r]; c++)
@@ -482,26 +482,26 @@ __device__ inline void ox_fill_from_b(Sol& child, const Sol& parentB,
                 child.data[r][c] = fill_buf[fi++];
 }
 
-// ---- 变体 1: OX-区间 ----
-// 每行随机选一个连续区间保留，保留邻接关系
+// ---- Variant 1: OX-interval ----
+// Per row, random contiguous interval kept; preserves adjacency
 template<typename Sol>
 __device__ inline void ox_interval(Sol& child, const Sol& parentA, const Sol& parentB,
                                     int dim1, int total_elements, curandState* rng) {
     bool keep[Sol::DIM1 * Sol::DIM2];
     for (int i = 0; i < Sol::DIM1 * Sol::DIM2; i++) keep[i] = false;
     
-    // child = A，同时标记每行的保留区间
+    // child = A, mark each row's kept interval
     for (int r = 0; r < dim1; r++) {
         int sz = parentA.dim2_sizes[r];
         child.dim2_sizes[r] = sz;
         for (int c = 0; c < sz; c++) child.data[r][c] = parentA.data[r][c];
         
         if (sz < 2) {
-            // 长度 0 或 1：全部保留
+            // length 0 or 1: keep all
             for (int c = 0; c < sz; c++) keep[r * Sol::DIM2 + c] = true;
             continue;
         }
-        // 随机选区间 [lo, hi]
+        // Random interval [lo, hi]
         int lo = rand_int(rng, sz);
         int hi = rand_int(rng, sz);
         if (lo > hi) { int tmp = lo; lo = hi; hi = tmp; }
@@ -511,8 +511,8 @@ __device__ inline void ox_interval(Sol& child, const Sol& parentA, const Sol& pa
     ox_fill_from_b(child, parentB, keep, dim1, total_elements);
 }
 
-// ---- 变体 2: OX-子集 ----
-// 随机选约 50% 的元素值保留其在 A 中的位置，通用性最强
+// ---- Variant 2: OX-subset ----
+// Randomly keep ~50% of positions at their A values; most general
 template<typename Sol>
 __device__ inline void ox_subset(Sol& child, const Sol& parentA, const Sol& parentB,
                                   int dim1, int total_elements, curandState* rng) {
@@ -526,7 +526,7 @@ __device__ inline void ox_subset(Sol& child, const Sol& parentA, const Sol& pare
             child.data[r][c] = parentA.data[r][c];
     }
     
-    // 每个位置 50% 概率保留
+    // 50% keep per position
     for (int r = 0; r < dim1; r++)
         for (int c = 0; c < child.dim2_sizes[r]; c++)
             keep[r * Sol::DIM2 + c] = (curand_uniform(rng) < 0.5f);
@@ -534,9 +534,9 @@ __device__ inline void ox_subset(Sol& child, const Sol& parentA, const Sol& pare
     ox_fill_from_b(child, parentB, keep, dim1, total_elements);
 }
 
-// ---- 变体 3: OX-行 ----
-// 随机选若干整行保留，其余行的元素全部按 B 的顺序重填
-// 保留整条路线结构，VRP 受益
+// ---- Variant 3: OX-row ----
+// Randomly keep whole rows; refill non-kept rows from B's order
+// Preserves full route structure; good for VRP
 template<typename Sol>
 __device__ inline void ox_row(Sol& child, const Sol& parentA, const Sol& parentB,
                                int dim1, int total_elements, curandState* rng) {
@@ -550,7 +550,7 @@ __device__ inline void ox_row(Sol& child, const Sol& parentA, const Sol& parentB
             child.data[r][c] = parentA.data[r][c];
     }
     
-    // 每行 50% 概率整行保留
+    // 50% chance to keep whole row
     int kept = 0;
     for (int r = 0; r < dim1; r++) {
         if (curand_uniform(rng) < 0.5f) {
@@ -559,14 +559,14 @@ __device__ inline void ox_row(Sol& child, const Sol& parentA, const Sol& parentB
             kept++;
         }
     }
-    // 确保不是全保留或全不保留
+    // Ensure not all-kept or all-unkept
     if (kept == 0) {
         int r = rand_int(rng, dim1);
-        // 不标记任何 keep → 全部重填（至少有一行不保留）
-        // 实际上 kept==0 意味着全部重填，这是合法的（child = B 的顺序填入 A 的结构）
+        // No keep marks → full refill (at least one row not kept)
+        // kept==0 means full refill; valid (child gets B's order into A's structure)
     }
     if (kept == dim1 && dim1 > 1) {
-        // 全保留 → 随机取消一行
+        // All kept → randomly un-keep one row
         int r = rand_int(rng, dim1);
         for (int c = 0; c < child.dim2_sizes[r]; c++)
             keep[r * Sol::DIM2 + c] = false;
@@ -575,14 +575,14 @@ __device__ inline void ox_row(Sol& child, const Sol& parentA, const Sol& parentB
     ox_fill_from_b(child, parentB, keep, dim1, total_elements);
 }
 
-// ---- OX 统一入口 ----
-// 随机选一个变体执行
-// dim1==1 时只用区间和子集（行变体无意义）
+// ---- OX unified entry ----
+// Pick one variant at random
+// When dim1==1 use only interval and subset (row variant useless)
 template<typename Sol>
 __device__ inline void perm_ox_crossover(Sol& child, const Sol& parentA, const Sol& parentB,
                                           int dim1, int total_elements, curandState* rng) {
     int n_variants = (dim1 > 1) ? 3 : 2;
-    int variant = rand_int(rng, n_variants);  // 0: 区间, 1: 子集, [2: 行]
+    int variant = rand_int(rng, n_variants);  // 0: interval, 1: subset, [2: row]
     switch (variant) {
         case 0: ox_interval(child, parentA, parentB, dim1, total_elements, rng); break;
         case 1: ox_subset(child, parentA, parentB, dim1, total_elements, rng); break;
@@ -590,8 +590,8 @@ __device__ inline void perm_ox_crossover(Sol& child, const Sol& parentA, const S
     }
 }
 
-/// uniform_crossover: 逐元素从两个父代中随机选择
-/// 适用于 Binary 编码（不破坏排列约束）
+/// uniform_crossover: random parent choice per element
+/// Suitable for Binary encoding (does not break permutation constraints)
 template<typename Sol>
 __device__ inline void uniform_crossover(Sol& child, const Sol& parentA, const Sol& parentB,
                                           int dim1, curandState* rng) {
@@ -607,15 +607,15 @@ __device__ inline void uniform_crossover(Sol& child, const Sol& parentA, const S
     }
 }
 
-// [已删除] generate_move_for_seq / sample_and_generate / apply_move / undo_move
-// P0 重构后主路径统一使用 execute_sequence，旧的 Move 生成+应用+撤销路径不再需要
+// [removed] generate_move_for_seq / sample_and_generate / apply_move / undo_move
+// After P0 refactor the main path uses execute_sequence; old Move gen/apply/undo path removed
 
 // ============================================================
-// execute_sequence — 统一接口：生成参数并直接执行（不返回 Move）
+// execute_sequence — unified API: generate params and execute directly (no Move returned)
 // ============================================================
-// 返回 true 若 sol 被修改，false 若 NOOP
-// d_G, d_O, rel_N: 可选的关系矩阵指针（SEQ_LNS_GUIDED_REBUILD 使用）
-// val_lb, val_ub: Integer 编码的值域范围（其他编码忽略）
+// Returns true if sol modified, false if NOOP
+// d_G, d_O, rel_N: optional relation matrices (for SEQ_LNS_GUIDED_REBUILD)
+// val_lb, val_ub: Integer encoding value range (ignored for other encodings)
 
 template<typename Sol>
 __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
@@ -627,7 +627,7 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
                                          int val_ub = 1,
                                          const void* prob_data = nullptr) {
     // ============================================================
-    // Permutation 序列
+    // Permutation sequences
     // ============================================================
     if (encoding == EncodingType::Permutation) {
         switch (seq_id) {
@@ -841,15 +841,15 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
             return true;
         }
         case seq::SEQ_LNS_GUIDED_REBUILD: {
-            // 关系矩阵引导重建：
-            //   1. 随机选种子元素 seed
-            //   2. 查 G[seed] 找分组倾向最强的 K 个元素
-            //   3. 在解中找到这些元素的位置
-            //   4. 按 O 矩阵引导的顺序重排这些位置的元素
+            // Relation-matrix guided rebuild:
+            //   1. Pick random seed element seed
+            //   2. Look up G[seed] for K elements with strongest grouping affinity
+            //   3. Find positions of these elements in the solution
+            //   4. Reorder these positions by order guided by O matrix
             //
-            // 如果没有关系矩阵（冷启动），退化为 scatter_shuffle
+            // Without relation matrices (cold start), fall back to scatter_shuffle
             if (!d_G || !d_O || rel_N <= 0) {
-                // 退化：随机 scatter shuffle
+                // Fallback: random scatter shuffle
                 int row = (dim1 > 1) ? rand_int(rng, dim1) : 0;
                 int sz = sol.dim2_sizes[row];
                 if (sz < 4) return false;
@@ -872,21 +872,21 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
                 return true;
             }
             
-            // --- 有关系矩阵：引导重建 ---
-            // 通用策略（不感知问题类型）：
-            //   G 矩阵 → 选哪些元素（分组倾向弱的 = 可能放错位置的）
-            //   O 矩阵 → 怎么排（排序倾向引导重排顺序）
-            //   两者协同：G 选人，O 排序
+            // --- With relation matrices: guided rebuild ---
+            // Generic strategy (problem-agnostic):
+            //   G matrix → which elements (weak grouping with seed = likely misplaced)
+            //   O matrix → how to order (ordering affinity guides reorder)
+            //   Together: G picks, O orders
             int row = (dim1 > 1) ? rand_int(rng, dim1) : 0;
             int sz = sol.dim2_sizes[row];
             if (sz < 4) return false;
             
-            // 选种子元素
+            // Pick seed element
             int seed_pos = rand_int(rng, sz);
             int seed_val = sol.data[row][seed_pos];
             if (seed_val < 0 || seed_val >= rel_N) return false;
             
-            // 检查矩阵是否有足够信息（G 和 O 任一有信号即可）
+            // Check matrices have enough signal (either G or O)
             float max_signal = 0.0f;
             for (int c = 0; c < sz; c++) {
                 int v = sol.data[row][c];
@@ -897,11 +897,11 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
                     if (o > max_signal) max_signal = o;
                 }
             }
-            if (max_signal < 0.05f) return false;  // 信息不足，跳过
+            if (max_signal < 0.05f) return false;  // insufficient signal, skip
             
-            // 破坏：锦标赛选择 G 值低的元素（t=2）
-            // G 值低 = 与 seed 分组倾向弱 = 可能放错位置
-            // 锦标赛：随机抽 2 个，取 G 值更低的那个，重复 count 次
+            // Destroy: tournament pick low-G elements (t=2)
+            // Low G = weak grouping with seed = likely misplaced
+            // Tournament: draw 2 at random, take lower G, repeat count times
             constexpr int MAX_REBUILD = 10;
             constexpr int TOUR_SIZE = 2;
             int count = sz / 5;  // ~20%
@@ -911,12 +911,12 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
             
             int sel_pos[MAX_REBUILD];
             int sel_val[MAX_REBUILD];
-            bool used[128] = {};  // 标记已选位置，防止重复
+            bool used[128] = {};  // mark chosen positions to avoid duplicates
             int picked = 0;
-            int max_attempts = count * 4;  // 防止死循环
+            int max_attempts = count * 4;  // avoid infinite loop
             
             for (int attempt = 0; attempt < max_attempts && picked < count; attempt++) {
-                // 锦标赛：随机抽 TOUR_SIZE 个候选，取 G 值最低的
+                // Tournament: draw TOUR_SIZE candidates at random, take lowest G
                 int best_c = -1;
                 float best_g = 1e30f;
                 for (int t = 0; t < TOUR_SIZE; t++) {
@@ -936,15 +936,15 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
             if (picked < 2) return false;
             count = picked;
             
-            // 修复：锦标赛排序（O 矩阵引导 + 随机扰动）
-            // 插入排序，比较时加噪声实现概率性：O 值高的大概率排前面，但不绝对
+            // Repair: tournament sort (O-guided + random noise)
+            // Insertion sort with noisy comparison: high O tends to go first, not guaranteed
             for (int i = 1; i < count; i++) {
                 int key = sel_val[i];
                 int j = i - 1;
                 while (j >= 0) {
                     float o_key_before = d_O[key * rel_N + sel_val[j]];
                     float o_j_before   = d_O[sel_val[j] * rel_N + key];
-                    // 噪声幅度 0.05：O 值差距 >0.05 时基本确定，<0.05 时随机
+                    // Noise scale 0.05: if O gap >0.05 mostly deterministic, else random
                     float noise = (curand_uniform(rng) - 0.5f) * 0.1f;
                     if (o_key_before + noise > o_j_before) {
                         sel_val[j + 1] = sel_val[j];
@@ -956,7 +956,7 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
                 sel_val[j + 1] = key;
             }
             
-            // 对 sel_pos 排序（升序），使写回位置有序
+            // Sort sel_pos ascending so write-back order is stable
             for (int i = 1; i < count; i++) {
                 int key = sel_pos[i];
                 int j = i - 1;
@@ -967,7 +967,7 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
                 sel_pos[j + 1] = key;
             }
             
-            // 检查是否真的改变了排列
+            // Check whether permutation actually changed
             bool any_change = false;
             for (int i = 0; i < count; i++) {
                 if (sol.data[row][sel_pos[i]] != sel_val[i]) {
@@ -977,7 +977,7 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
             }
             if (!any_change) return false;
             
-            // 写回
+            // Write back
             for (int i = 0; i < count; i++) {
                 sol.data[row][sel_pos[i]] = sel_val[i];
             }
@@ -989,7 +989,7 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
     }
 
     // ============================================================
-    // Binary 序列
+    // Binary sequences
     // ============================================================
     if (encoding == EncodingType::Binary) {
         switch (seq_id) {
@@ -1063,7 +1063,7 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
     }
 
     // ============================================================
-    // Integer 序列
+    // Integer sequences
     // ============================================================
     if (encoding == EncodingType::Integer) {
         switch (seq_id) {
@@ -1131,7 +1131,7 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
     }
 
     // ============================================================
-    // 共享：行级序列（编码无关）
+    // Shared: row-level sequences (encoding-agnostic)
     // ============================================================
     switch (seq_id) {
     case seq::SEQ_ROW_SWAP: {
@@ -1194,11 +1194,11 @@ __device__ inline bool execute_sequence(int seq_id, Sol& sol, int dim1,
 }
 
 // ============================================================
-// sample_and_execute — 从 SeqRegistry 按权重采样 + 直接执行
+// sample_and_execute — sample from SeqRegistry by weight and execute directly
 // ============================================================
-// 返回 true 若 sol 被修改，false 若 NOOP
-// 输出参数 out_seq_idx：采样到的序列在 registry 中的索引
-// d_G, d_O, rel_N: 可选的关系矩阵（传递给 execute_sequence）
+// Returns true if sol modified, false if NOOP
+// out_seq_idx: index of sampled sequence in registry
+// d_G, d_O, rel_N: optional relation matrices (passed to execute_sequence)
 
 template<typename Sol>
 __device__ inline bool sample_and_execute(const SeqRegistry& reg,
@@ -1212,7 +1212,7 @@ __device__ inline bool sample_and_execute(const SeqRegistry& reg,
                                           int val_lb = 0,
                                           int val_ub = 1,
                                           const void* prob_data = nullptr) {
-    // 延迟归一化：使用缓存的 weights_sum
+    // Lazy normalization: use cached weights_sum
     float r = curand_uniform(rng) * reg.weights_sum;  // r ∈ [0, weights_sum)
     float cumsum = 0.0f;
     out_seq_idx = reg.count - 1;

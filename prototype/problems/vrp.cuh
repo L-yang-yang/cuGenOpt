@@ -1,8 +1,8 @@
 /**
- * vrp.cuh - 容量约束车辆路径问题 (CVRP)
- * 
- * 继承 ProblemBase，使用 ObjDef 目标注册机制
- * 多行编码（D1=K 条路线，分区初始化 + 跨行算子）
+ * vrp.cuh - Capacitated Vehicle Routing Problem (CVRP)
+ *
+ * Extends ProblemBase with ObjDef objective registration.
+ * Multi-row encoding (D1 = K routes, partition init + cross-row operators).
  */
 
 #pragma once
@@ -12,11 +12,11 @@
 #include "gpu_cache.cuh"
 
 struct VRPProblem : ProblemBase<VRPProblem, 8, 64> {
-    // GPU 数据
+    // GPU data
     const float* d_dist;
     const float* d_demand;
-    const float* h_dist;    // host 端距离矩阵（含 depot，用于 init_relation_matrix）
-    const float* h_demand;  // host 端需求数组（用于 clone_to_device）
+    const float* h_dist;    // host distance matrix (includes depot; for init_relation_matrix)
+    const float* h_demand;  // host demand array (for clone_to_device)
     int n;
     int stride;
     float capacity;
@@ -24,7 +24,7 @@ struct VRPProblem : ProblemBase<VRPProblem, 8, 64> {
     int max_vehicles;
     GpuCache cache;
     
-    // ---- 目标计算 ----
+    // ---- objective evaluation ----
     __device__ float compute_route_dist(const int* route, int size) const {
         if (size == 0) return 0.0f;
         float dist = 0.0f;
@@ -61,7 +61,7 @@ struct VRPProblem : ProblemBase<VRPProblem, 8, 64> {
         return total;
     }
     
-    // ---- 目标定义（OBJ_DEFS 与 compute_obj 必须一一对应）----
+    // ---- objective defs (OBJ_DEFS must match compute_obj one-to-one) ----
     static constexpr ObjDef OBJ_DEFS[] = {
         {ObjDir::Minimize, 1.0f, 0.0f},   // case 0: calc_total_distance
     };
@@ -102,7 +102,7 @@ struct VRPProblem : ProblemBase<VRPProblem, 8, 64> {
         return cfg;
     }
     
-    // ---- shared memory 接口 ----
+    // ---- shared memory interface ----
     static constexpr size_t SMEM_LIMIT = 48 * 1024;
     
     size_t shared_mem_bytes() const {
@@ -129,14 +129,14 @@ struct VRPProblem : ProblemBase<VRPProblem, 8, 64> {
     void enable_cache(int cap = 65536) { cache = GpuCache::allocate(cap); }
     void print_cache_stats() const { cache.print_stats(); }
     
-    // 距离先验：客户间距离近 → G/O 分数高
-    // 注意：h_dist 含 depot（stride×stride），元素编号 0..n-1 对应 node 1..n
+    // Distance prior: closer customers → higher G/O scores
+    // Note: h_dist includes depot (stride×stride); indices 0..n-1 map to nodes 1..n
     void init_relation_matrix(float* G, float* O, int N) const {
         if (!h_dist || N != n) return;
         float max_d = 0.0f;
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++) {
-                float d = h_dist[(i + 1) * stride + (j + 1)];  // 跳过 depot
+                float d = h_dist[(i + 1) * stride + (j + 1)];  // skip depot
                 if (d > max_d) max_d = d;
             }
         if (max_d <= 0.0f) return;
@@ -161,7 +161,7 @@ struct VRPProblem : ProblemBase<VRPProblem, 8, 64> {
         prob.max_vehicles = max_vehicles;
         prob.cache = GpuCache::disabled();
         prob.h_dist = h_dist_ptr;
-        prob.h_demand = h_demand_ptr;  // 保存 host 端指针
+        prob.h_demand = h_demand_ptr;  // keep host pointer
         
         int n_nodes = n + 1;
         float* dd;
@@ -185,13 +185,13 @@ struct VRPProblem : ProblemBase<VRPProblem, 8, 64> {
         cache.destroy();
     }
     
-    // v5.0: 多 GPU 协同 — 克隆到指定 GPU
+    // v5.0: multi-GPU — clone onto a given device
     VRPProblem* clone_to_device(int gpu_id) const override {
         int orig_device;
         CUDA_CHECK(cudaGetDevice(&orig_device));
         CUDA_CHECK(cudaSetDevice(gpu_id));
         
-        // 从 host 端数据直接拷贝到目标 GPU（避免跨设备 D2H 拷贝）
+        // Copy from host straight to target GPU (avoid cross-device D2H staging)
         int n_nodes = n + 1;
         float* dd;
         CUDA_CHECK(cudaMalloc(&dd, sizeof(float) * n_nodes * n_nodes));

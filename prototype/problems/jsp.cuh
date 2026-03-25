@@ -1,26 +1,26 @@
 /**
- * jsp.cuh - 车间调度问题 (Job Shop Scheduling Problem)
- * 
- * J 个工件，每个工件有 O 道工序，每道工序指定机器和耗时。
- * 
- * === 编码方案 A：Integer 多行（时间表编码）===
- * JSPProblem: data[j][i] = 工件 j 的第 i 道工序的开始时间
+ * jsp.cuh - Job Shop Scheduling Problem (JSSP)
+ *
+ * J jobs, each with O operations; each op specifies machine and duration.
+ *
+ * === Encoding A: multi-row Integer (time-table encoding) ===
+ * JSPProblem: data[j][i] = start time of job j's i-th operation
  *   dim1 = num_jobs, dim2_default = num_ops
- *   row_mode = Fixed（禁止 ROW_SPLIT/ROW_MERGE）
- *   每行代表一个工件的固定工序序列，行长度不可变
- * 
- * === 编码方案 B：Permutation 多重集（工序排列编码）===
- * JSPPermProblem: data[0][k] = 工件编号（0..J-1），长度 J*O
- *   值 j 出现 O 次。从左到右扫描，第 t 次遇到值 j 表示工件 j 的第 t 道工序。
+ *   row_mode = Fixed (no ROW_SPLIT/ROW_MERGE)
+ *   Each row is a fixed op sequence for one job; row length is fixed.
+ *
+ * === Encoding B: Permutation multiset (operation sequence encoding) ===
+ * JSPPermProblem: data[0][k] = job id (0..J-1), length J*O
+ *   Value j appears O times. Left-to-right scan: t-th occurrence of j is job j's t-th op.
  *   dim1 = 1, dim2_default = J*O, perm_repeat_count = O
- *   标准 Permutation 算子（swap/reverse/insert）天然保持多重集结构
- * 
- * 目标：Minimize makespan（所有工件完成时间的最大值）。
- * 约束：
- *   (a) 工序顺序：同一工件的工序必须按序执行
- *   (b) 机器冲突：同一机器同一时刻只能处理一个工序
- * 
- * 验证实例：自定义 3 工件 3 机器 (3x3)，最优 makespan = 12
+ *   Standard permutation ops (swap/reverse/insert) preserve multiset structure.
+ *
+ * Objective: minimize makespan (max completion time over jobs).
+ * Constraints:
+ *   (a) Precedence: ops of the same job must run in order.
+ *   (b) Machine conflict: one op per machine at a time.
+ *
+ * Validation instance: custom 3 jobs × 3 machines (3x3), optimal makespan = 12
  */
 
 #pragma once
@@ -28,16 +28,16 @@
 #include "cuda_utils.cuh"
 
 // ============================================================
-// 编码方案 A：Integer 多行（时间表编码）
+// Encoding A: multi-row Integer (time-table encoding)
 // ============================================================
 
 struct JSPProblem : ProblemBase<JSPProblem, 8, 16> {
-    const int*   d_machine;     // 工序所需机器 [J*O]
-    const float* d_duration;    // 工序耗时 [J*O]
-    int num_jobs;               // 工件数 J
-    int num_ops;                // 每工件工序数 O
-    int num_machines;           // 机器数 M
-    int time_horizon;           // 时间上界
+    const int*   d_machine;     // machine per op [J*O]
+    const float* d_duration;    // op duration [J*O]
+    int num_jobs;               // number of jobs J
+    int num_ops;                // ops per job O
+    int num_machines;           // number of machines M
+    int time_horizon;           // time horizon upper bound
     
     __device__ float calc_makespan(const Sol& sol) const {
         float makespan = 0.0f;
@@ -62,7 +62,7 @@ struct JSPProblem : ProblemBase<JSPProblem, 8, 16> {
     __device__ float compute_penalty(const Sol& sol) const {
         float penalty = 0.0f;
         
-        // (a) 工序顺序约束
+        // (a) Precedence constraints
         for (int j = 0; j < num_jobs; j++) {
             for (int i = 1; i < num_ops; i++) {
                 float prev_end = (float)sol.data[j][i-1] + d_duration[j * num_ops + (i-1)];
@@ -72,7 +72,7 @@ struct JSPProblem : ProblemBase<JSPProblem, 8, 16> {
             }
         }
         
-        // (b) 机器冲突约束
+        // (b) Machine conflict constraints
         int total = num_jobs * num_ops;
         for (int a = 0; a < total; a++) {
             int ja = a / num_ops, ia = a % num_ops;
@@ -151,28 +151,28 @@ struct JSPProblem : ProblemBase<JSPProblem, 8, 16> {
 };
 
 // ============================================================
-// 编码方案 B：Permutation 多重集（工序排列编码）
+// Encoding B: Permutation multiset (operation sequence encoding)
 // ============================================================
-// data[0] 是长度 J*O 的排列，值域 [0, J)，每个值出现 O 次
-// 从左到右扫描：第 t 次遇到值 j → 安排工件 j 的第 t 道工序
-// 贪心解码：每道工序安排在"最早可行时间"（满足工序顺序 + 机器空闲）
+// data[0] is a length-J*O sequence with values in [0, J), each appearing O times.
+// Left-to-right: t-th occurrence of j schedules job j's t-th operation.
+// Greedy decode: each op at earliest feasible time (precedence + machine free).
 
 struct JSPPermProblem : ProblemBase<JSPPermProblem, 1, 64> {
-    const int*   d_machine;     // 工序所需机器 [J*O]
-    const float* d_duration;    // 工序耗时 [J*O]
+    const int*   d_machine;     // machine per op [J*O]
+    const float* d_duration;    // op duration [J*O]
     int num_jobs;
     int num_ops;
     int num_machines;
     
-    // 贪心解码：从排列生成调度方案，返回 makespan
+    // Greedy decode: build schedule from permutation, return makespan
     __device__ float decode_and_makespan(const Sol& sol) const {
         int total = num_jobs * num_ops;
         int size = sol.dim2_sizes[0];
         if (size < total) return 1e9f;
         
-        float job_avail[8];     // 每个工件的下一道工序最早开始时间
-        float mach_avail[8];    // 每台机器的最早空闲时间
-        int   job_next_op[8];   // 每个工件的下一道待安排工序编号
+        float job_avail[8];     // earliest start for next op of each job
+        float mach_avail[8];    // earliest machine free time
+        int   job_next_op[8];   // next op index to schedule per job
         
         for (int j = 0; j < num_jobs; j++) { job_avail[j] = 0.0f; job_next_op[j] = 0; }
         for (int m = 0; m < num_machines; m++) mach_avail[m] = 0.0f;
@@ -182,13 +182,13 @@ struct JSPPermProblem : ProblemBase<JSPPermProblem, 1, 64> {
             int j = sol.data[0][k];
             if (j < 0 || j >= num_jobs) return 1e9f;
             int op = job_next_op[j];
-            if (op >= num_ops) continue;  // 该工件已安排完
+            if (op >= num_ops) continue;  // job already fully scheduled
             
             int flat = j * num_ops + op;
             int m = d_machine[flat];
             float dur = d_duration[flat];
             
-            // 最早开始时间 = max(工件前序完成, 机器空闲)
+            // Earliest start = max(job predecessor done, machine free)
             float start = fmaxf(job_avail[j], mach_avail[m]);
             float end = start + dur;
             
@@ -212,7 +212,7 @@ struct JSPPermProblem : ProblemBase<JSPPermProblem, 1, 64> {
         }
     }
     
-    // 贪心解码天然满足约束，penalty 始终为 0
+    // Greedy decode satisfies constraints; penalty is always 0
     __device__ float compute_penalty(const Sol& sol) const {
         return 0.0f;
     }

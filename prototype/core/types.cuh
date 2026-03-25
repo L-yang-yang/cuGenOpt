@@ -1,38 +1,39 @@
 /**
- * types.cuh - 核心类型定义
+ * types.cuh - Core type definitions
  * 
- * 包含：编码类型、Solution 模板、ProblemConfig/SolverConfig、
- *       SeqRegistry（AOS 序列级权重）、KStepConfig（多步执行）、
- *       RelationMatrix（G/O 关系矩阵）、ProblemBase（CRTP 基类）
+ * Contains: encoding types, Solution template, ProblemConfig/SolverConfig,
+ *           SeqRegistry (AOS sequence-level weights), KStepConfig (multi-step execution),
+ *           RelationMatrix (G/O relation matrix), ProblemBase (CRTP base class)
  */
 
 #pragma once
 #include <cstdio>
+#include "cuda_utils.cuh"
 
 // ============================================================
-// 编译时常量
+// Compile-time constants
 // ============================================================
-constexpr int MAX_OBJ = 4;    // 最多 4 个目标（16字节，不值得模板化）
-constexpr int MAX_SEQ = 32;   // 最大序列数（内置 ~16 + 自定义算子 ≤8，留余量）
-constexpr int MAX_K   = 3;    // 多步执行的最大步数（K=1,2,3）
-// AOS 权重上下限（归一化后）
-constexpr float AOS_WEIGHT_FLOOR = 0.05f;  // 最低权重保底（确保充分探索）
-constexpr float AOS_WEIGHT_CAP   = 0.35f;  // 最高权重上限（防止赢者通吃）
+constexpr int MAX_OBJ = 4;    // Max 4 objectives (16 bytes, not worth templatizing)
+constexpr int MAX_SEQ = 32;   // Max sequences (built-in ~16 + custom ops ≤8, with margin)
+constexpr int MAX_K   = 3;    // Max steps for multi-step execution (K=1,2,3)
+// AOS weight bounds
+constexpr float AOS_WEIGHT_FLOOR = 0.05f;  // Minimum weight floor (ensures sufficient exploration)
+constexpr float AOS_WEIGHT_CAP   = 0.35f;  // Maximum weight cap (prevents winner-take-all)
 
 // ============================================================
-// 枚举类型
+// Enum types
 // ============================================================
 
 enum class EncodingType {
-    Permutation,    // 排列：元素不重复
-    Binary,         // 0-1：flip 是主要算子
-    Integer         // 有界整数
+    Permutation,    // Permutation: elements are unique
+    Binary,         // 0-1: flip is the main operator
+    Integer         // Bounded integers
 };
 
 enum class RowMode {
-    Single,     // dim1=1，单行（TSP/QAP/Knapsack 等大部分问题）
-    Fixed,      // dim1>1，行等长不可变（JSP-Int/Schedule，禁止 SPLIT/MERGE）
-    Partition   // dim1>1，元素分区到各行，行长可变（CVRP/VRPTW）
+    Single,     // dim1=1, single row (most problems: TSP/QAP/Knapsack, etc.)
+    Fixed,      // dim1>1, equal row lengths fixed (JSP-Int/Schedule; SPLIT/MERGE disallowed)
+    Partition   // dim1>1, elements partitioned across rows, variable row lengths (CVRP/VRPTW)
 };
 
 enum class ObjDir {
@@ -40,241 +41,235 @@ enum class ObjDir {
     Maximize
 };
 
-// 多目标比较模式
+// Multi-objective comparison mode
 enum class CompareMode {
-    Weighted,       // 加权求和：sum(weight[i] * obj[i])，越小越好
-    Lexicographic   // 字典法：按优先级逐目标比较，前面的目标优先
+    Weighted,       // Weighted sum: sum(weight[i] * obj[i]), lower is better
+    Lexicographic   // Lexicographic: compare objectives by priority order
 };
 
 enum class MigrateStrategy {
-    Ring,       // 环形：各岛最优→邻岛最差（慢传播，高多样性）
-    TopN,       // 全局 Top-N 轮转分发（快传播，强收敛）
-    Hybrid      // 两者兼顾：Top-N 替换最差 + Ring 替换次差
+    Ring,       // Ring: each island's best → neighbor's worst (slow spread, high diversity)
+    TopN,       // Global Top-N round-robin (fast spread, strong convergence)
+    Hybrid      // Hybrid: Top-N replaces worst + Ring replaces second-worst
 };
 
-// v5.0: 多 GPU 协同 — 解注入模式
+// v5.0: multi-GPU coordination — solution injection mode
 enum class MultiGpuInjectMode {
-    OneIsland,   // 注入到 1 个岛的 worst（保守，保持多样性）
-    HalfIslands, // 注入到 num_islands/2 个岛的 worst（平衡）
-    AllIslands   // 注入到所有岛的 worst（激进，快速传播）
+    OneIsland,   // Inject into worst of 1 island (conservative, preserves diversity)
+    HalfIslands, // Inject into worst on num_islands/2 islands (balanced)
+    AllIslands   // Inject into worst on all islands (aggressive, fast spread)
 };
 
-// v5.0 方案 B3: InjectBuffer — 被动注入缓冲区
-// GPU 无感知，CPU 同步写入，GPU 在 migrate_kernel 中检查并应用
-// 设计要点：
-// 1. 使用同步 cudaMemcpy 避免与 solve() 的 stream/Graph 冲突
-// 2. 写入顺序：先 solution 后 flag，GPU 端原子读 flag 确保一致性
-// 3. 完全解耦：不依赖 solve() 的任何内部状态
+// v5.0 option B3: InjectBuffer — passive injection buffer
+// GPU has no awareness; CPU writes synchronously; GPU checks and applies in migrate_kernel
+// Design notes:
+// 1. Use synchronous cudaMemcpy to avoid conflicts with solve() stream/Graph
+// 2. Write order: solution first, then flag; GPU atomic flag read ensures consistency
+// 3. Fully decoupled: does not depend on any internal state of solve()
 template<typename Sol>
 struct InjectBuffer {
-    Sol*  d_solution;    // Device 端解缓冲区（单个解）
-    int*  d_flag;        // Device 端标志位：0=空，1=有新解
+    Sol*  d_solution = nullptr;  // Device solution buffer (single solution)
+    int*  d_flag     = nullptr;  // Device flag: 0=empty, 1=new solution
+    int   owner_gpu  = 0;       // GPU that owns the allocation
     
-    // 分配 InjectBuffer（在指定 GPU 上）
+    // Allocate InjectBuffer (on given GPU)
     static InjectBuffer<Sol> allocate(int gpu_id) {
         InjectBuffer<Sol> buf;
+        buf.owner_gpu = gpu_id;
         
-        // 保存原设备，切换到目标 GPU
         int orig_device;
-        cudaGetDevice(&orig_device);
-        cudaSetDevice(gpu_id);
+        CUDA_CHECK(cudaGetDevice(&orig_device));
+        CUDA_CHECK(cudaSetDevice(gpu_id));
         
-        // 分配设备内存
-        cudaMalloc(&buf.d_solution, sizeof(Sol));
-        cudaMalloc(&buf.d_flag, sizeof(int));
+        CUDA_CHECK(cudaMalloc(&buf.d_solution, sizeof(Sol)));
+        CUDA_CHECK(cudaMalloc(&buf.d_flag, sizeof(int)));
         
-        // 初始化 flag 为 0
         int zero = 0;
-        cudaMemcpy(buf.d_flag, &zero, sizeof(int), cudaMemcpyHostToDevice);
+        CUDA_CHECK(cudaMemcpy(buf.d_flag, &zero, sizeof(int), cudaMemcpyHostToDevice));
         
-        // 恢复原设备
-        cudaSetDevice(orig_device);
+        CUDA_CHECK(cudaSetDevice(orig_device));
         
         return buf;
     }
     
-    // 释放 InjectBuffer
+    // Free InjectBuffer (switches to owner GPU before freeing)
     void destroy() {
-        if (d_solution) {
-            cudaFree(d_solution);
-            d_solution = nullptr;
-        }
-        if (d_flag) {
-            cudaFree(d_flag);
-            d_flag = nullptr;
+        if (d_solution || d_flag) {
+            int orig_device;
+            cudaGetDevice(&orig_device);
+            cudaSetDevice(owner_gpu);
+            if (d_solution) { cudaFree(d_solution); d_solution = nullptr; }
+            if (d_flag)     { cudaFree(d_flag);     d_flag = nullptr;     }
+            cudaSetDevice(orig_device);
         }
     }
     
-    // CPU 端写入新解
-    // 注意：使用同步 cudaMemcpy 避免与 solve() 的 stream 冲突
-    // 顺序：先写 solution，再写 flag（GPU 端原子读 flag 确保不会读到半写状态）
+    // CPU-side write of new solution
+    // Note: synchronous cudaMemcpy avoids stream conflicts with solve()
+    // Order: write solution first, then flag (GPU atomic flag read avoids half-written reads)
     void write_sync(const Sol& sol, int target_gpu) {
-        // 保存原设备，切换到目标 GPU
         int orig_device;
-        cudaGetDevice(&orig_device);
-        cudaSetDevice(target_gpu);
+        CUDA_CHECK(cudaGetDevice(&orig_device));
+        CUDA_CHECK(cudaSetDevice(target_gpu));
         
-        // 先写解数据
-        cudaMemcpy(d_solution, &sol, sizeof(Sol), cudaMemcpyHostToDevice);
-        // 再写标志位（确保解数据已写完）
+        CUDA_CHECK(cudaMemcpy(d_solution, &sol, sizeof(Sol), cudaMemcpyHostToDevice));
         int flag = 1;
-        cudaMemcpy(d_flag, &flag, sizeof(int), cudaMemcpyHostToDevice);
+        CUDA_CHECK(cudaMemcpy(d_flag, &flag, sizeof(int), cudaMemcpyHostToDevice));
         
-        // 恢复原设备
-        cudaSetDevice(orig_device);
+        CUDA_CHECK(cudaSetDevice(orig_device));
     }
 };
 
 
 // ============================================================
-// SeqID — 统一的 OperationSequence 编号
+// SeqID — unified OperationSequence IDs
 // ============================================================
-// 每个 SeqID 对应一种具体的搜索操作（原子或多步）
-// AOS 权重跟踪粒度 = SeqID（每个序列独立权重）
+// Each SeqID maps to one concrete search operation (atomic or multi-step)
+// AOS weight granularity = SeqID (independent weight per sequence)
 //
-// 命名规则：SEQ_{编码}_{操作名}
-// 跨编码共享的行级操作统一编号
+// Naming: SEQ_{encoding}_{operation}
+// Row-level ops shared across encodings use unified numbering
 
 namespace seq {
 
-// --- Permutation 行内（元素级）---
-constexpr int SEQ_PERM_SWAP           = 0;   // swap 两个位置
-constexpr int SEQ_PERM_REVERSE        = 1;   // 2-opt（反转区间）
-constexpr int SEQ_PERM_INSERT         = 2;   // insert（移动到新位置）
-constexpr int SEQ_PERM_3OPT           = 3;   // 3-opt（断 3 边重连）
+// --- Permutation in-row (element-level) ---
+constexpr int SEQ_PERM_SWAP           = 0;   // swap two positions
+constexpr int SEQ_PERM_REVERSE        = 1;   // 2-opt (reverse segment)
+constexpr int SEQ_PERM_INSERT         = 2;   // insert (move to new position)
+constexpr int SEQ_PERM_3OPT           = 3;   // 3-opt (reconnect after 3 edges)
 
-// --- Permutation 行内（片段级）---
-constexpr int SEQ_PERM_OR_OPT         = 4;   // or-opt（移动连续 k 个元素）
+// --- Permutation in-row (segment-level) ---
+constexpr int SEQ_PERM_OR_OPT         = 4;   // or-opt (move k consecutive elements)
 
-// --- Permutation 行内（组合级）---
-constexpr int SEQ_PERM_DOUBLE_SWAP    = 30;  // 连续两次 swap（同行）
-constexpr int SEQ_PERM_TRIPLE_SWAP    = 31;  // 连续三次 swap（同行）
+// --- Permutation in-row (combo-level) ---
+constexpr int SEQ_PERM_DOUBLE_SWAP    = 30;  // two consecutive swaps (same row)
+constexpr int SEQ_PERM_TRIPLE_SWAP    = 31;  // three consecutive swaps (same row)
 
-// --- Permutation 跨行（元素级）---
-constexpr int SEQ_PERM_CROSS_RELOCATE = 5;   // 单元素移行
-constexpr int SEQ_PERM_CROSS_SWAP     = 6;   // 单元素换行
+// --- Permutation cross-row (element-level) ---
+constexpr int SEQ_PERM_CROSS_RELOCATE = 5;   // single element moves row
+constexpr int SEQ_PERM_CROSS_SWAP     = 6;   // single element swaps rows
 
-// --- Permutation 跨行（片段级）---
-constexpr int SEQ_PERM_SEG_RELOCATE   = 7;   // 片段移行
-constexpr int SEQ_PERM_SEG_SWAP       = 8;   // 片段换行（2-opt*）
-constexpr int SEQ_PERM_CROSS_EXCHANGE = 9;   // 片段互换（保序）
+// --- Permutation cross-row (segment-level) ---
+constexpr int SEQ_PERM_SEG_RELOCATE   = 7;   // segment moves row
+constexpr int SEQ_PERM_SEG_SWAP       = 8;   // segment swaps rows (2-opt*)
+constexpr int SEQ_PERM_CROSS_EXCHANGE = 9;   // segment exchange (order preserved)
 
-// --- Binary 行内（元素级）---
-constexpr int SEQ_BIN_FLIP            = 0;   // 翻转一个位
-constexpr int SEQ_BIN_SWAP            = 1;   // 交换两个位
+// --- Binary in-row (element-level) ---
+constexpr int SEQ_BIN_FLIP            = 0;   // flip one bit
+constexpr int SEQ_BIN_SWAP            = 1;   // swap two bits
 
-// --- Binary 行内（片段级）---
-constexpr int SEQ_BIN_SEG_FLIP        = 2;   // 翻转连续 k 个位
-constexpr int SEQ_BIN_K_FLIP          = 3;   // 同时翻转 k 个随机位
+// --- Binary in-row (segment-level) ---
+constexpr int SEQ_BIN_SEG_FLIP        = 2;   // flip k consecutive bits
+constexpr int SEQ_BIN_K_FLIP          = 3;   // flip k random bits at once
 
-// --- Binary 跨行 ---
-constexpr int SEQ_BIN_CROSS_SWAP      = 4;   // 两行各一个位互换
-constexpr int SEQ_BIN_SEG_CROSS_SWAP  = 5;   // 两行各取一段互换
+// --- Binary cross-row ---
+constexpr int SEQ_BIN_CROSS_SWAP      = 4;   // swap one bit per row across two rows
+constexpr int SEQ_BIN_SEG_CROSS_SWAP  = 5;   // swap a segment from each row
 
-// --- 共享：行级（编码无关）---
-constexpr int SEQ_ROW_SWAP            = 10;  // 交换两行
-constexpr int SEQ_ROW_REVERSE         = 11;  // 反转行排列
-constexpr int SEQ_ROW_SPLIT           = 12;  // 一行拆两行
-constexpr int SEQ_ROW_MERGE           = 13;  // 两行合并
+// --- Shared: row-level (encoding-agnostic) ---
+constexpr int SEQ_ROW_SWAP            = 10;  // swap two rows
+constexpr int SEQ_ROW_REVERSE         = 11;  // reverse row order
+constexpr int SEQ_ROW_SPLIT           = 12;  // split one row into two
+constexpr int SEQ_ROW_MERGE           = 13;  // merge two rows
 
-// --- 特殊 ---
-constexpr int SEQ_PERTURBATION        = 14;  // 扰动（多步不可逆）
+// --- Special ---
+constexpr int SEQ_PERTURBATION        = 14;  // perturbation (multi-step, irreversible)
 
-// --- Integer 行内（元素级）---
-constexpr int SEQ_INT_RANDOM_RESET    = 0;   // 随机一个位置重置为 [lb, ub] 内随机值
-constexpr int SEQ_INT_DELTA           = 1;   // 随机一个位置 ±k（clamp 到 [lb, ub]）
-constexpr int SEQ_INT_SWAP            = 2;   // 交换两个位置的值
+// --- Integer in-row (element-level) ---
+constexpr int SEQ_INT_RANDOM_RESET    = 0;   // reset one position to random in [lb, ub]
+constexpr int SEQ_INT_DELTA           = 1;   // one position ±k (clamped to [lb, ub])
+constexpr int SEQ_INT_SWAP            = 2;   // swap values at two positions
 
-// --- Integer 行内（片段级）---
-constexpr int SEQ_INT_SEG_RESET       = 3;   // 连续 k 个位置全部重置
-constexpr int SEQ_INT_K_DELTA         = 4;   // 随机 k 个位置各自 ±1
+// --- Integer in-row (segment-level) ---
+constexpr int SEQ_INT_SEG_RESET       = 3;   // reset k consecutive positions
+constexpr int SEQ_INT_K_DELTA         = 4;   // k positions each ±1 at random
 
-// --- Integer 跨行 ---
-constexpr int SEQ_INT_CROSS_SWAP      = 5;   // 两行各一个位置互换
+// --- Integer cross-row ---
+constexpr int SEQ_INT_CROSS_SWAP      = 5;   // swap one position per row across two rows
 
-// --- LNS（大邻域搜索）---
-constexpr int SEQ_LNS_SEGMENT_SHUFFLE = 20;  // 打乱连续片段
-constexpr int SEQ_LNS_SCATTER_SHUFFLE = 21;  // 打乱随机分散位置
-constexpr int SEQ_LNS_GUIDED_REBUILD  = 22;  // 关系矩阵引导重建
+// --- LNS (large neighborhood search) ---
+constexpr int SEQ_LNS_SEGMENT_SHUFFLE = 20;  // shuffle a contiguous segment
+constexpr int SEQ_LNS_SCATTER_SHUFFLE = 21;  // shuffle a scattered set of positions
+constexpr int SEQ_LNS_GUIDED_REBUILD  = 22;  // guided rebuild from relation matrix
 
 }  // namespace seq
 
 // ============================================================
-// RelationMatrix — G/O 关系矩阵（GPU global memory）
+// RelationMatrix — G/O relation matrix (GPU global memory)
 // ============================================================
-// G[i][j]: 元素 i 和 j 的分组倾向（对称，越大越倾向同组）
-// O[i][j]: 元素 i 排在 j 前面的倾向（不对称）
-// 存储为一维数组 [N * N]，行优先
-// 小规模 N<200 直接 Dense，P2 再做稀疏化
+// G[i][j]: grouping tendency of elements i and j (symmetric; higher → more same-group)
+// O[i][j]: tendency for element i to precede j (asymmetric)
+// Stored as a 1D row-major array [N * N]
+// For small N<200 use dense directly; P2 may add sparsification
 //
-// 更新时机：host 端，每个 batch 间隙
-// 使用时机：kernel 中 SEQ_LNS_GUIDED_REBUILD 读取
+// Updated on: host, between batches
+// Read in: kernel for SEQ_LNS_GUIDED_REBUILD
 
 struct RelationMatrix {
-    float* d_G;           // GPU 上的 G 矩阵 [N * N]
-    float* d_O;           // GPU 上的 O 矩阵 [N * N]
-    float* h_G;           // Host 上的 G 矩阵 [N * N]（用于更新后上传）
-    float* h_O;           // Host 上的 O 矩阵 [N * N]
-    int    N;             // 元素总数
-    float  decay;         // 衰减系数 α（默认 0.95）
-    int    update_count;  // 已更新次数（用于冷启动判断）
+    float* d_G;           // G matrix on GPU [N * N]
+    float* d_O;           // O matrix on GPU [N * N]
+    float* h_G;           // G matrix on host [N * N] (for upload after update)
+    float* h_O;           // O matrix on host [N * N]
+    int    N;             // total number of elements
+    float  decay;         // decay factor α (default 0.95)
+    int    update_count;  // number of updates so far (for cold-start logic)
 };
 
 // ============================================================
-// SeqRegistry — 运行时可用序列注册表
+// SeqRegistry — runtime-available sequence registry
 // ============================================================
-// 根据 EncodingType 和 dim1 自动确定哪些序列可用
-// 传到 GPU 供 sample_sequence() 使用
+// Which sequences are available is determined from EncodingType and dim1
+// Passed to GPU for sample_sequence()
 
 enum class SeqCategory : int {
-    InRow    = 0,   // 行内算子（swap, reverse, insert, ...）
-    CrossRow = 1,   // 跨行算子（cross_relocate, cross_swap, seg_relocate, ...）
-    RowLevel = 2,   // 行级算子（row_swap, row_reverse, split, merge）
-    LNS      = 3,   // 大邻域搜索
+    InRow    = 0,   // within-row operators (swap, reverse, insert, ...)
+    CrossRow = 1,   // cross-row operators (cross_relocate, cross_swap, seg_relocate, ...)
+    RowLevel = 2,   // row-level operators (row_swap, row_reverse, split, merge)
+    LNS      = 3,   // large neighborhood search
 };
 
 struct SeqRegistry {
-    int   ids[MAX_SEQ];       // 可用序列的 SeqID 列表
-    int   count;              // 可用序列数量
-    float weights[MAX_SEQ];   // 每个序列的当前权重（未归一化，延迟归一化）
-    float weights_sum;        // 权重和（缓存，用于延迟归一化）
-    float max_w[MAX_SEQ];     // 每个序列的权重上限（0 = 不限，用全局 cap）
-    SeqCategory categories[MAX_SEQ];  // 每个序列的分类（约束导向用）
+    int   ids[MAX_SEQ];       // SeqID list of available sequences
+    int   count;              // number of available sequences
+    float weights[MAX_SEQ];   // current weight per sequence (unnormalized; lazy normalization)
+    float weights_sum;        // sum of weights (cached for lazy normalization)
+    float max_w[MAX_SEQ];     // per-sequence weight cap (0 = unlimited, use global cap)
+    SeqCategory categories[MAX_SEQ];  // category per sequence (for constraint-directed mode)
 };
 
 // ============================================================
-// KStepConfig — 多步执行的步数选择配置
+// KStepConfig — step-count selection for multi-step execution
 // ============================================================
-// K=1: 单步（当前行为），K=2/3: 连续执行多个序列后再评估
-// 两层权重体系的第一层
+// K=1: single step (current behavior); K=2/3: run several sequences then evaluate
+// First layer of the two-level weight system
 //
-// 自适应策略：
-//   - 初始 K=1 权重很大（保守），K>1 权重小
-//   - K>1 带来改进 → 增大该 K 的权重
-//   - 长时间无改进 → 重置/增大 K>1 权重（跳出局部最优）
+// Adaptive policy:
+//   - Initially K=1 has large weight (conservative), K>1 small
+//   - If K>1 yields improvement → increase that K's weight
+//   - Long stagnation → reset / boost K>1 weights (escape local optima)
 
 struct KStepConfig {
-    float weights[MAX_K];     // K=1,2,3 的采样权重（归一化）
-    int   stagnation_count;   // 连续无改进的 batch 数（用于触发重置）
-    int   stagnation_limit;   // 触发重置的阈值（默认 5 个 batch）
+    float weights[MAX_K];     // sampling weights for K=1,2,3 (normalized)
+    int   stagnation_count;   // consecutive batches without improvement (triggers reset)
+    int   stagnation_limit;   // threshold to trigger reset (default 5 batches)
 };
 
-// 构建默认 K 步配置
+// Build default K-step configuration
 inline KStepConfig build_kstep_config() {
     KStepConfig kc;
-    kc.weights[0] = 0.80f;   // K=1: 初始主导
-    kc.weights[1] = 0.15f;   // K=2: 少量探索
-    kc.weights[2] = 0.05f;   // K=3: 极少探索
+    kc.weights[0] = 0.80f;   // K=1: dominates initially
+    kc.weights[1] = 0.15f;   // K=2: little exploration
+    kc.weights[2] = 0.05f;   // K=3: minimal exploration
     kc.stagnation_count = 0;
     kc.stagnation_limit = 5;
     return kc;
 };
 
 // ============================================================
-// ProblemProfile — 基于结构特征推断的问题画像
+// ProblemProfile — problem profile inferred from structural features
 // ============================================================
-// 第一层：纯结构推断（不感知语义），用于驱动算子注册和初始权重
-// 未来第二层：可扩展更细粒度的画像（如多属性、高约束等）
+// Layer 1: structure-only inference (no semantics), drives operator registration and initial weights
+// Future layer 2: finer profiles (e.g. multi-attribute, high constraint)
 
 enum class ScaleClass  { Small, Medium, Large };
 enum class StructClass { SingleSeq, MultiFixed, MultiPartition };
@@ -286,10 +281,10 @@ struct ProblemProfile {
     float         cross_row_prob;
 };
 
-// classify_problem() 定义在 ProblemConfig 之后
+// classify_problem() is defined after ProblemConfig
 
 // ============================================================
-// 权重预设 — 由 ScaleClass 驱动
+// Weight presets — driven by ScaleClass
 // ============================================================
 
 struct WeightPreset {
@@ -308,100 +303,100 @@ inline WeightPreset get_weight_preset(ScaleClass scale) {
     return { 0.50f, 0.80f, 0.006f, 0.01f };
 }
 
-// classify_problem() 和 build_seq_registry() 定义在 ProblemConfig 之后
+// classify_problem() and build_seq_registry() are defined after ProblemConfig
 
 // ============================================================
-// Solution<D1, D2> — 解的模板化表示
+// Solution<D1, D2> — templated solution representation
 // ============================================================
-// D1: 行数上限 (TSP=1, VRP≤16, Schedule≤8)
-// D2: 每行列数上限 (TSP≤64, 背包≤32)
-// 每个 Problem 选择最小够用的 D1/D2，编译器生成紧凑的结构
+// D1: max number of rows (TSP=1, VRP≤16, Schedule≤8)
+// D2: max columns per row (TSP≤64, knapsack≤32)
+// Each Problem picks the smallest sufficient D1/D2; compiler emits a compact layout
 
 template<int D1, int D2>
 struct Solution {
-    static constexpr int DIM1 = D1;   // 编译时行数上限
-    static constexpr int DIM2 = D2;   // 编译时列数上限
-    int   data[D1][D2];               // D1×D2×4 字节
-    int   dim2_sizes[D1];             // D1×4 字节
-    float objectives[MAX_OBJ];        // 16 字节（固定）
-    float penalty;                    // 4 字节
+    static constexpr int DIM1 = D1;   // compile-time max rows
+    static constexpr int DIM2 = D2;   // compile-time max columns per row
+    int   data[D1][D2];               // D1×D2×4 bytes
+    int   dim2_sizes[D1];             // D1×4 bytes
+    float objectives[MAX_OBJ];        // 16 bytes (fixed)
+    float penalty;                    // 4 bytes
 };
 
 // ============================================================
-// ProblemConfig — 问题的运行时元信息
+// ProblemConfig — runtime metadata for a problem
 // ============================================================
 
 struct ProblemConfig {
     EncodingType encoding;
-    int   dim1;                       // 实际使用的行数 (≤ D1)
-    int   dim2_default;               // 实际使用的列数 (≤ D2)
+    int   dim1;                       // actual number of rows used (≤ D1)
+    int   dim2_default;               // actual number of columns used (≤ D2)
     int   num_objectives;
     ObjDir obj_dirs[MAX_OBJ];
-    float obj_weights[MAX_OBJ];       // Weighted 模式下的权重
-    // 多目标比较
+    float obj_weights[MAX_OBJ];       // weights in Weighted mode
+    // Multi-objective comparison
     CompareMode compare_mode = CompareMode::Weighted;
-    int   obj_priority[MAX_OBJ] = {0, 1, 2, 3};  // Lexicographic 模式下的比较顺序（索引）
-    float obj_tolerance[MAX_OBJ] = {0.0f, 0.0f, 0.0f, 0.0f};  // 字典法容差：差值 <= tol 视为相等
+    int   obj_priority[MAX_OBJ] = {0, 1, 2, 3};  // comparison order in Lexicographic mode (indices)
+    float obj_tolerance[MAX_OBJ] = {0.0f, 0.0f, 0.0f, 0.0f};  // lexicographic tolerance: |diff| ≤ tol ⇒ tie
     int   value_lower_bound;
     int   value_upper_bound;
-    // v3.4: 统一行模式
-    RowMode row_mode      = RowMode::Single;  // 行模式（Single/Fixed/Partition）
-    float cross_row_prob  = 0.0f;     // 跨行 move 概率（0=纯行内操作）
-    int   total_elements  = 0;        // Partition 模式下的总元素数
-    int   perm_repeat_count = 1;      // 排列中每个值的重复次数（1=标准排列，>1=多重集排列）
+    // v3.4: unified row mode
+    RowMode row_mode      = RowMode::Single;  // row mode (Single/Fixed/Partition)
+    float cross_row_prob  = 0.0f;     // probability of cross-row moves (0 = within-row only)
+    int   total_elements  = 0;        // total elements in Partition mode
+    int   perm_repeat_count = 1;      // repeats per value in permutation (1 = standard; >1 = multiset)
 };
 
 // ============================================================
-// SolverConfig — 求解器参数
+// SolverConfig — solver parameters
 // ============================================================
 
 struct SolverConfig {
-    int   pop_size         = 0;       // 种群大小（0 = 自动匹配 GPU 最大并行度）
+    int   pop_size         = 0;       // population size (0 = auto to max GPU parallelism)
     int   max_gen          = 1000;
     float mutation_rate    = 0.1f;
     unsigned seed          = 42;
     bool  verbose          = true;
     int   print_every      = 100;
-    // 岛屿模型参数
-    int   num_islands      = 1;       // 0 = 自适应，1 = 纯爬山（无岛屿），>1 = 岛屿模型
-    int   migrate_interval = 100;     // 每隔多少代执行一次迁移
+    // Island model
+    int   num_islands      = 1;       // 0 = adaptive, 1 = pure hill climbing (no islands), >1 = island model
+    int   migrate_interval = 100;     // migrate every this many generations
     MigrateStrategy migrate_strategy = MigrateStrategy::Hybrid;
-    // 模拟退火参数
-    float sa_temp_init     = 0.0f;    // 初始温度（0 = 禁用 SA，纯爬山）
-    float sa_alpha         = 0.998f;  // 冷却率（每代乘以 alpha）
-    // v1.0: 交叉参数
-    float crossover_rate   = 0.1f;    // 每代中执行交叉的概率（vs 变异）
-    // v2.0: 自适应算子选择
-    bool  use_aos          = false;   // 启用 AOS（batch 间更新算子权重）
-    float aos_weight_floor = AOS_WEIGHT_FLOOR;  // 运行时可覆盖的 floor
-    float aos_weight_cap   = AOS_WEIGHT_CAP;    // 运行时可覆盖的 cap
-    // v2.1: 初始解策略
-    int   init_oversample  = 4;       // 采样倍数（1 = 不做采样择优，即纯随机）
-    float init_random_ratio = 0.3f;   // 纯随机解占比（多样性保底）
-    // v3.0: 工程可用性
-    float time_limit_sec   = 0.0f;   // 时间限制（秒，0 = 不限制，按 max_gen 跑完）
-    int   stagnation_limit = 0;      // 收敛检测：连续多少个 batch 无改进后 reheat（0 = 禁用）
-    float reheat_ratio     = 0.5f;   // reheat 时温度恢复到初始温度的比例
+    // Simulated annealing
+    float sa_temp_init     = 0.0f;    // initial temperature (0 = disable SA, hill climb only)
+    float sa_alpha         = 0.998f;  // cooling rate (multiply by alpha each generation)
+    // v1.0: crossover
+    float crossover_rate   = 0.1f;    // probability of crossover per generation (vs mutation)
+    // v2.0: adaptive operator selection
+    bool  use_aos          = false;   // enable AOS (update operator weights between batches)
+    float aos_weight_floor = AOS_WEIGHT_FLOOR;  // runtime-overridable floor
+    float aos_weight_cap   = AOS_WEIGHT_CAP;    // runtime-overridable cap
+    // v2.1: initial solution strategy
+    int   init_oversample  = 4;       // oversampling factor (1 = no sampling selection, pure random)
+    float init_random_ratio = 0.3f;   // fraction of purely random solutions (diversity floor)
+    // v3.0: engineering usability
+    float time_limit_sec   = 0.0f;   // time limit in seconds (0 = none, run to max_gen)
+    int   stagnation_limit = 0;      // convergence: reheat after this many batches without improvement (0 = off)
+    float reheat_ratio     = 0.5f;   // on reheat, fraction of initial temperature to restore
     // v3.5: CUDA Graph
-    bool  use_cuda_graph   = false;  // 启用 CUDA Graph（减少 kernel launch 开销）
-    // v3.6: AOS 更新频率控制
-    int   aos_update_interval = 10;  // 每隔多少个 batch 更新一次 AOS 权重（降低 cudaMemcpy 同步频率）
-    // v4.0: 约束导向 + 分层搜索
-    bool  use_constraint_directed = false;  // 启用约束导向（根据 penalty 比例动态调整跨行算子权重）
-    bool  use_phased_search       = false;  // 启用分层搜索（按进度调整全局 floor/cap）
-    // 分层搜索参数：三期阈值
-    float phase_explore_end  = 0.30f;  // 探索期结束（进度比例）
-    float phase_refine_start = 0.70f;  // 精细期开始（进度比例）
-    // 约束导向参数
-    float constraint_boost_max = 2.5f; // 高约束时跨行算子 cap 提升倍率上限
-    // v5.0: 多 GPU 协同
-    int   num_gpus             = 1;    // 使用的 GPU 数量（1 = 单 GPU，>1 = 多 GPU 协同）
-    float multi_gpu_interval_sec = 10.0f;  // GPU 间交换最优解的时间间隔（秒）
-    MultiGpuInjectMode multi_gpu_inject_mode = MultiGpuInjectMode::HalfIslands;  // 注入模式
+    bool  use_cuda_graph   = false;  // enable CUDA Graph (fewer kernel launch overheads)
+    // v3.6: AOS update frequency
+    int   aos_update_interval = 10;  // update AOS weights every this many batches (lower cudaMemcpy sync rate)
+    // v4.0: constraint-directed + phased search
+    bool  use_constraint_directed = false;  // constraint-directed mode (scale cross-row weights by penalty ratio)
+    bool  use_phased_search       = false;  // phased search (adjust global floor/cap by progress)
+    // Phased search: three-phase thresholds
+    float phase_explore_end  = 0.30f;  // end of exploration phase (progress fraction)
+    float phase_refine_start = 0.70f;  // start of refinement phase (progress fraction)
+    // Constraint-directed parameters
+    float constraint_boost_max = 2.5f; // max multiplier boost for cross-row cap under high constraint
+    // v5.0: multi-GPU cooperation
+    int   num_gpus             = 1;    // number of GPUs (1 = single GPU, >1 = multi-GPU)
+    float multi_gpu_interval_sec = 10.0f;  // interval in seconds to exchange best solutions across GPUs
+    MultiGpuInjectMode multi_gpu_inject_mode = MultiGpuInjectMode::HalfIslands;  // injection mode
 };
 
 // ============================================================
-// classify_problem — 从 ProblemConfig 推断问题画像
+// classify_problem — infer problem profile from ProblemConfig
 // ============================================================
 
 inline ProblemProfile classify_problem(const ProblemConfig& pcfg) {
@@ -424,7 +419,7 @@ inline ProblemProfile classify_problem(const ProblemConfig& pcfg) {
 }
 
 // ============================================================
-// build_seq_registry — 由 ProblemProfile 驱动的算子注册
+// build_seq_registry — operator registration driven by ProblemProfile
 // ============================================================
 
 inline SeqRegistry build_seq_registry(const ProblemProfile& prof) {
@@ -436,7 +431,10 @@ inline SeqRegistry build_seq_registry(const ProblemProfile& prof) {
     }
 
     auto add = [&](int id, float w, SeqCategory cat, float cap = 0.0f) {
-        if (reg.count >= MAX_SEQ) return;
+        if (reg.count >= MAX_SEQ) {
+            printf("[WARN] SeqRegistry full (MAX_SEQ=%d), ignoring SeqID %d\n", MAX_SEQ, id);
+            return;
+        }
         reg.ids[reg.count] = id;
         reg.weights[reg.count] = w;
         reg.max_w[reg.count] = cap;
@@ -514,7 +512,7 @@ inline SeqRegistry build_seq_registry(const ProblemProfile& prof) {
         }
     }
 
-    // 延迟归一化：只计算权重和，不归一化
+    // Lazy normalization: only sum weights; do not normalize here
     reg.weights_sum = 0.0f;
     for (int i = 0; i < reg.count; i++) {
         reg.weights_sum += reg.weights[i];
@@ -523,19 +521,19 @@ inline SeqRegistry build_seq_registry(const ProblemProfile& prof) {
 }
 
 // ============================================================
-// ObjConfig — 传到 GPU 的目标比较配置（紧凑结构）
+// ObjConfig — compact objective comparison config for GPU
 // ============================================================
 
 struct ObjConfig {
     int         num_obj;
     CompareMode mode;
-    ObjDir      dirs[MAX_OBJ];       // 每个目标的方向
-    float       weights[MAX_OBJ];    // Weighted 模式下的权重
-    int         priority[MAX_OBJ];   // Lexicographic 模式下的比较顺序
-    float       tolerance[MAX_OBJ];  // Lexicographic 模式下的容差
+    ObjDir      dirs[MAX_OBJ];       // direction per objective
+    float       weights[MAX_OBJ];    // weights in Weighted mode
+    int         priority[MAX_OBJ];   // comparison order in Lexicographic mode
+    float       tolerance[MAX_OBJ];  // tolerance in Lexicographic mode
 };
 
-// 从 ProblemConfig 构造 ObjConfig（CPU 端）
+// Build ObjConfig from ProblemConfig (CPU side)
 inline ObjConfig make_obj_config(const ProblemConfig& pcfg) {
     ObjConfig oc;
     oc.num_obj = pcfg.num_objectives;
@@ -550,7 +548,7 @@ inline ObjConfig make_obj_config(const ProblemConfig& pcfg) {
 }
 
 // ============================================================
-// SolveResult — solve() 的返回值
+// SolveResult — return value of solve()
 // ============================================================
 
 enum class StopReason { MaxGen, TimeLimit, Stagnation };
@@ -564,12 +562,12 @@ struct SolveResult {
 };
 
 // ============================================================
-// 目标重要性映射 — 统一 Weighted / Lexicographic 的重要性度量
+// Objective importance mapping — unified importance for Weighted / Lexicographic
 // ============================================================
-// 用于初始化选种（NSGA-II 加权拥挤度 + 核心目标预留名额）
+// Used for initial selection (NSGA-II weighted crowding + core-object slots)
 // Weighted:      importance[i] = weight[i] / Σweight
 // Lexicographic: importance[i] = 0.5^rank[i] / Σ(0.5^rank)
-//   → 第一优先级 ~57%，第二 ~29%，第三 ~14%
+//   → first priority ~57%, second ~29%, third ~14%
 
 inline void compute_importance(const ObjConfig& oc, float* importance) {
     float sum = 0.0f;
@@ -590,26 +588,26 @@ inline void compute_importance(const ObjConfig& oc, float* importance) {
 }
 
 // ============================================================
-// 比较工具 — 支持 Weighted / Lexicographic
+// Comparison utilities — Weighted / Lexicographic
 // ============================================================
 
-// 将目标值统一为"越小越好"：Maximize 目标取负
+// Normalize objectives to "smaller is better": negate Maximize objectives
 __device__ __host__ inline float normalize_obj(float val, ObjDir dir) {
     return (dir == ObjDir::Maximize) ? -val : val;
 }
 
-// 核心比较：a 是否优于 b
-// v5.0: 添加 __host__ 支持多 GPU 在 CPU 端比较解
+// Core comparison: whether a is better than b
+// v5.0: add __host__ so multi-GPU can compare solutions on CPU
 template<typename Sol>
 __device__ __host__ inline bool is_better(const Sol& a, const Sol& b,
                                   const ObjConfig& oc) {
-    // penalty 优先：可行解一定优于不可行解
+    // Penalty first: feasible beats infeasible
     if (a.penalty <= 0.0f && b.penalty > 0.0f) return true;
     if (a.penalty > 0.0f && b.penalty <= 0.0f) return false;
     if (a.penalty > 0.0f && b.penalty > 0.0f) return a.penalty < b.penalty;
     
     if (oc.mode == CompareMode::Weighted) {
-        // 加权求和（权重已包含方向信息：Maximize 目标用负权重，或由 normalize_obj 处理）
+        // Weighted sum (weights may encode direction: negative for Maximize, or use normalize_obj)
         float sum_a = 0.0f, sum_b = 0.0f;
         for (int i = 0; i < oc.num_obj; i++) {
             float na = normalize_obj(a.objectives[i], oc.dirs[i]);
@@ -619,21 +617,22 @@ __device__ __host__ inline bool is_better(const Sol& a, const Sol& b,
         }
         return sum_a < sum_b;
     } else {
-        // 字典法：按 priority 顺序逐目标比较
+        // Lexicographic: compare objectives in priority order
         for (int p = 0; p < oc.num_obj; p++) {
             int idx = oc.priority[p];
+            if (idx < 0 || idx >= oc.num_obj) continue;
             float va = normalize_obj(a.objectives[idx], oc.dirs[idx]);
             float vb = normalize_obj(b.objectives[idx], oc.dirs[idx]);
             float diff = va - vb;
-            if (diff < -oc.tolerance[idx]) return true;   // a 明显更好
-            if (diff >  oc.tolerance[idx]) return false;  // b 明显更好
-            // 在容差内视为相等 → 继续比较下一个目标
+            if (diff < -oc.tolerance[idx]) return true;   // a clearly better
+            if (diff >  oc.tolerance[idx]) return false;  // b clearly better
+            // Within tolerance → tie, continue to next objective
         }
-        return false;  // 所有目标都在容差内相等
+        return false;  // all objectives tied within tolerance
     }
 }
 
-// 标量化（SA 接受概率用）：返回越小越好的标量
+// Scalarization (for SA acceptance): smaller is better
 template<typename Sol>
 __device__ __host__ inline float scalar_objective(const Sol& sol,
                                                     const ObjConfig& oc) {
@@ -643,13 +642,14 @@ __device__ __host__ inline float scalar_objective(const Sol& sol,
             sum += oc.weights[i] * normalize_obj(sol.objectives[i], oc.dirs[i]);
         return sum;
     } else {
-        // 字典法下 SA 用第一优先级目标作为标量
+        // Under lexicographic SA, use first-priority objective as scalar
         int idx = oc.priority[0];
+        if (idx < 0 || idx >= oc.num_obj) idx = 0;
         return normalize_obj(sol.objectives[idx], oc.dirs[idx]);
     }
 }
 
-// 轻量比较：直接操作 float[] 目标数组（避免复制整个 Sol）
+// Lightweight comparison: operate on float[] objectives (avoid copying full Sol)
 __device__ inline bool obj_is_better(const float* new_objs, const float* old_objs,
                                       const ObjConfig& oc) {
     if (oc.mode == CompareMode::Weighted) {
@@ -662,6 +662,7 @@ __device__ inline bool obj_is_better(const float* new_objs, const float* old_obj
     } else {
         for (int p = 0; p < oc.num_obj; p++) {
             int idx = oc.priority[p];
+            if (idx < 0 || idx >= oc.num_obj) continue;
             float va = normalize_obj(new_objs[idx], oc.dirs[idx]);
             float vb = normalize_obj(old_objs[idx], oc.dirs[idx]);
             float diff = va - vb;
@@ -672,7 +673,7 @@ __device__ inline bool obj_is_better(const float* new_objs, const float* old_obj
     }
 }
 
-// 轻量标量化：直接操作 float[] 目标数组
+// Lightweight scalarization: operate on float[] objectives
 __device__ __host__ inline float obj_scalar(const float* objs, const ObjConfig& oc) {
     if (oc.mode == CompareMode::Weighted) {
         float sum = 0.0f;
@@ -681,60 +682,61 @@ __device__ __host__ inline float obj_scalar(const float* objs, const ObjConfig& 
         return sum;
     } else {
         int idx = oc.priority[0];
+        if (idx < 0 || idx >= oc.num_obj) idx = 0;
         return normalize_obj(objs[idx], oc.dirs[idx]);
     }
 }
 
 // ============================================================
-// AOSStats — 自适应算子选择统计（每个 block 一份）
+// AOSStats — adaptive operator selection stats (one per block)
 // ============================================================
-// v3.0: 粒度从 3 层 → MAX_SEQ 个序列
-// 记录每个序列的使用次数和改进次数
-// batch 结束后由 host 聚合，更新 SeqRegistry 权重
+// v3.0: granularity from 3 layers → MAX_SEQ sequences
+// Records per-sequence usage and improvement counts
+// Host aggregates after each batch and updates SeqRegistry weights
 
 struct AOSStats {
-    // 算子层统计（第二层）
-    int usage[MAX_SEQ];       // 各序列使用次数
-    int improvement[MAX_SEQ]; // 各序列改进次数（delta < 0 且被接受）
-    // K 步数层统计（第一层）
-    int k_usage[MAX_K];       // K=1,2,3 各自使用次数
-    int k_improvement[MAX_K]; // K=1,2,3 各自改进次数
+    // Operator-level stats (second layer)
+    int usage[MAX_SEQ];       // per-sequence usage counts
+    int improvement[MAX_SEQ]; // per-sequence improvements (delta < 0 and accepted)
+    // K-step layer stats (first layer)
+    int k_usage[MAX_K];       // usage counts for K=1,2,3
+    int k_improvement[MAX_K]; // improvement counts for K=1,2,3
 };
 
 // ============================================================
-// ObjDef — 单个目标的定义（编译期常量）
+// ObjDef — single-objective definition (compile-time constant)
 // ============================================================
 
 struct ObjDef {
-    ObjDir dir;           // 优化方向
-    float  weight;        // Weighted 模式下的权重
-    float  tolerance;     // Lexicographic 模式下的容差
+    ObjDir dir;           // optimization direction
+    float  weight;        // weight in Weighted mode
+    float  tolerance;     // tolerance in Lexicographic mode
 };
 
 // ============================================================
-// HeuristicMatrix — 启发式初始解构造用的数据矩阵描述
+// HeuristicMatrix — data matrix descriptor for heuristic initial solutions
 // ============================================================
 
 struct HeuristicMatrix {
-    const float* data;   // host 端 N*N 矩阵
-    int N;               // 维度
+    const float* data;   // N×N matrix on host
+    int N;               // dimension
 };
 
 // ============================================================
-// ProblemBase<Derived, D1, D2> — CRTP 基类
+// ProblemBase<Derived, D1, D2> — CRTP base class
 //
-// 用户继承此基类，提供：
-//   static constexpr ObjDef OBJ_DEFS[] = {...};   — 目标元信息
-//   __device__ float compute_obj(int idx, ...) const;  — 目标分发
+// Users inherit this base and provide:
+//   static constexpr ObjDef OBJ_DEFS[] = {...};   — objective metadata
+//   __device__ float compute_obj(int idx, ...) const;  — objective dispatch
 //   __device__ float compute_penalty(...) const;
 //
-// 约定：OBJ_DEFS 和 compute_obj 紧挨着写，case N 对应 OBJ_DEFS[N]
-// NUM_OBJ 由 sizeof(OBJ_DEFS) 自动推导，无需手动维护
+// Convention: OBJ_DEFS and compute_obj stay aligned; case N maps to OBJ_DEFS[N]
+// NUM_OBJ is derived from sizeof(OBJ_DEFS); no manual count
 //
-// 基类自动提供：
-//   evaluate(sol)           — 遍历目标列表调用 compute_obj
-//   fill_obj_config(cfg)    — 从 OBJ_DEFS 自动填充 ProblemConfig
-//   obj_config()            — 直接生成 ObjConfig
+// Base class provides:
+//   evaluate(sol)           — loop objectives and call compute_obj
+//   fill_obj_config(cfg)    — fill ProblemConfig from OBJ_DEFS
+//   obj_config()            — build ObjConfig directly
 // ============================================================
 
 template<typename Derived, int D1_, int D2_>
@@ -743,10 +745,10 @@ struct ProblemBase {
     static constexpr int D2 = D2_;
     using Sol = Solution<D1, D2>;
     
-    // NUM_OBJ 从 OBJ_DEFS 数组自动推导
+    // NUM_OBJ derived from OBJ_DEFS array size
     static constexpr int NUM_OBJ = sizeof(Derived::OBJ_DEFS) / sizeof(ObjDef);
     
-    // 自动评估：遍历目标列表
+    // Automatic evaluation: iterate objectives
     __device__ void evaluate(Sol& sol) const {
         const auto& self = static_cast<const Derived&>(*this);
         constexpr int n = sizeof(Derived::OBJ_DEFS) / sizeof(ObjDef);
@@ -755,7 +757,7 @@ struct ProblemBase {
         sol.penalty = self.compute_penalty(sol);
     }
     
-    // 从 OBJ_DEFS 自动填充 ProblemConfig 的目标部分
+    // Fill objective fields of ProblemConfig from OBJ_DEFS
     void fill_obj_config(ProblemConfig& cfg) const {
         constexpr int n = sizeof(Derived::OBJ_DEFS) / sizeof(ObjDef);
         cfg.num_objectives = n;
@@ -763,59 +765,59 @@ struct ProblemBase {
             cfg.obj_dirs[i]      = Derived::OBJ_DEFS[i].dir;
             cfg.obj_weights[i]   = Derived::OBJ_DEFS[i].weight;
             cfg.obj_tolerance[i] = Derived::OBJ_DEFS[i].tolerance;
-            cfg.obj_priority[i]  = i;  // 列表顺序即优先级
+            cfg.obj_priority[i]  = i;  // list order is priority order
         }
     }
     
-    // 直接生成 ObjConfig（供 solver 使用）
+    // Build ObjConfig directly (for solver)
     ObjConfig obj_config() const {
         ProblemConfig pcfg;
         fill_obj_config(pcfg);
         return make_obj_config(pcfg);
     }
     
-    // 可选：返回 shared memory 需求（字节）
-    // 默认返回 0（不使用 shared memory）
-    // 子类覆盖：如果问题数据可以放入 shared memory，返回实际大小
+    // Optional: shared memory requirement (bytes)
+    // Default 0 (no shared memory)
+    // Override if problem data fits in shared memory; return actual size
     size_t shared_mem_bytes() const {
         return 0;
     }
     
-    // 可选：加载问题数据到 shared memory
-    // 默认空实现（不使用 shared memory）
-    // 子类覆盖：如果 shared_mem_bytes() > 0，实现数据加载逻辑
+    // Optional: load problem data into shared memory
+    // Default no-op (no shared memory)
+    // Override if shared_mem_bytes() > 0 to implement loading
     __device__ void load_shared(char* smem, int tid, int bsz) {
-        (void)smem; (void)tid; (void)bsz;  // 默认：不做任何事
+        (void)smem; (void)tid; (void)bsz;  // default: no-op
     }
     
-    // 每个 block 在 global memory 中的热数据工作集大小（字节）
-    // 用于 auto pop_size 估算 L2 cache 压力
-    // 默认 = shared_mem_bytes()（数据在 smem 时，gmem 工作集为 0 不影响）
-    // 子类覆盖：当 shared_mem_bytes() 返回 0（数据放不进 smem）时，
-    //           返回实际数据大小（如距离矩阵 n*n*sizeof(float)）
+    // Hot working-set size in global memory per block (bytes)
+    // Used for auto pop_size L2 cache pressure estimate
+    // Default = shared_mem_bytes() (when data is in smem, gmem working set is 0)
+    // Override when shared_mem_bytes() is 0 (data does not fit in smem):
+    //           return actual data size (e.g. distance matrix n*n*sizeof(float))
     size_t working_set_bytes() const {
         return static_cast<const Derived&>(*this).shared_mem_bytes();
     }
     
-    // 可选：初始化 G/O 关系矩阵（为 GUIDED_REBUILD 提供先验知识）
-    // G[i*N+j]: 元素 i 和 j 的分组倾向（对称，[0,1]，越大越倾向同组）
-    // O[i*N+j]: 元素 i 排在 j 前面的倾向（不对称，[0,1]）
-    // 默认不提供（全零），搜索过程中通过 EMA 从历史好解积累
-    // 用户覆盖示例：距离近 → G 和 O 都高
+    // Optional: initialize G/O relation matrix (prior for GUIDED_REBUILD)
+    // G[i*N+j]: grouping tendency of i and j (symmetric, [0,1]; higher → same group)
+    // O[i*N+j]: tendency for i before j (asymmetric, [0,1])
+    // Default none (zeros); EMA accumulates from good solutions during search
+    // Example override: close distance → high G and O
     void init_relation_matrix(float* h_G, float* h_O, int N) const {
-        (void)h_G; (void)h_O; (void)N;  // 默认：不做任何事（保持全零）
+        (void)h_G; (void)h_O; (void)N;  // default: no-op (keep zeros)
     }
     
-    // 可选：返回 host 端数据矩阵供启发式初始解构造
-    // 默认返回 0（不提供），子类 override 后填充 out 数组并返回实际数量
+    // Optional: host-side data matrices for heuristic initial solutions
+    // Default 0 (none); override to fill out[] and return count
     int heuristic_matrices(HeuristicMatrix* out, int max_count) const {
         (void)out; (void)max_count;
         return 0;
     }
     
-    // v5.0: 多 GPU 协同 — 克隆 Problem 到指定 GPU
-    // 子类需实现：cudaSetDevice(gpu_id) + 分配设备内存 + 拷贝数据
-    // 返回新的 Problem 实例指针（在 host 端，但其内部设备指针指向 gpu_id）
+    // v5.0: multi-GPU — clone Problem to a given GPU
+    // Subclasses implement: cudaSetDevice(gpu_id) + device alloc + copy
+    // Returns new Problem* on host; internal device pointers target gpu_id
     virtual Derived* clone_to_device(int gpu_id) const {
         (void)gpu_id;
         fprintf(stderr, "Error: clone_to_device() not implemented for this Problem type\n");

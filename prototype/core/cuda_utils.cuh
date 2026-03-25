@@ -1,8 +1,8 @@
 /**
- * cuda_utils.cuh - CUDA 工具集
+ * cuda_utils.cuh - CUDA utilities
  * 
- * 职责：错误检查、设备信息、随机数工具
- * 规则：所有 CUDA API 调用都必须用 CUDA_CHECK 包裹
+ * Responsibilities: error checking, device info, random number utilities
+ * Rule: every CUDA API call must be wrapped with CUDA_CHECK
  */
 
 #pragma once
@@ -11,7 +11,7 @@
 #include <curand_kernel.h>
 
 // ============================================================
-// 错误检查
+// Error checking
 // ============================================================
 
 #define CUDA_CHECK(call) do {                                       \
@@ -23,7 +23,7 @@
     }                                                               \
 } while(0)
 
-// kernel launch 后检查（捕获异步错误）
+// Check after kernel launch (catches async errors)
 #define CUDA_CHECK_LAST() do {                                      \
     cudaError_t err = cudaGetLastError();                            \
     if (err != cudaSuccess) {                                       \
@@ -34,7 +34,7 @@
 } while(0)
 
 // ============================================================
-// 设备信息
+// Device info
 // ============================================================
 
 inline void print_device_info() {
@@ -52,10 +52,10 @@ inline void print_device_info() {
 }
 
 // ============================================================
-// 随机数工具 (Device 端)
+// Random number utilities (device-side)
 // ============================================================
 
-// 初始化 curand 状态，每个线程一个
+// Initialize curand state: one per thread
 __global__ void init_curand_kernel(curandState* states, unsigned long long seed, int n) {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     if (tid < n) {
@@ -63,12 +63,12 @@ __global__ void init_curand_kernel(curandState* states, unsigned long long seed,
     }
 }
 
-// Device 端：生成 [0, bound) 的随机整数
+// Device-side: random integer in [0, bound)
 __device__ inline int rand_int(curandState* state, int bound) {
     return curand(state) % bound;
 }
 
-// Device 端：Fisher-Yates shuffle，对 arr[0..n-1] 做随机排列
+// Device-side: Fisher-Yates shuffle of arr[0..n-1]
 __device__ inline void shuffle(int* arr, int n, curandState* state) {
     for (int i = n - 1; i > 0; i--) {
         int j = rand_int(state, i + 1);
@@ -79,12 +79,12 @@ __device__ inline void shuffle(int* arr, int n, curandState* state) {
 }
 
 // ============================================================
-// Kernel 启动参数计算
+// Kernel launch grid sizing
 // ============================================================
 
 inline int div_ceil(int a, int b) { return (a + b - 1) / b; }
 
-// 计算合适的 block 数量
+// Compute suitable number of blocks
 inline int calc_grid_size(int n, int block_size = 256) {
     return div_ceil(n, block_size);
 }

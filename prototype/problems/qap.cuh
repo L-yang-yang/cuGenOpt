@@ -1,14 +1,14 @@
 /**
- * qap.cuh - 二次分配问题 (Quadratic Assignment Problem)
- * 
- * N 个设施分配到 N 个位置（排列编码）。
- * 决策变量：data[0][i] = 设施 i 分配到的位置。
- * 目标：Minimize sum(flow[i][j] * dist[perm[i]][perm[j]])
- * 
- * 验证实例：自定义 5x5
- *   flow: 设施间的物流量
- *   dist: 位置间的距离
- *   已知最优 = 58
+ * qap.cuh - Quadratic Assignment Problem (QAP)
+ *
+ * Assign N facilities to N locations (permutation encoding).
+ * Decision: data[0][i] = location assigned to facility i.
+ * Objective: Minimize sum(flow[i][j] * dist[perm[i]][perm[j]])
+ *
+ * Validation instance: custom 5x5
+ *   flow: inter-facility flow
+ *   dist: inter-location distances
+ *   known optimum = 58
  */
 
 #pragma once
@@ -16,8 +16,10 @@
 #include "cuda_utils.cuh"
 
 struct QAPProblem : ProblemBase<QAPProblem, 1, 32> {
-    const float* d_flow;    // 物流量矩阵 [N*N]
-    const float* d_dist;    // 距离矩阵 [N*N]
+    const float* d_flow;    // flow matrix [N*N] (device)
+    const float* d_dist;    // distance matrix [N*N] (device)
+    const float* h_flow;    // flow matrix [N*N] (host, for clone_to_device)
+    const float* h_dist;    // distance matrix [N*N] (host, for clone_to_device)
     int n;
     
     __device__ float calc_cost(const Sol& sol) const {
@@ -64,14 +66,16 @@ struct QAPProblem : ProblemBase<QAPProblem, 1, 32> {
         d_dist = sd;
     }
     
-    static QAPProblem create(const float* h_flow, const float* h_dist, int n) {
+    static QAPProblem create(const float* h_flow_in, const float* h_dist_in, int n) {
         QAPProblem prob;
         prob.n = n;
+        prob.h_flow = h_flow_in;
+        prob.h_dist = h_dist_in;
         float *df, *dd;
         CUDA_CHECK(cudaMalloc(&df, sizeof(float) * n * n));
         CUDA_CHECK(cudaMalloc(&dd, sizeof(float) * n * n));
-        CUDA_CHECK(cudaMemcpy(df, h_flow, sizeof(float) * n * n, cudaMemcpyHostToDevice));
-        CUDA_CHECK(cudaMemcpy(dd, h_dist, sizeof(float) * n * n, cudaMemcpyHostToDevice));
+        CUDA_CHECK(cudaMemcpy(df, h_flow_in, sizeof(float) * n * n, cudaMemcpyHostToDevice));
+        CUDA_CHECK(cudaMemcpy(dd, h_dist_in, sizeof(float) * n * n, cudaMemcpyHostToDevice));
         prob.d_flow = df; prob.d_dist = dd;
         return prob;
     }
@@ -82,18 +86,12 @@ struct QAPProblem : ProblemBase<QAPProblem, 1, 32> {
         d_flow = nullptr; d_dist = nullptr;
     }
     
-    // v5.0: 多 GPU 协同 — 克隆到指定 GPU
+    // v5.0: multi-GPU — clone onto a given device
     QAPProblem* clone_to_device(int gpu_id) const override {
         int orig_device;
         CUDA_CHECK(cudaGetDevice(&orig_device));
         
-        // 先下载数据到 host（从当前设备）
-        float* h_flow = new float[n * n];
-        float* h_dist = new float[n * n];
-        CUDA_CHECK(cudaMemcpy(h_flow, d_flow, sizeof(float) * n * n, cudaMemcpyDeviceToHost));
-        CUDA_CHECK(cudaMemcpy(h_dist, d_dist, sizeof(float) * n * n, cudaMemcpyDeviceToHost));
-        
-        // 切换到目标 GPU 并上传
+        // Use host-side matrices directly (no D2H needed)
         CUDA_CHECK(cudaSetDevice(gpu_id));
         float *df, *dd;
         CUDA_CHECK(cudaMalloc(&df, sizeof(float) * n * n));
@@ -101,15 +99,12 @@ struct QAPProblem : ProblemBase<QAPProblem, 1, 32> {
         CUDA_CHECK(cudaMemcpy(df, h_flow, sizeof(float) * n * n, cudaMemcpyHostToDevice));
         CUDA_CHECK(cudaMemcpy(dd, h_dist, sizeof(float) * n * n, cudaMemcpyHostToDevice));
         
-        delete[] h_flow;
-        delete[] h_dist;
-        
-        // 恢复原设备
         CUDA_CHECK(cudaSetDevice(orig_device));
         
-        // 创建新实例
         QAPProblem* new_prob = new QAPProblem();
         new_prob->n = n;
+        new_prob->h_flow = h_flow;
+        new_prob->h_dist = h_dist;
         new_prob->d_flow = df;
         new_prob->d_dist = dd;
         

@@ -1,10 +1,10 @@
 /**
- * population.cuh - 种群管理
+ * population.cuh - Population management
  * 
- * v2.0: Block 级架构
- *   - RNG 数组大小 = pop_size * block_size（每个 block 内每个线程独立 RNG）
- *   - 初始化 kernel 保持 1-thread-per-solution（初始化只做一次，不需要并行）
- *   - find_best_kernel 保持单线程（种群规模不大）
+ * v2.0: Block-level architecture
+ *   - RNG array size = pop_size * block_size (one independent RNG per thread within each block)
+ *   - Init kernel stays 1-thread-per-solution (initialization runs once; parallelism not needed)
+ *   - find_best_kernel remains single-threaded (population size is modest)
  */
 
 #pragma once
@@ -12,7 +12,7 @@
 #include "cuda_utils.cuh"
 
 // ============================================================
-// Device 端 Kernel（模板化）
+// Device-side kernels (templated)
 // ============================================================
 
 template<typename Sol>
@@ -65,9 +65,9 @@ __global__ void init_integer_kernel(Sol* pop, int pop_size,
 }
 
 // ============================================================
-// 多重集排列初始化 — 每个值 [0, N) 重复 R 次，总长度 N*R
+// Multiset permutation init — each value in [0, N) repeated R times, total length N*R
 // ============================================================
-// 用于 JSP 工序排列编码：N=num_jobs, R=num_ops，值 j 出现 R 次表示工件 j
+// For JSP operation-sequence encoding: N=num_jobs, R=num_ops; value j appearing R times means job j
 
 template<typename Sol>
 __global__ void init_multiset_perm_kernel(Sol* pop, int pop_size,
@@ -90,7 +90,7 @@ __global__ void init_multiset_perm_kernel(Sol* pop, int pop_size,
 }
 
 // ============================================================
-// 分区初始化 — 元素 {0..total_elements-1} 不重复分配到 dim1 行
+// Partition init — elements {0..total_elements-1} assigned without duplication across dim1 rows
 // ============================================================
 
 template<typename Sol>
@@ -131,21 +131,21 @@ __global__ void find_best_kernel(const Sol* pop, int pop_size,
 }
 
 // ============================================================
-// Host 端 RAII 类（模板化）
+// Host-side RAII class (templated)
 // ============================================================
 
 template<typename Sol>
 class Population {
 public:
     Sol*         d_solutions  = nullptr;
-    curandState* d_rng_states = nullptr;  // 大小 = pop_size * block_size
+    curandState* d_rng_states = nullptr;  // size = pop_size * block_size
     int          size         = 0;
-    int          rng_count    = 0;        // RNG 状态总数
+    int          rng_count    = 0;        // total RNG states
 
     Population() = default;
     
-    // block_size: Block 级架构下每个 block 的线程数
-    // RNG 数组大小 = pop_size * block_size（每个 block 内每个线程独立 RNG）
+    // block_size: threads per block under block-level architecture
+    // RNG array size = pop_size * block_size (one independent RNG per thread within each block)
     void allocate(int pop_size, int block_size = 128) {
         size = pop_size;
         rng_count = pop_size * block_size;

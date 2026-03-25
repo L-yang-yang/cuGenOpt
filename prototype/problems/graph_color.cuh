@@ -1,11 +1,11 @@
 /**
- * graph_color.cuh - 图着色问题（Integer 编码）
- * 
- * N 个节点的图，用 k 种颜色着色。
- * 决策变量：data[0][i] ∈ [0, k-1]，表示节点 i 的颜色。
- * 目标：最小化冲突边数（相邻节点同色的边数）。
- * 
- * 验证实例：Petersen 图（10 节点 15 边，色数=3，最优冲突=0）
+ * graph_color.cuh - graph coloring (Integer encoding)
+ *
+ * Graph on N nodes, k colors.
+ * Decision: data[0][i] in [0, k-1] = color of node i.
+ * Objective: minimize number of conflicting edges (adjacent same color).
+ *
+ * Validation instance: Petersen graph (10 nodes, 15 edges, chromatic number 3, optimal conflicts=0)
  */
 
 #pragma once
@@ -13,9 +13,9 @@
 #include "cuda_utils.cuh"
 
 struct GraphColorProblem : ProblemBase<GraphColorProblem, 1, 64> {
-    const int* d_adj;   // 邻接矩阵 [N*N]（1=相邻, 0=不相邻）
-    int n;              // 节点数
-    int k;              // 颜色数
+    const int* d_adj;   // adjacency [N*N] (1=edge, 0=no edge)
+    int n;              // number of nodes
+    int k;              // number of colors
     
     __device__ float calc_conflicts(const Sol& sol) const {
         int conflicts = 0;

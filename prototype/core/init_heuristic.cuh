@@ -6,7 +6,7 @@
 
 namespace heuristic_init {
 
-// 单行排列：所有行填相同排列
+// Single-row layout: same permutation in every row
 template<typename Sol>
 static void build_sorted_permutation(Sol& sol, const std::vector<int>& order,
                                      int dim1, int dim2) {
@@ -19,7 +19,7 @@ static void build_sorted_permutation(Sol& sol, const std::vector<int>& order,
     for (int i = 0; i < MAX_OBJ; i++) sol.objectives[i] = 0.0f;
 }
 
-// Partition 模式：排列均匀切分到 dim1 行，元素不重复
+// Partition mode: split permutation evenly across dim1 rows, no duplicate elements
 template<typename Sol>
 static void build_partition_from_order(Sol& sol, const std::vector<int>& order,
                                        int dim1, int total_elements) {
@@ -66,8 +66,8 @@ std::vector<Sol> build_from_matrices(const HeuristicMatrix* matrices, int num_ma
                 col_sum[j] += mat[i * N + j];
             }
 
-        // 对于 Partition (VRPTW)，距离矩阵含 depot (index 0)，
-        // 排序只针对客户 (index 1..N-1)，输出值为 0-based 客户编号
+        // For Partition (VRPTW), the distance matrix includes depot (index 0);
+        // sorting is only over customers (indices 1..N-1); output values are 0-based customer ids
         std::vector<int> idx;
         if (partition_mode && N > elem_count) {
             for (int i = 1; i <= elem_count; i++) idx.push_back(i);

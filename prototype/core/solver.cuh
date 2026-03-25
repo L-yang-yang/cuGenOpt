@@ -1,14 +1,14 @@
 /**
- * solver.cuh - 主求解循环
+ * solver.cuh - Main solve loop
  * 
- * v2.0: Block 级架构重构
- *   - 1 block = 1 solution（邻域并行）
- *   - Solution 存放在 shared memory
- *   - 每代：K 个线程各自生成候选 move + 评估 delta → 归约选最优 → thread 0 执行
- *   - 交叉暂用简化版（thread 0 执行，其余线程等待）
- *   - 迁移/精英注入保持单线程 kernel（操作全局内存）
+ * v2.0: Block-level architecture refactor
+ *   - 1 block = 1 solution (neighborhood parallelism)
+ *   - Solution lives in shared memory
+ *   - Each generation: K threads each propose a candidate move + evaluate delta -> reduce to best -> thread 0 applies
+ *   - Crossover uses a simplified path for now (thread 0 runs crossover, others wait)
+ *   - Migration / elite injection remain single-thread kernels (global memory)
  *
- * 要求 Problem 接口：
+ * Required Problem interface:
  *   size_t shared_mem_bytes() const;
  *   __device__ void load_shared(char* smem, int tid, int bsz);
  *   __device__ void evaluate(Sol& sol) const;
@@ -25,16 +25,16 @@
 #include <cmath>
 
 // ============================================================
-// 编译时常量
+// Compile-time constants
 // ============================================================
-constexpr int BLOCK_LEVEL_THREADS = 128;  // Block 级架构的默认线程数/block
+constexpr int BLOCK_LEVEL_THREADS = 128;  // Default threads per block for block-level architecture
 
 // ============================================================
-// EvolveParams — CUDA Graph 可变参数（device memory）
+// EvolveParams — CUDA Graph mutable parameters (device memory)
 // ============================================================
-// 将每个 batch 会变化的参数集中到一个 struct 中，
-// evolve_block_kernel 通过指针读取，CUDA Graph 录制时绑定指针。
-// 每次 replay 前只需 cudaMemcpy 更新这块 device memory。
+// Per-batch parameters are packed into one struct;
+// evolve_block_kernel reads via pointer; CUDA Graph capture binds the pointer.
+// Before each replay, only cudaMemcpy this device memory block.
 
 struct EvolveParams {
     float       temp_start;
@@ -46,13 +46,13 @@ struct EvolveParams {
 };
 
 // ============================================================
-// 工具：协作加载/存储 Solution（shared memory ↔ global memory）
+// Helpers: cooperative load/store Solution (shared memory ↔ global memory)
 // ============================================================
 
 template<typename Sol>
 __device__ inline void cooperative_load_sol(Sol& dst, const Sol& src,
                                              int tid, int num_threads) {
-    // 按 int 粒度协作拷贝整个 Solution 结构体
+    // Cooperative copy of entire Solution struct in int-sized chunks
     const int* src_ptr = reinterpret_cast<const int*>(&src);
     int* dst_ptr = reinterpret_cast<int*>(&dst);
     constexpr int n_ints = (sizeof(Sol) + sizeof(int) - 1) / sizeof(int);
@@ -63,11 +63,11 @@ __device__ inline void cooperative_load_sol(Sol& dst, const Sol& src,
 template<typename Sol>
 __device__ inline void cooperative_store_sol(Sol& dst, const Sol& src,
                                               int tid, int num_threads) {
-    cooperative_load_sol(dst, src, tid, num_threads);  // 同样的拷贝逻辑
+    cooperative_load_sol(dst, src, tid, num_threads);  // Same copy logic
 }
 
 // ============================================================
-// Kernel 1: 初始评估（只调用一次，1 block = 1 solution）
+// Kernel 1: Initial evaluation (once; 1 block = 1 solution)
 // ============================================================
 
 template<typename Problem, typename Sol>
@@ -77,27 +77,27 @@ __global__ void evaluate_kernel(Problem prob, Sol* pop, int pop_size,
     Problem lp = prob;
     if (smem_size > 0) { lp.load_shared(smem, threadIdx.x, blockDim.x); __syncthreads(); }
     
-    // 1-thread-per-solution 初始评估（保持简单，只调用一次）
+    // One-thread-per-solution initial evaluation (simple; called once)
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     if (tid < pop_size) lp.evaluate(pop[tid]);
 }
 
 // ============================================================
-// Kernel 2: Block 级批量进化（邻域并行）
+// Kernel 2: Block-level batched evolution (neighborhood parallelism)
 // ============================================================
 //
-// 每代流程：
-//   1. K 个线程各自生成一个候选 move
-//   2. K 个线程各自评估 move 的 delta（不修改 shared memory 中的 sol）
-//   3. Block 内归约：选 delta 最小的 move
-//   4. Thread 0 决定是否接受（SA / HC）
-//   5. Thread 0 执行最优 move 并更新 sol
-//   6. __syncthreads() 让所有线程看到更新后的 sol
+// Per-generation flow:
+//   1. Each of K threads generates one candidate move
+//   2. Each thread evaluates delta for its move (does not modify sol in shared memory)
+//   3. Block reduction: pick move with smallest delta
+//   4. Thread 0 accepts or rejects (SA / HC)
+//   5. Thread 0 applies best move and updates sol
+//   6. __syncthreads() so all threads see updated sol
 //
-// Solution 在 shared memory 中，Problem 数据也在 shared memory 中
+// Solution and Problem data live in shared memory
 
 // ============================================================
-// MultiStepCandidate — 多步执行结果（用于归约）
+// MultiStepCandidate — multi-step result (for reduction)
 // ============================================================
 struct MultiStepCandidate {
     float delta;
@@ -135,23 +135,23 @@ __global__ void evolve_block_kernel(Problem prob, Sol* pop, int pop_size,
     const float temp_start = d_params->temp_start;
     const ObjConfig oc = d_params->oc;
     
-    // --- shared memory 布局 ---
+    // --- shared memory layout ---
     // [0 .. sizeof(Sol)-1]                              : Solution
-    // [sizeof(Sol) .. sizeof(Sol)+prob_smem-1]          : Problem 数据
-    // [之后 .. ]                                        : MultiStepCandidate[num_threads] 归约工作区
-    // [之后 .. ]                                        : AOSStats (如果启用)
+    // [sizeof(Sol) .. sizeof(Sol)+prob_smem-1]          : Problem data
+    // [after .. ]                                       : MultiStepCandidate[num_threads] reduction workspace
+    // [after .. ]                                       : AOSStats (if enabled)
     
     Sol* s_sol = reinterpret_cast<Sol*>(smem);
     char* prob_smem_ptr = smem + sizeof(Sol);
     MultiStepCandidate* s_cands = reinterpret_cast<MultiStepCandidate*>(
         smem + sizeof(Sol) + prob_smem_size);
     
-    // AOS 统计（在 MultiStepCandidate 数组之后）
+    // AOS stats (after MultiStepCandidate array)
     AOSStats* s_aos = nullptr;
     if (d_aos_stats) {
         s_aos = reinterpret_cast<AOSStats*>(
             smem + sizeof(Sol) + prob_smem_size + sizeof(MultiStepCandidate) * num_threads);
-        // Thread 0 初始化 AOS 计数器
+        // Thread 0 initializes AOS counters
         if (tid == 0) {
             for (int i = 0; i < MAX_SEQ; i++) {
                 s_aos->usage[i] = 0;
@@ -164,13 +164,13 @@ __global__ void evolve_block_kernel(Problem prob, Sol* pop, int pop_size,
         }
     }
     
-    // 加载 Problem 数据到 shared memory
+    // Load Problem data into shared memory
     Problem lp = prob;
     if (prob_smem_size > 0) {
         lp.load_shared(prob_smem_ptr, tid, num_threads);
     }
     
-    // 协作加载 Solution 到 shared memory
+    // Cooperatively load Solution into shared memory
     cooperative_load_sol(*s_sol, pop[bid], tid, num_threads);
     __syncthreads();
     
@@ -181,12 +181,12 @@ __global__ void evolve_block_kernel(Problem prob, Sol* pop, int pop_size,
     
     for (int g = 0; g < gens_per_batch; g++) {
         // ============================================================
-        // Step 1: 每个线程独立采样 K 步数 + K 个序列，在 local copy 上执行
+        // Step 1: Each thread independently samples K steps + K sequences on local copy
         // ============================================================
         
-        // 采样 K（步数）：按 kstep.weights 权重
+        // Sample K (step count): weighted by kstep.weights
         float kr = curand_uniform(&rng);
-        int my_k = 1;  // 默认 K=1
+        int my_k = 1;  // default K=1
         {
             float cum = 0.0f;
             for (int i = 0; i < MAX_K; i++) {
@@ -195,7 +195,7 @@ __global__ void evolve_block_kernel(Problem prob, Sol* pop, int pop_size,
             }
         }
         
-        // 在 local memory 拷贝 sol，执行 K 步 move
+        // Copy sol in local memory, apply K moves
         Sol local_sol = *s_sol;
         MultiStepCandidate my_cand;
         my_cand.k_steps = my_k;
@@ -215,7 +215,7 @@ __global__ void evolve_block_kernel(Problem prob, Sol* pop, int pop_size,
             if (changed) all_noop = false;
         }
         
-        // Step 2: 评估最终 delta（K 步之后 vs 原始 sol）
+        // Step 2: Evaluate final delta (after K steps vs original sol)
         if (all_noop) {
             my_cand.delta = 1e30f;
             my_cand.new_penalty = s_sol->penalty;
@@ -242,7 +242,7 @@ __global__ void evolve_block_kernel(Problem prob, Sol* pop, int pop_size,
         s_cands[tid] = my_cand;
         __syncthreads();
         
-        // Step 3: Block 内并行归约，找 delta 最小的 candidate
+        // Step 3: Parallel reduction in block to find candidate with smallest delta
         for (int stride = num_threads / 2; stride > 0; stride >>= 1) {
             if (tid < stride) {
                 if (s_cands[tid + stride].delta < s_cands[tid].delta)
@@ -251,7 +251,7 @@ __global__ void evolve_block_kernel(Problem prob, Sol* pop, int pop_size,
             __syncthreads();
         }
         
-        // Step 4: Thread 0 决定是否接受
+        // Step 4: Thread 0 decides accept/reject
         if (tid == 0) {
             MultiStepCandidate& best = s_cands[0];
             bool has_valid = (best.delta < 1e29f);
@@ -269,7 +269,7 @@ __global__ void evolve_block_kernel(Problem prob, Sol* pop, int pop_size,
                 }
                 
                 if (accept) {
-                    // AOS 统计：K 层 + 算子层
+                    // AOS stats: K layer + operator layer
                     if (s_aos) {
                         int ki = best.k_steps - 1;
                         if (ki >= 0 && ki < MAX_K) {
@@ -304,23 +304,23 @@ __global__ void evolve_block_kernel(Problem prob, Sol* pop, int pop_size,
         __syncthreads();
     }
     
-    // 写回 Solution 到全局内存
+    // Write Solution back to global memory
     cooperative_store_sol(pop[bid], *s_sol, tid, num_threads);
     
-    // AOS 统计写回全局内存
+    // Write AOS stats back to global memory
     if (d_aos_stats && tid == 0) {
         d_aos_stats[bid] = *s_aos;
     }
     
-    // 保存 RNG 状态
+    // Save RNG state
     rng_states[rng_idx] = rng;
 }
 
 // ============================================================
-// Kernel 2b: Block 级交叉操作
+// Kernel 2b: Block-level crossover
 // ============================================================
-// 简化版：thread 0 执行交叉逻辑，其余线程协作加载/存储
-// 后续 Phase 3 会实现多线程协作交叉
+// Simplified: thread 0 runs crossover; others cooperative load/store
+// Phase 3 may add multi-thread cooperative crossover
 
 template<typename Problem, typename Sol>
 __global__ void crossover_block_kernel(Problem prob, Sol* pop, int pop_size,
@@ -338,7 +338,7 @@ __global__ void crossover_block_kernel(Problem prob, Sol* pop, int pop_size,
     
     if (bid >= pop_size) return;
     
-    // shared memory 布局：Sol + Problem data
+    // Shared memory layout: Sol + Problem data
     Sol* s_sol = reinterpret_cast<Sol*>(smem);
     char* prob_smem_ptr = smem + sizeof(Sol);
     
@@ -350,7 +350,7 @@ __global__ void crossover_block_kernel(Problem prob, Sol* pop, int pop_size,
     cooperative_load_sol(*s_sol, pop[bid], tid, K);
     __syncthreads();
     
-    // Thread 0 执行交叉逻辑
+    // Thread 0 runs crossover
     if (tid == 0) {
         int rng_idx = bid * K;
         curandState rng = rng_states[rng_idx];
@@ -389,12 +389,12 @@ __global__ void crossover_block_kernel(Problem prob, Sol* pop, int pop_size,
     }
     __syncthreads();
     
-    // 写回（可能被交叉更新了）
+    // Write back (possibly updated by crossover)
     cooperative_store_sol(pop[bid], *s_sol, tid, K);
 }
 
 // ============================================================
-// Kernel 3: 岛屿间迁移（保持不变，单线程 kernel）
+// Kernel 3: Inter-island migration (unchanged; single-thread kernel)
 // ============================================================
 
 template<typename Sol>
@@ -406,6 +406,8 @@ __device__ inline int find_worst_in_island(const Sol* pop, int base, int island_
     return worst;
 }
 
+constexpr int MAX_ISLANDS = 64;
+
 template<typename Sol>
 __global__ void migrate_kernel(Sol* pop, int pop_size, int island_size,
                                 ObjConfig oc,
@@ -414,8 +416,10 @@ __global__ void migrate_kernel(Sol* pop, int pop_size, int island_size,
     if (threadIdx.x != 0 || blockIdx.x != 0) return;
     int round = d_params->migrate_round;
     int num_islands = pop_size / island_size;
+    if (num_islands > MAX_ISLANDS) num_islands = MAX_ISLANDS;
+    if (num_islands <= 1) return;
     
-    int candidates[64];
+    int candidates[MAX_ISLANDS];
     for (int isle = 0; isle < num_islands; isle++) {
         int base = isle * island_size;
         int best = base;
@@ -424,9 +428,9 @@ __global__ void migrate_kernel(Sol* pop, int pop_size, int island_size,
         candidates[isle] = best;
     }
     
-    int topn[64];
+    int topn[MAX_ISLANDS];
     if (strategy == MigrateStrategy::TopN || strategy == MigrateStrategy::Hybrid) {
-        bool selected[64] = {};
+        bool selected[MAX_ISLANDS] = {};
         for (int t = 0; t < num_islands; t++) {
             int best_c = -1;
             for (int c = 0; c < num_islands; c++) {
@@ -459,7 +463,7 @@ __global__ void migrate_kernel(Sol* pop, int pop_size, int island_size,
 }
 
 // ============================================================
-// Kernel 4: 精英注入（保持不变）
+// Kernel 4: Elite injection (unchanged)
 // ============================================================
 
 template<typename Sol>
@@ -483,7 +487,7 @@ __global__ void elite_inject_kernel(Sol* pop, int pop_size,
 }
 
 // ============================================================
-// v5.0: 多 GPU 协同 — 注入外部解到岛屿
+// v5.0: Multi-GPU coordination — inject external solutions into islands
 // ============================================================
 
 template<typename Sol>
@@ -496,7 +500,7 @@ __global__ void inject_to_islands_kernel(Sol* pop, int pop_size, int island_size
     int num_islands = pop_size / island_size;
     if (num_islands == 0) return;
     
-    // 根据注入模式确定注入的岛屿数量
+    // Number of islands to inject into depends on mode
     int islands_to_inject = 0;
     if (mode == MultiGpuInjectMode::OneIsland) {
         islands_to_inject = 1;
@@ -506,15 +510,15 @@ __global__ void inject_to_islands_kernel(Sol* pop, int pop_size, int island_size
         islands_to_inject = num_islands;
     }
     
-    // 将注入解分配到各个岛屿的 worst 位置
+    // Place each injected solution at worst slot of an island
     for (int i = 0; i < islands_to_inject && i < num_inject; i++) {
         int target_isle = i % num_islands;
         int base = target_isle * island_size;
         
-        // 找到该岛的 worst 解
+        // Find worst solution on this island
         int worst = find_worst_in_island(pop, base, island_size, oc);
         
-        // 如果注入解更优，则替换
+        // Replace if injection is better
         if (is_better(inject_solutions[i], pop[worst], oc)) {
             pop[worst] = inject_solutions[i];
         }
@@ -522,49 +526,49 @@ __global__ void inject_to_islands_kernel(Sol* pop, int pop_size, int island_size
 }
 
 // ============================================================
-// v5.0 方案 B3: inject_check_kernel — 被动注入检查
+// v5.0 plan B3: inject_check_kernel — passive injection check
 // ============================================================
-// GPU 在 migrate 时检查 InjectBuffer，如果有新解则注入到第一个岛的 worst
-// 使用 atomicExch 原子读取并清除 flag，确保线程安全
+// During migrate, GPU checks InjectBuffer; if new solution exists, inject at worst of first island
+// atomicExch reads and clears flag atomically for thread safety
 //
-// 设计要点：
-// 1. 单线程执行（thread 0 of block 0），避免竞争
-// 2. atomicExch 原子读取 flag 并清零，确保每个解只被处理一次
-// 3. 只注入到第一个岛（OneIsland 策略），保持多样性
-// 4. 完全可选：如果 inject_buf 为 nullptr，直接跳过（不影响单 GPU）
+// Design notes:
+// 1. Single thread (thread 0 of block 0) to avoid races
+// 2. atomicExch reads flag and clears it so each solution is handled once
+// 3. Inject only into first island (OneIsland strategy) to preserve diversity
+// 4. Optional: if inject_buf is nullptr, skip (single-GPU unaffected)
 
 template<typename Sol>
 __global__ void inject_check_kernel(Sol* pop, int pop_size, int island_size,
                                      InjectBuffer<Sol>* inject_buf, ObjConfig oc) {
-    // 单线程执行
+    // Single-thread execution
     if (threadIdx.x != 0 || blockIdx.x != 0) return;
     
-    // 如果没有注入缓冲区，直接返回（单 GPU 场景）
+    // No injection buffer — return (single-GPU case)
     if (inject_buf == nullptr) return;
     
-    // 原子读取并清除 flag（确保每个解只被处理一次）
+    // Atomically read and clear flag (each solution processed once)
     int flag = atomicExch(inject_buf->d_flag, 0);
     
-    // 如果没有新解，直接返回
+    // No new solution — return
     if (flag != 1) return;
     
-    // 读取注入的解
+    // Read injected solution
     Sol inject_sol = *(inject_buf->d_solution);
     
-    // 找到第一个岛的 worst 位置
+    // Find worst slot on first island
     int num_islands = pop_size / island_size;
     if (num_islands == 0) return;
     
     int worst = find_worst_in_island(pop, 0, island_size, oc);
     
-    // 如果注入解更优，则替换
+    // Replace if injection is better
     if (is_better(inject_sol, pop[worst], oc)) {
         pop[worst] = inject_sol;
     }
 }
 
 // ============================================================
-// solve<Problem>: 主循环（Block 级架构）
+// solve<Problem>: main loop (block-level architecture)
 // ============================================================
 
 using RegistryCallback = void(*)(SeqRegistry&);
@@ -586,22 +590,22 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
     bool use_time_limit = cfg.time_limit_sec > 0.0f;
     bool use_stagnation = cfg.stagnation_limit > 0;
     
-    // Block 级参数
-    const int block_threads = BLOCK_LEVEL_THREADS;  // 128 线程/block
+    // Block-level parameters
+    const int block_threads = BLOCK_LEVEL_THREADS;  // 128 threads/block
     
-    // --- 0. Shared memory 计算（需要在 pop_size 确定之前完成，用于 occupancy 查询）---
+    // --- 0. Shared memory sizing (before pop_size; used for occupancy query) ---
     size_t prob_smem = prob.shared_mem_bytes();
-    // v3.1: 归约工作区为 MultiStepCandidate（含 K 步 moves + seq_indices）
+    // v3.1: reduction workspace is MultiStepCandidate (K-step moves + seq_indices)
     size_t total_smem = sizeof(Sol) + prob_smem + sizeof(MultiStepCandidate) * block_threads;
     if (use_aos) total_smem += sizeof(AOSStats);
     
-    // 查询 GPU 硬件属性
+    // Query GPU device properties
     cudaDeviceProp prop;
     int device;
     CUDA_CHECK(cudaGetDevice(&device));
     CUDA_CHECK(cudaGetDeviceProperties(&prop, device));
     
-    // 尝试扩展 shared memory 上限（V100: 96KB, A100: 164KB 等）
+    // Try to raise shared memory cap (V100: 96KB, A100: 164KB, etc.)
     size_t max_smem = (size_t)prop.sharedMemPerBlock;
     if (total_smem > 48 * 1024) {
         cudaError_t err1 = cudaFuncSetAttribute(
@@ -617,7 +621,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         }
     }
     
-    // 检查 shared memory 上限
+    // Check shared memory limit
     bool smem_overflow = false;
     if (total_smem > max_smem) {
         smem_overflow = (prob_smem > 0);
@@ -626,12 +630,12 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         if (use_aos) total_smem += sizeof(AOSStats);
     }
     
-    // --- 0b. 确定 pop_size（自动或用户指定）---
+    // --- 0b. Determine pop_size (auto or user) ---
     int pop_size = cfg.pop_size;
     bool auto_pop = (pop_size <= 0);
     
     if (auto_pop) {
-        // 查询 occupancy：每个 SM 能同时运行多少个 block
+        // Query occupancy: how many blocks per SM
         int max_blocks_per_sm = 0;
         cudaOccupancyMaxActiveBlocksPerMultiprocessor(
             &max_blocks_per_sm,
@@ -642,17 +646,17 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         int full_capacity = max_blocks_per_sm * prop.multiProcessorCount;
         
         if (prob_smem > 0) {
-            // 问题数据在 shared memory → 无 L2 cache 压力，打满 SM
+            // Problem data in shared memory → no L2 pressure; fill SMs
             pop_size = full_capacity;
         } else {
-            // 问题数据在 global memory → 根据 L2 cache 容量估算合理并发度
+            // Problem data in global memory → estimate concurrency from L2 size
             //
-            // 模型：pop = L2_size / working_set_bytes
-            //   所有 block 访问同一份只读数据，L2/ws 反映 cache 能支撑的并发度
+            // Model: pop = L2_size / working_set_bytes
+            //   All blocks read same read-only data; L2/ws approximates cache-supported concurrency
             //
-            // SM 下限策略：L2/ws >= sm_min/2 时拉升到 sm_min（允许一定 cache 压力换取种群多样性）
-            //   ch150: L2/ws=70, sm_min=128 → 70 >= 64 → 拉升到 128 ✓（多样性优先）
-            //   pcb442: L2/ws=8, sm_min=128 → 8 < 64 → 不拉升 ✓（避免 thrashing）
+            // SM floor policy: if L2/ws >= sm_min/2, raise to sm_min (trade some cache pressure for diversity)
+            //   ch150: L2/ws=70, sm_min=128 -> 70 >= 64 -> raise to 128 (diversity first)
+            //   pcb442: L2/ws=8, sm_min=128 -> 8 < 64 -> do not raise (avoid thrashing)
             
             size_t ws = prob.working_set_bytes();
             if (ws > 0) {
@@ -671,26 +675,26 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             }
         }
         
-        // 向下取整到 2 的幂（warp 对齐、归约友好、islands 整除）
+        // Round down to power of 2 (warp alignment, reduction-friendly, island divisibility)
         {
             int p = 1;
             while (p * 2 <= pop_size) p *= 2;
             pop_size = p;
         }
         
-        // 绝对下限：32（保证至少 1 岛 × 32 解的最小可用规模）
+        // Absolute floor: 32 (at least 1 island x 32 individuals)
         if (pop_size < 32) pop_size = 32;
     }
     
-    // 自适应岛屿数量（num_islands=0 时启用）
+    // Adaptive island count (when num_islands=0)
     int num_islands = cfg.num_islands;
     if (num_islands == 0) {
-        // 策略：每岛至少 32 个个体，最多 8 岛
-        // pop < 64   → 1 岛（纯 HC）
-        // 64-127     → 2 岛
-        // 128-255    → 4 岛
-        // 256-511    → 8 岛
-        // >= 512     → 8 岛
+        // Policy: at least 32 individuals per island, at most 8 islands
+        // pop < 64   -> 1 island (pure HC)
+        // 64-127     -> 2 islands
+        // 128-255    -> 4 islands
+        // 256-511    -> 8 islands
+        // >= 512     -> 8 islands
         if (pop_size < 64) {
             num_islands = 1;
         } else if (pop_size < 128) {
@@ -747,8 +751,8 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         printf(" seed=%u\n", cfg.seed);
     }
     
-    // --- 1. 分配 ---
-    // crossover 栈需求（thread 0 在 local memory 中构造 child）
+    // --- 1. Allocation ---
+    // Crossover stack needs (thread 0 builds child in local memory)
     if (use_crossover) {
         size_t ox_arrays = Sol::DIM1 * Sol::DIM2 * sizeof(bool)
                          + 512 * sizeof(bool)
@@ -759,7 +763,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
     
     ObjConfig oc = make_obj_config(pcfg);
     
-    // --- 1b. 采样择优初始化 ---
+    // --- 1b. Sample-and-select initialization ---
     int oversample = cfg.init_oversample;
     if (oversample < 1) oversample = 1;
     int candidate_size = pop_size * oversample;
@@ -768,13 +772,13 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
     Population<Sol> pop;
     
     if (do_oversample) {
-        // 生成 K × pop_size 个候选解
+        // Generate K x pop_size candidate solutions
         Population<Sol> candidates;
         candidates.allocate(candidate_size, block_threads);
         candidates.init_rng(cfg.seed, 256);
         candidates.init_population(pcfg, 256);
         
-        // 启发式初始解注入（替换候选池尾部）
+        // Inject heuristic initial solutions (replace tail of candidate pool)
         if (pcfg.encoding == EncodingType::Permutation) {
             HeuristicMatrix heur_mats[8];
             int num_mats = prob.heuristic_matrices(heur_mats, 8);
@@ -797,7 +801,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             }
         }
         
-        // GPU 上评估所有候选
+        // Evaluate all candidates on GPU
         {
             size_t eval_smem = prob.shared_mem_bytes();
             if (eval_smem > 48 * 1024) {
@@ -810,12 +814,12 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             CUDA_CHECK(cudaDeviceSynchronize());
         }
         
-        // 下载所有候选解到 host
+        // Download all candidates to host
         Sol* h_candidates = new Sol[candidate_size];
         CUDA_CHECK(cudaMemcpy(h_candidates, candidates.d_solutions,
                               sizeof(Sol) * candidate_size, cudaMemcpyDeviceToHost));
         
-        // 构建候选信息
+        // Build candidate metadata
         std::vector<init_sel::CandidateInfo> cand_info(candidate_size);
         for (int i = 0; i < candidate_size; i++) {
             cand_info[i].idx = i;
@@ -829,16 +833,16 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             }
         }
         
-        // 计算目标重要性
+        // Compute objective importance
         float importance[MAX_OBJ];
         compute_importance(oc, importance);
         
-        // 纯随机保底名额
+        // Pure-random quota (floor)
         int num_random = (int)(pop_size * cfg.init_random_ratio);
         if (num_random < 1) num_random = 1;
         if (num_random > pop_size / 2) num_random = pop_size / 2;
         
-        // 选择
+        // Selection
         std::vector<int> selected;
         if (oc.num_obj == 1) {
             selected = init_sel::top_n_select(cand_info, pop_size, num_random);
@@ -847,13 +851,13 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                                                pop_size, num_random);
         }
         
-        // 分配最终种群
+        // Allocate final population
         pop.allocate(pop_size, block_threads);
-        // 复用候选的 RNG 状态（取前 pop_size 份）
-        // 重新初始化 RNG 更安全（候选的 RNG 状态已被使用过）
+        // Could reuse candidate RNG state (first pop_size entries)
+        // Re-init RNG is safer (candidate RNGs were already used)
         pop.init_rng(cfg.seed + 1, 256);
         
-        // 上传选中的解到种群前部
+        // Upload selected solutions to front of population
         int num_selected = (int)selected.size();
         for (int i = 0; i < num_selected; i++) {
             CUDA_CHECK(cudaMemcpy(pop.d_solutions + i,
@@ -861,8 +865,8 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                                   sizeof(Sol), cudaMemcpyDeviceToDevice));
         }
         
-        // 剩余位置（纯随机保底）：从候选中随机选未被选中的
-        // 简单做法：直接用候选中排在后面的未选中解
+        // Remaining slots (pure-random floor): fill from unselected candidates
+        // Simple approach: use later candidates that were not selected
         if (num_selected < pop_size) {
             int fill_idx = num_selected;
             for (int i = 0; i < candidate_size && fill_idx < pop_size; i++) {
@@ -876,7 +880,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         }
         
         if (cfg.verbose) {
-            // 统计选中解的平均质量 vs 全部候选的平均质量
+            // Compare mean quality of selected vs all candidates
             float sel_avg = 0.0f, all_avg = 0.0f;
             for (int i = 0; i < candidate_size; i++) all_avg += cand_info[i].objs[0];
             all_avg /= candidate_size;
@@ -893,20 +897,20 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         }
         
         delete[] h_candidates;
-        // candidates 析构自动释放 GPU 内存
+        // candidates dtor frees GPU memory
     } else {
-        // oversample=1：纯随机，和之前一样
+        // oversample=1: pure random, same as before
         pop.allocate(pop_size, block_threads);
         pop.init_rng(cfg.seed, 256);
         pop.init_population(pcfg, 256);
     }
     
-    // --- 1c. 注入用户提供的初始解 ---
-    // 策略：校验合法性 → 合法解替换种群尾部（保留 oversample 选出的好解在前部）
+    // --- 1c. Inject user-provided initial solutions ---
+    // Policy: validate -> valid solutions replace population tail (keep oversample winners at front)
     if (init_solutions && num_init_solutions > 0) {
-        int max_inject = pop_size / 16;  // 最多占种群 ~6%（保留多样性）
+        int max_inject = pop_size / 16;  // at most ~6% of population (diversity)
         if (max_inject < 1) max_inject = 1;
-        if (max_inject > 16) max_inject = 16;  // 绝对上限
+        if (max_inject > 16) max_inject = 16;  // hard cap
         int want = num_init_solutions;
         if (want > max_inject) want = max_inject;
         
@@ -915,17 +919,17 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             const Sol& s = init_solutions[i];
             bool valid = true;
             
-            // 基本维度检查
+            // Basic dimension checks
             for (int r = 0; r < pcfg.dim1 && valid; r++) {
                 if (s.dim2_sizes[r] < 0 || s.dim2_sizes[r] > Sol::DIM2) {
                     valid = false; break;
                 }
             }
             
-            // 编码特定检查
+            // Encoding-specific checks
             if (valid && pcfg.encoding == EncodingType::Permutation) {
                 if (pcfg.row_mode == RowMode::Partition) {
-                    // 分区模式：跨行元素不重复，总数 = total_elements
+                    // Partition mode: no duplicate elements across rows; total = total_elements
                     bool seen[512] = {};
                     int total = 0;
                     for (int r = 0; r < pcfg.dim1 && valid; r++) {
@@ -939,7 +943,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                     }
                     if (valid && total != pcfg.total_elements) valid = false;
                 } else if (pcfg.perm_repeat_count > 1) {
-                    // 多重集排列：每行中每个值 [0, N) 恰好出现 repeat_count 次
+                    // Multiset permutation: each value in [0, N) appears repeat_count times per row
                     int R = pcfg.perm_repeat_count;
                     int N = pcfg.dim2_default / R;
                     for (int r = 0; r < pcfg.dim1 && valid; r++) {
@@ -956,7 +960,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                         }
                     }
                 } else {
-                    // 标准排列：每行元素 [0, dim2_default) 不重复
+                    // Standard permutation: each row is a permutation of [0, dim2_default)
                     for (int r = 0; r < pcfg.dim1 && valid; r++) {
                         if (s.dim2_sizes[r] != pcfg.dim2_default) { valid = false; break; }
                         bool seen[512] = {};
@@ -977,7 +981,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             }
             
             if (valid) {
-                // 注入到种群尾部（从后往前填，保留前部的 oversample 好解）
+                // Inject at population tail (fill from end; keep oversample winners at front)
                 int target_idx = pop_size - 1 - injected;
                 CUDA_CHECK(cudaMemcpy(pop.d_solutions + target_idx, &s,
                                       sizeof(Sol), cudaMemcpyHostToDevice));
@@ -992,7 +996,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         }
     }
     
-    // v3.0: 构建序列注册表（替代旧的 d_op_weights）
+    // v3.0: Build sequence registry (replaces old d_op_weights)
     ProblemProfile profile = classify_problem(pcfg);
     SeqRegistry seq_reg = build_seq_registry(profile);
 
@@ -1000,7 +1004,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         custom_registry_fn(seq_reg);
     }
     
-    // v3.1: K 步配置（多步执行）
+    // v3.1: K-step config (multi-step execution)
     KStepConfig kstep = build_kstep_config();
     
     if (cfg.verbose) {
@@ -1022,13 +1026,13 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
     Sol* d_global_best = nullptr;
     if (use_sa) {
         CUDA_CHECK(cudaMalloc(&d_global_best, sizeof(Sol)));
-        // v5.0 方案 B3: 导出 d_global_best 指针供外部读取（可选）
+        // v5.0 plan B3: expose d_global_best pointer for external read (optional)
         if (d_global_best_out != nullptr) {
             *d_global_best_out = d_global_best;
         }
     }
     
-    // AOS: 分配全局内存统计缓冲区（序列级粒度）
+    // AOS: allocate global stats buffer (per-sequence granularity)
     AOSStats* d_aos_stats = nullptr;
     AOSStats* h_aos_stats = nullptr;
     
@@ -1037,8 +1041,8 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         h_aos_stats = new AOSStats[pop_size];
     }
     
-    // --- 关系矩阵（G/O）：用于 SEQ_LNS_GUIDED_REBUILD ---
-    // 仅 Permutation 编码 + 有 GUIDED_REBUILD 序列时启用
+    // --- Relation matrices (G/O) for SEQ_LNS_GUIDED_REBUILD ---
+    // Enabled only for Permutation encoding when GUIDED_REBUILD is in registry
     bool use_relation_matrix = false;
     RelationMatrix rel_mat = {};
     int rel_N = 0;
@@ -1051,11 +1055,11 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         }
     }
     if (use_relation_matrix) {
-        // N = dim2_default（排列中的元素数）
+        // N = dim2_default (number of elements in permutation)
         rel_N = pcfg.dim2_default;
         if (rel_N > 0) {
             rel_mat = relation_matrix_create(rel_N, 0.95f);
-            // 让用户提供先验知识初始化 G/O（可选，默认不做任何事）
+            // Optional prior init of G/O via user hook (default: no-op)
             prob.init_relation_matrix(rel_mat.h_G, rel_mat.h_O, rel_N);
             relation_matrix_upload(rel_mat);
         } else {
@@ -1063,11 +1067,11 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         }
     }
     
-    // grid = pop_size（每个 block 处理一个解）
+    // grid = pop_size (one block per solution)
     int grid = pop_size;
     
-    // --- 2. 初始评估 ---
-    // 采样择优路径中已经评估过候选，但最终种群可能包含随机解，需要重新评估
+    // --- 2. Initial evaluation ---
+    // Sample-select path already evaluated candidates; final pop may still have randoms — re-evaluate
     {
         size_t eval_smem = prob.shared_mem_bytes();
         if (eval_smem > 48 * 1024) {
@@ -1086,9 +1090,9 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         CUDA_CHECK(cudaMemcpy(d_global_best, pop.d_solutions + idx, sizeof(Sol), cudaMemcpyDeviceToDevice));
     }
     
-    // --- 3. 主循环 ---
-    // batch 大小决定了 AOS/关系矩阵/收敛检测的更新频率
-    // 需要平衡：太小 → 同步开销大，太大 → 反应迟钝
+    // --- 3. Main loop ---
+    // Batch size sets update cadence for AOS / relation matrix / convergence checks
+    // Balance: too small -> sync overhead; too slow to react if too large
     int batch;
     if (use_islands)
         batch = cfg.migrate_interval;
@@ -1097,7 +1101,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
     else
         batch = cfg.max_gen;
     
-    // 需要定期更新的功能：强制 batch ≤ 200
+    // Features needing periodic updates: force batch <= 200
     if (use_relation_matrix || use_aos || use_time_limit || use_stagnation) {
         if (batch > 200) batch = 200;
     }
@@ -1106,11 +1110,11 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
     int migrate_round = 0;
     StopReason stop_reason = StopReason::MaxGen;
     
-    // 收敛检测状态
+    // Convergence-check state
     float prev_best_scalar = 1e30f;
     int stagnation_count = 0;
     
-    // --- EvolveParams: 可变参数（device memory）---
+    // --- EvolveParams: mutable fields (device memory) ---
     EvolveParams h_params;
     h_params.temp_start = 0.0f;
     h_params.gens_per_batch = batch;
@@ -1133,7 +1137,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         CUDA_CHECK(cudaStreamCreate(&stream));
     }
     
-    // lambda: 在 stream 上发射一个 batch 的 GPU kernel 序列
+    // Lambda: launch one batch of GPU kernels on stream
     auto launch_batch_kernels = [&](cudaStream_t s) {
         evolve_block_kernel<<<grid, block_threads, total_smem, s>>>(
             prob, pop.d_solutions, pop_size,
@@ -1168,7 +1172,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         }
     };
     
-    // 捕获 CUDA Graph（首次）
+    // Capture CUDA Graph (first time)
     if (use_graph) {
         CUDA_CHECK(cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal));
         launch_batch_kernels(stream);
@@ -1187,7 +1191,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
     CUDA_CHECK(cudaEventCreate(&t_stop));
     CUDA_CHECK(cudaEventRecord(t_start));
     
-    // 时间感知 AOS：窗口累积器
+    // Time-aware AOS: window accumulators
     int win_seq_usage[MAX_SEQ] = {};
     int win_seq_improve[MAX_SEQ] = {};
     int win_k_usage[MAX_K] = {};
@@ -1195,9 +1199,15 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
     int batch_count = 0;
     const int aos_interval = (cfg.aos_update_interval > 0) ? cfg.aos_update_interval : 1;
     
-    // v4.0: 约束导向 + 分层搜索
+    // v4.0: constraint-directed + phased search (require AOS enabled)
     const bool use_constraint_directed = cfg.use_constraint_directed && use_aos;
     const bool use_phased_search = cfg.use_phased_search && use_aos;
+    if (cfg.verbose) {
+        if (cfg.use_constraint_directed && !use_aos)
+            printf("  [WARN] constraint_directed requires AOS, disabled\n");
+        if (cfg.use_phased_search && !use_aos)
+            printf("  [WARN] phased_search requires AOS, disabled\n");
+    }
     float base_max_w[MAX_SEQ];
     for (int i = 0; i < seq_reg.count; i++) base_max_w[i] = seq_reg.max_w[i];
     
@@ -1217,7 +1227,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         
         float temp = use_sa ? cfg.sa_temp_init * powf(cfg.sa_alpha, (float)gen_done) : 0.0f;
         
-        // 更新 device 端可变参数
+        // Update mutable device parameters
         h_params.temp_start = temp;
         h_params.gens_per_batch = gens;
         h_params.seq_reg = seq_reg;
@@ -1225,7 +1235,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         h_params.migrate_round = migrate_round;
         CUDA_CHECK(cudaMemcpy(d_params, &h_params, sizeof(EvolveParams), cudaMemcpyHostToDevice));
         
-        // 发射 GPU kernel 序列
+        // Launch GPU kernel sequence
         if (use_graph) {
             CUDA_CHECK(cudaGraphLaunch(graph_exec, stream));
             CUDA_CHECK(cudaStreamSynchronize(stream));
@@ -1233,8 +1243,8 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             launch_batch_kernels(nullptr);
         }
         
-        // v5.0 方案 B3: 被动注入检查（在 Graph 之外单独调用）
-        // 注意：必须在 Graph 之外，因为 inject_buf 内容是动态变化的
+        // v5.0 plan B3: passive injection check (outside Graph)
+        // Must be outside Graph: inject_buf content changes dynamically
         if (inject_buf != nullptr && use_islands) {
             inject_check_kernel<<<1, 1>>>(pop.d_solutions, pop_size,
                                            island_size, inject_buf, oc);
@@ -1245,14 +1255,14 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         if (use_islands) migrate_round++;
         batch_count++;
         
-        // AOS: 两层权重更新（EMA）+ 停滞检测
+        // AOS: two-level weight update (EMA) + stagnation detection
         if (use_aos && (batch_count % aos_interval == 0)) {
             CUDA_CHECK(cudaDeviceSynchronize());
             CUDA_CHECK(cudaMemcpy(h_aos_stats, d_aos_stats,
                                   sizeof(AOSStats) * pop_size,
                                   cudaMemcpyDeviceToHost));
             
-            // --- 聚合当前 batch 的统计到窗口累积器 ---
+            // --- Fold current batch stats into window accumulators ---
             for (int b = 0; b < pop_size; b++) {
                 for (int i = 0; i < seq_reg.count; i++) {
                     win_seq_usage[i] += h_aos_stats[b].usage[i];
@@ -1266,7 +1276,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             
             constexpr float AOS_ALPHA = 0.6f;
             
-            // --- v4.0: 约束导向 — 计算种群约束违反率 ---
+            // --- v4.0: constraint-directed — population infeasibility ratio ---
             float penalty_ratio = 0.0f;
             if (use_constraint_directed) {
                 Sol* h_pop_snap = new Sol[pop_size];
@@ -1280,7 +1290,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                 delete[] h_pop_snap;
             }
             
-            // --- v4.0: 分层搜索 — 计算当前阶段的 floor/cap 调整 ---
+            // --- v4.0: phased search — phase floor/cap multipliers ---
             float phase_floor_mult = 1.0f;
             float phase_cap_mult   = 1.0f;
             if (use_phased_search) {
@@ -1296,18 +1306,18 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                     progress = (float)gen_done / (float)cfg.max_gen;
                 }
                 if (progress < cfg.phase_explore_end) {
-                    phase_floor_mult = 1.5f;   // 探索期：抬高 floor → 更均匀
-                    phase_cap_mult   = 0.7f;   // 探索期：压低 cap → 防止过早集中
+                    phase_floor_mult = 1.5f;   // explore: raise floor -> more uniform
+                    phase_cap_mult   = 0.7f;   // explore: lower cap -> avoid early concentration
                 } else if (progress >= cfg.phase_refine_start) {
-                    phase_floor_mult = 0.5f;   // 精细期：降低 floor → 允许弱算子退出
-                    phase_cap_mult   = 1.5f;   // 精细期：抬高 cap → 集中利用强算子
+                    phase_floor_mult = 0.5f;   // refine: lower floor -> weak ops can fade
+                    phase_cap_mult   = 1.5f;   // refine: raise cap -> exploit strong ops
                 }
             }
             
-            // --- 第二层：算子权重更新（EMA） ---
+            // --- Layer 2: operator weights (EMA) ---
             {
                 float new_w[MAX_SEQ];
-                // 延迟归一化：EMA 更新 + 边界约束（不归一化）
+                // Deferred normalization: EMA + bounds (no renormalize to sum 1)
                 for (int i = 0; i < seq_reg.count; i++) {
                     float signal = (win_seq_usage[i] > 0)
                         ? (float)win_seq_improve[i] / (float)win_seq_usage[i]
@@ -1322,7 +1332,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                 float floor_val = base_floor * phase_floor_mult;
                 float global_cap = cfg.aos_weight_cap * phase_cap_mult;
                 
-                // --- v4.0: 约束导向 — boost 跨行/行级算子权重 + 放宽 cap ---
+                // --- v4.0: constraint-directed — boost cross-row/row-level weights + relax cap ---
                 if (use_constraint_directed && penalty_ratio > 0.1f) {
                     float boost = 1.0f + (penalty_ratio - 0.1f) / 0.9f
                                   * (cfg.constraint_boost_max - 1.0f);
@@ -1339,7 +1349,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                         seq_reg.max_w[i] = base_max_w[i];
                 }
                 
-                // 应用边界约束（不归一化）
+                // Apply bounds (no renormalize to sum 1)
                 float sum = 0.0f;
                 for (int i = 0; i < seq_reg.count; i++) {
                     float cap_val = (seq_reg.max_w[i] > 0.0f) ? seq_reg.max_w[i] : global_cap;
@@ -1347,11 +1357,11 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                     sum += seq_reg.weights[i];
                 }
                 
-                // 更新缓存的权重和
+                // Update cached weight sum
                 seq_reg.weights_sum = sum;
             }
             
-            // --- 第一层：K 步数权重更新（EMA + 延迟归一化） ---
+            // --- Layer 1: K-step weights (EMA + deferred normalize) ---
             {
                 float new_w[MAX_K];
                 for (int i = 0; i < MAX_K; i++) {
@@ -1362,14 +1372,14 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                              + (1.0f - AOS_ALPHA) * (rate + AOS_WEIGHT_FLOOR);
                 }
                 
-                // 应用边界约束（不归一化）
+                // Apply bounds (no renormalize to sum 1)
                 float floor_val = cfg.aos_weight_floor;
                 float cap_val = 0.95f;
                 for (int i = 0; i < MAX_K; i++) {
                     kstep.weights[i] = fmaxf(floor_val, fminf(cap_val, new_w[i]));
                 }
                 
-                // K 步权重归一化（保持原有行为，因为 K 步选择不使用轮盘赌）
+                // Renormalize K-step weights (legacy behavior; K choice is not roulette)
                 float sum = 0.0f;
                 for (int i = 0; i < MAX_K; i++) sum += kstep.weights[i];
                 if (sum > 0.0f) {
@@ -1378,7 +1388,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                 }
             }
             
-            // --- Debug: 前 5 个 batch 打印统计 ---
+            // --- Debug: print stats for first 5 batches ---
             if (cfg.verbose && gen_done <= batch * 5) {
                 fprintf(stderr, "  [AOS batch g=%d] usage:", gen_done);
                 for (int i = 0; i < seq_reg.count; i++) fprintf(stderr, " %d", win_seq_usage[i]);
@@ -1397,7 +1407,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             }
             
             
-            // --- 停滞检测 ---
+            // --- Stagnation detection ---
             {
                 int total_improve_all = 0;
                 for (int i = 0; i < seq_reg.count; i++)
@@ -1417,25 +1427,25 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                 }
             }
             
-            // --- 清零窗口累积器 ---
+            // --- Clear window accumulators ---
             memset(win_seq_usage, 0, sizeof(win_seq_usage));
             memset(win_seq_improve, 0, sizeof(win_seq_improve));
             memset(win_k_usage, 0, sizeof(win_k_usage));
             memset(win_k_improve, 0, sizeof(win_k_improve));
         }
         
-        // --- 关系矩阵更新（每个 batch 间隙，从种群 top-K 解统计）---
-        // 多个好解贡献 G/O 信号，加速矩阵信息积累
+        // --- Relation matrix update (between batches, from population top-K) ---
+        // Several good solutions contribute G/O signal to build the matrix faster
         if (use_relation_matrix) {
             if (!use_aos) {
                 CUDA_CHECK(cudaDeviceSynchronize());
             }
             
-            // 下载整个种群的目标值，找 top-K
+            // Download population objectives and find top-K
             constexpr int REL_TOP_K = 4;
             int top_indices[REL_TOP_K];
             {
-                // 简单方法：下载所有解的 scalar 目标，host 端排序取 top-K
+                // Simple approach: scalar objectives on host, pick top-K minima
                 float* h_scores = new float[pop_size];
                 Sol* h_pop_ptr = new Sol[pop_size];
                 CUDA_CHECK(cudaMemcpy(h_pop_ptr, pop.d_solutions,
@@ -1444,16 +1454,16 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
                     h_scores[b] = scalar_objective(h_pop_ptr[b], oc);
                     if (h_pop_ptr[b].penalty > 0.0f) h_scores[b] = 1e30f;
                 }
-                // 找 top-K 最小值
+                // Find top-K smallest scores
                 for (int k = 0; k < REL_TOP_K && k < pop_size; k++) {
                     int mi = 0;
                     for (int b = 1; b < pop_size; b++) {
                         if (h_scores[b] < h_scores[mi]) mi = b;
                     }
                     top_indices[k] = mi;
-                    h_scores[mi] = 1e30f;  // 标记已选
+                    h_scores[mi] = 1e30f;  // mark as taken
                 }
-                // 从 top-K 解更新 G/O
+                // Update G/O from top-K solutions
                 int actual_k = (pop_size < REL_TOP_K) ? pop_size : REL_TOP_K;
                 for (int k = 0; k < actual_k; k++) {
                     relation_matrix_update(rel_mat, h_pop_ptr[top_indices[k]], pcfg.dim1);
@@ -1465,9 +1475,9 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             relation_matrix_upload(rel_mat);
         }
         
-        // 交叉 / 迁移 / 精英注入 已在 launch_batch_kernels 中统一发射
+        // Crossover / migrate / elite inject already launched in launch_batch_kernels
         
-        // --- 时间限制检查 ---
+        // --- Time limit check ---
         if (use_time_limit) {
             CUDA_CHECK(cudaEventRecord(t_stop));
             CUDA_CHECK(cudaEventSynchronize(t_stop));
@@ -1481,7 +1491,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             }
         }
         
-        // --- 收敛检测 + reheat ---
+        // --- Convergence check + reheat ---
         if (use_stagnation) {
             find_best_kernel<<<1, 1>>>(pop.d_solutions, pop_size, oc, d_best_idx);
             CUDA_CHECK(cudaDeviceSynchronize());
@@ -1500,26 +1510,25 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             
             if (stagnation_count >= cfg.stagnation_limit) {
                 if (use_sa && cfg.reheat_ratio > 0.0f) {
-                    // reheat：将温度恢复到初始温度的 reheat_ratio 倍
-                    // 通过回退 gen_done 实现（温度 = init * alpha^gen_done）
+                    // Reheat: restore temperature to reheat_ratio * initial
+                    // Implemented by rolling back gen_done (temp = init * alpha^gen_done)
                     float target_temp = cfg.sa_temp_init * cfg.reheat_ratio;
                     int reheat_gen = (int)(logf(target_temp / cfg.sa_temp_init) / logf(cfg.sa_alpha));
                     if (reheat_gen < 0) reheat_gen = 0;
-                    // 不真正回退 gen_done（会影响终止条件），而是记录一个 temp_offset
-                    // 简化做法：直接在下一轮 batch 中 temp 会自然从 reheat 后的值开始
-                    // 这里通过修改 gen_done 的等效温度来实现
+                    // Not a true gen_done rollback for termination; conceptually temp_offset
+                    // Simplified: next batch temp follows from adjusted gen_done
                     if (cfg.verbose) {
                         float cur_temp = cfg.sa_temp_init * powf(cfg.sa_alpha, (float)gen_done);
                         printf("  [REHEAT] stagnation=%d at gen %d, temp %.4f → %.4f\n",
                                cfg.stagnation_limit, gen_done, cur_temp, target_temp);
                     }
-                    // 将 gen_done 回退到对应 target_temp 的位置（但不超过已完成代数的一半）
+                    // Roll gen_done back to match target_temp (but not below half of completed gens)
                     int min_gen = gen_done / 2;
                     if (reheat_gen < min_gen) reheat_gen = min_gen;
                     gen_done = reheat_gen;
                     stagnation_count = 0;
                 } else {
-                    // 无 SA 时，收敛检测触发 → 提前终止
+                    // No SA: stagnation triggers early stop
                     stop_reason = StopReason::Stagnation;
                     if (cfg.verbose) printf("  [STOP] stagnation=%d at gen %d, no SA to reheat\n",
                                              cfg.stagnation_limit, gen_done);
@@ -1528,7 +1537,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
             }
         }
         
-        // 打印进度
+        // Progress printout
         if (cfg.verbose && gen_done % cfg.print_every == 0) {
             if (!use_stagnation) {
                 find_best_kernel<<<1, 1>>>(pop.d_solutions, pop_size, oc, d_best_idx);
@@ -1549,7 +1558,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
     float elapsed_ms = 0;
     CUDA_CHECK(cudaEventElapsedTime(&elapsed_ms, t_start, t_stop));
     
-    // --- 4. 最终结果 ---
+    // --- 4. Final result ---
     Sol best;
     if (use_sa) {
         CUDA_CHECK(cudaDeviceSynchronize());
@@ -1582,7 +1591,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         }
     }
     
-    // AOS: 打印最终两层权重
+    // AOS: print final two-level weights
     if (use_aos && cfg.verbose) {
         printf("  AOS K-step weights: K1=%.3f K2=%.3f K3=%.3f\n",
                kstep.weights[0], kstep.weights[1], kstep.weights[2]);
@@ -1592,7 +1601,7 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         printf("\n");
     }
     
-    // 填充返回值
+    // Fill return struct
     result.best_solution = best;
     result.elapsed_ms = elapsed_ms;
     result.generations = gen_done;

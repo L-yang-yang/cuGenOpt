@@ -1,7 +1,7 @@
 /**
- * knapsack.cuh - 0-1 背包问题
- * 
- * 继承 ProblemBase，使用 ObjDef 目标注册机制
+ * knapsack.cuh - 0-1 knapsack
+ *
+ * Extends ProblemBase with ObjDef objective registration.
  */
 
 #pragma once
@@ -10,13 +10,13 @@
 #include "operators.cuh"
 
 struct KnapsackProblem : ProblemBase<KnapsackProblem, 1, 32> {
-    // 问题数据（d_weights 是物品重量，非目标权重）
+    // problem data (d_weights are item weights, not objective weights)
     const float* d_weights;
     const float* d_values;
     float capacity;
     int n;
     
-    // ---- 目标计算 ----
+    // ---- objective evaluation ----
     __device__ float calc_total_value(const Sol& sol) const {
         float tv = 0.0f;
         const int* sel = sol.data[0];
@@ -26,7 +26,7 @@ struct KnapsackProblem : ProblemBase<KnapsackProblem, 1, 32> {
         return tv;
     }
     
-    // ---- 目标定义（OBJ_DEFS 与 compute_obj 必须一一对应）----
+    // ---- objective defs (OBJ_DEFS must match compute_obj one-to-one) ----
     static constexpr ObjDef OBJ_DEFS[] = {
         {ObjDir::Maximize, 1.0f, 0.0f},   // case 0: calc_total_value
     };
@@ -55,7 +55,7 @@ struct KnapsackProblem : ProblemBase<KnapsackProblem, 1, 32> {
         return cfg;
     }
     
-    // ---- shared memory 接口 ----
+    // ---- shared memory interface ----
     size_t shared_mem_bytes() const {
         return 2 * (size_t)n * sizeof(float);
     }

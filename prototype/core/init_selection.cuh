@@ -1,15 +1,15 @@
 /**
- * init_selection.cuh - 初始解采样择优 + NSGA-II 选择
+ * init_selection.cuh - Initial-solution sampling and NSGA-II selection
  *
- * Host 端逻辑，在 solver 初始化阶段调用一次。
- * 从 K × pop_size 个候选解中选出 pop_size 个作为初始种群。
+ * Host-side logic; called once during solver initialization.
+ * Selects pop_size individuals from K × pop_size candidates as the initial population.
  *
- * 选择策略：
- *   1. 核心目标预留名额（按 importance 分配）
- *   2. NSGA-II 选择（非支配排序 + 加权拥挤度）
- *   3. 纯随机保底（多样性）
+ * Selection strategy:
+ *   1. Reserve slots for core objectives (by importance)
+ *   2. NSGA-II selection (non-dominated sort + weighted crowding)
+ *   3. Pure random fallback (diversity)
  *
- * 单目标时自动退化为 top-N 排序，无需分支。
+ * Single-objective case automatically reduces to top-N sorting; no extra branching.
  */
 
 #pragma once
@@ -22,36 +22,36 @@
 namespace init_sel {
 
 // ============================================================
-// 候选解的目标信息（从 GPU 下载后在 host 端使用）
+// Per-candidate objective info (used on host after download from GPU)
 // ============================================================
 struct CandidateInfo {
-    int   idx;           // 在候选数组中的原始索引
-    float objs[MAX_OBJ]; // 归一化后的目标值（越小越好）
+    int   idx;           // Original index in the candidate array
+    float objs[MAX_OBJ]; // Normalized objectives (lower is better)
     float penalty;
-    int   rank;          // 非支配排序层级（0 = Pareto 前沿）
-    float crowding;      // 拥挤度距离
-    bool  selected;      // 是否已被选中
+    int   rank;          // Non-dominated sort front (0 = Pareto front)
+    float crowding;      // Crowding distance
+    bool  selected;      // Whether already selected
 };
 
 // ============================================================
-// 非支配排序（Fast Non-dominated Sort）
+// Non-dominated sort (Fast Non-dominated Sort)
 // ============================================================
-// 复杂度：O(M × N²)，M = 目标数，N = 候选数
-// 对初始化场景（N ≤ 几千，M ≤ 4）完全可接受
+// Complexity: O(M × N²), M = number of objectives, N = number of candidates
+// Acceptable for initialization (N up to a few thousand, M ≤ 4)
 
 inline void fast_nondominated_sort(std::vector<CandidateInfo>& cands,
                                     int num_obj,
                                     std::vector<std::vector<int>>& fronts) {
     int n = (int)cands.size();
-    std::vector<int> dom_count(n, 0);        // 被多少个解支配
-    std::vector<std::vector<int>> dom_set(n); // 支配了哪些解
+    std::vector<int> dom_count(n, 0);        // How many solutions dominate this one
+    std::vector<std::vector<int>> dom_set(n); // Which solutions this one dominates
     
-    // 判断 a 是否支配 b：a 在所有目标上 ≤ b，且至少一个 <
-    // 先处理 penalty：可行解支配不可行解
+    // Whether a dominates b: a ≤ b on all objectives, and strictly < on at least one
+    // Handle penalty first: feasible dominates infeasible
     auto dominates = [&](int a, int b) -> bool {
         const auto& ca = cands[a];
         const auto& cb = cands[b];
-        // penalty 处理
+        // Penalty handling
         if (ca.penalty <= 0.0f && cb.penalty > 0.0f) return true;
         if (ca.penalty > 0.0f && cb.penalty <= 0.0f) return false;
         if (ca.penalty > 0.0f && cb.penalty > 0.0f) return ca.penalty < cb.penalty;
@@ -65,7 +65,7 @@ inline void fast_nondominated_sort(std::vector<CandidateInfo>& cands,
         return all_leq && any_lt;
     };
     
-    // 计算支配关系
+    // Compute dominance relations
     for (int i = 0; i < n; i++) {
         for (int j = i + 1; j < n; j++) {
             if (dominates(i, j)) {
@@ -78,7 +78,7 @@ inline void fast_nondominated_sort(std::vector<CandidateInfo>& cands,
         }
     }
     
-    // 提取各层前沿
+    // Extract each front layer
     fronts.clear();
     std::vector<int> current_front;
     for (int i = 0; i < n; i++) {
@@ -107,9 +107,9 @@ inline void fast_nondominated_sort(std::vector<CandidateInfo>& cands,
 }
 
 // ============================================================
-// 加权拥挤度距离
+// Weighted crowding distance
 // ============================================================
-// 标准拥挤度 + importance 加权：核心目标维度上的间距贡献更大
+// Standard crowding + importance weighting: larger gap contribution on core objectives
 
 inline void weighted_crowding_distance(std::vector<CandidateInfo>& cands,
                                         const std::vector<int>& front,
@@ -117,7 +117,7 @@ inline void weighted_crowding_distance(std::vector<CandidateInfo>& cands,
                                         const float* importance) {
     int n = (int)front.size();
     if (n <= 2) {
-        for (int i : front) cands[i].crowding = 1e18f;  // 边界解无穷大
+        for (int i : front) cands[i].crowding = 1e18f;  // Boundary solutions: infinite
         return;
     }
     
@@ -126,18 +126,18 @@ inline void weighted_crowding_distance(std::vector<CandidateInfo>& cands,
     std::vector<int> sorted_idx(front.begin(), front.end());
     
     for (int m = 0; m < num_obj; m++) {
-        // 按目标 m 排序
+        // Sort by objective m
         std::sort(sorted_idx.begin(), sorted_idx.end(),
                   [&](int a, int b) { return cands[a].objs[m] < cands[b].objs[m]; });
         
         float range = cands[sorted_idx[n-1]].objs[m] - cands[sorted_idx[0]].objs[m];
-        if (range < 1e-12f) continue;  // 该目标无区分度
+        if (range < 1e-12f) continue;  // No spread on this objective
         
-        // 边界解设为无穷大
+        // Boundary solutions: infinite crowding
         cands[sorted_idx[0]].crowding += 1e18f;
         cands[sorted_idx[n-1]].crowding += 1e18f;
         
-        // 中间解：相邻间距 × importance 权重
+        // Interior: neighbor gap × importance weight
         float w = importance[m];
         for (int i = 1; i < n - 1; i++) {
             float gap = cands[sorted_idx[i+1]].objs[m] - cands[sorted_idx[i-1]].objs[m];
@@ -147,29 +147,29 @@ inline void weighted_crowding_distance(std::vector<CandidateInfo>& cands,
 }
 
 // ============================================================
-// 主选择函数：从 N 个候选中选出 target 个
+// Main selection: pick target candidates from N
 // ============================================================
-// 返回被选中的候选索引
+// Returns indices of selected candidates
 
 inline std::vector<int> nsga2_select(std::vector<CandidateInfo>& cands,
                                       int num_obj,
                                       const float* importance,
                                       int target,
                                       int num_reserved_random) {
-    // --- 1. 核心目标预留名额 ---
+    // --- 1. Reserve slots for core objectives ---
     int num_reserve_total = target - num_reserved_random;
-    // 预留比例：importance[i] × 30% 的名额（剩余 70% 给 NSGA-II）
+    // Reserve ratio: importance[i] × 30% of slots (remaining 70% for NSGA-II)
     float reserve_ratio = 0.3f;
     
     std::vector<int> selected;
     selected.reserve(target);
     
-    // 对每个目标，按该目标排序取 top
+    // For each objective, sort by that objective and take top
     for (int m = 0; m < num_obj; m++) {
         int quota = (int)(num_reserve_total * importance[m] * reserve_ratio);
-        if (quota < 1 && num_obj > 1) quota = 1;  // 每个目标至少 1 个
+        if (quota < 1 && num_obj > 1) quota = 1;  // At least one per objective
         
-        // 按目标 m 排序（越小越好）
+        // Sort by objective m (lower is better)
         std::vector<int> by_obj(cands.size());
         for (int i = 0; i < (int)cands.size(); i++) by_obj[i] = i;
         std::sort(by_obj.begin(), by_obj.end(),
@@ -186,32 +186,32 @@ inline std::vector<int> nsga2_select(std::vector<CandidateInfo>& cands,
         }
     }
     
-    // --- 2. NSGA-II 选择填充剩余名额 ---
+    // --- 2. NSGA-II fills remaining slots ---
     int remaining = target - num_reserved_random - (int)selected.size();
     
     if (remaining > 0) {
-        // 非支配排序
+        // Non-dominated sort
         std::vector<std::vector<int>> fronts;
         fast_nondominated_sort(cands, num_obj, fronts);
         
         for (auto& front : fronts) {
             if (remaining <= 0) break;
             
-            // 过滤已选中的
+            // Filter out already selected
             std::vector<int> available;
             for (int i : front) {
                 if (!cands[i].selected) available.push_back(i);
             }
             
             if ((int)available.size() <= remaining) {
-                // 整层都选
+                // Take the whole front
                 for (int i : available) {
                     cands[i].selected = true;
                     selected.push_back(i);
                     remaining--;
                 }
             } else {
-                // 该层需要截断：按加权拥挤度选
+                // Truncate this front: pick by weighted crowding
                 weighted_crowding_distance(cands, available, num_obj, importance);
                 std::sort(available.begin(), available.end(),
                           [&](int a, int b) { return cands[a].crowding > cands[b].crowding; });
@@ -228,14 +228,14 @@ inline std::vector<int> nsga2_select(std::vector<CandidateInfo>& cands,
 }
 
 // ============================================================
-// 单目标快速路径：直接按标量排序取 top
+// Single-objective fast path: scalar sort and take top
 // ============================================================
 inline std::vector<int> top_n_select(std::vector<CandidateInfo>& cands,
                                       int target,
                                       int num_reserved_random) {
     int to_select = target - num_reserved_random;
     
-    // 按 penalty 优先，然后按 objs[0]（已归一化为越小越好）
+    // Prefer lower penalty, then objs[0] (normalized, lower is better)
     std::vector<int> indices(cands.size());
     for (int i = 0; i < (int)cands.size(); i++) indices[i] = i;
     std::sort(indices.begin(), indices.end(), [&](int a, int b) {

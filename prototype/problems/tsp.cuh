@@ -1,7 +1,7 @@
 /**
- * tsp.cuh - TSP 问题定义
- * 
- * 继承 ProblemBase，使用 ObjDef 目标注册机制
+ * tsp.cuh - Traveling Salesman Problem (TSP) definition
+ *
+ * Extends ProblemBase with ObjDef objective registration.
  */
 
 #pragma once
@@ -10,12 +10,12 @@
 #include "operators.cuh"
 
 struct TSPProblem : ProblemBase<TSPProblem, 1, 64> {
-    // 问题数据
+    // problem data
     const float* d_dist;
-    const float* h_dist;  // host 端距离矩阵（用于 init_relation_matrix）
+    const float* h_dist;  // host distance matrix (for init_relation_matrix)
     int n;
     
-    // ---- 目标计算 ----
+    // ---- objective evaluation ----
     __device__ float calc_total_distance(const Sol& sol) const {
         float total = 0.0f;
         const int* route = sol.data[0];
@@ -25,7 +25,7 @@ struct TSPProblem : ProblemBase<TSPProblem, 1, 64> {
         return total;
     }
     
-    // ---- 目标定义（OBJ_DEFS 与 compute_obj 必须一一对应）----
+    // ---- objective defs (OBJ_DEFS must match compute_obj one-to-one) ----
     static constexpr ObjDef OBJ_DEFS[] = {
         {ObjDir::Minimize, 1.0f, 0.0f},   // case 0: calc_total_distance
     };
@@ -37,10 +37,10 @@ struct TSPProblem : ProblemBase<TSPProblem, 1, 64> {
     }
     
     __device__ float compute_penalty(const Sol& sol) const {
-        return 0.0f;  // TSP 无约束
+        return 0.0f;  // TSP has no side constraints
     }
     
-    // ---- config（编码/维度部分，目标由基类自动填充）----
+    // ---- config (encoding/dims; objectives filled by base class) ----
     ProblemConfig config() const {
         ProblemConfig cfg;
         cfg.encoding = EncodingType::Permutation;
@@ -49,7 +49,7 @@ struct TSPProblem : ProblemBase<TSPProblem, 1, 64> {
         return cfg;
     }
     
-    // ---- shared memory 接口 ----
+    // ---- shared memory interface ----
     static constexpr size_t SMEM_LIMIT = 48 * 1024;
     
     size_t shared_mem_bytes() const {
@@ -69,7 +69,7 @@ struct TSPProblem : ProblemBase<TSPProblem, 1, 64> {
         d_dist = sd;
     }
     
-    // 距离先验：距离近 → G/O 分数高
+    // Distance prior: closer cities → higher G/O scores
     void init_relation_matrix(float* G, float* O, int N) const {
         if (!h_dist || N != n) return;
         float max_d = 0.0f;
@@ -108,21 +108,21 @@ struct TSPProblem : ProblemBase<TSPProblem, 1, 64> {
         h_dist = nullptr;
     }
     
-    // v5.0: 多 GPU 协同 — 克隆到指定 GPU
+    // v5.0: multi-GPU — clone onto a given device
     TSPProblem* clone_to_device(int gpu_id) const override {
         int orig_device;
         CUDA_CHECK(cudaGetDevice(&orig_device));
         CUDA_CHECK(cudaSetDevice(gpu_id));
         
-        // 分配设备内存并拷贝距离矩阵
+        // Allocate device memory and copy distance matrix
         float* dd;
         CUDA_CHECK(cudaMalloc(&dd, sizeof(float) * n * n));
         CUDA_CHECK(cudaMemcpy(dd, h_dist, sizeof(float) * n * n, cudaMemcpyHostToDevice));
         
-        // 恢复原设备
+        // Restore original device
         CUDA_CHECK(cudaSetDevice(orig_device));
         
-        // 创建新的 Problem 实例（在 host 端）
+        // Create new Problem instance (on host)
         TSPProblem* new_prob = new TSPProblem();
         new_prob->n = n;
         new_prob->h_dist = h_dist;

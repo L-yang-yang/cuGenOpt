@@ -1,12 +1,12 @@
 /**
- * vrptw.cuh - 带时间窗的车辆路径问题 (VRPTW)
- * 
- * 在 CVRP 基础上增加时间窗约束。
- * 编码：Perm 多行分区（同 CVRP），data[r][j] = 路线 r 的第 j 个客户。
- * 目标：Minimize 总距离。
- * 约束：(a) 容量约束, (b) 时间窗约束（到达时间必须 ≤ latest，早到需等待）。
- * 
- * 验证实例：8 客户 3 车, 手工设计坐标+时间窗, 确保有已知可行解。
+ * vrptw.cuh - Vehicle Routing Problem with Time Windows (VRPTW)
+ *
+ * CVRP plus time window constraints.
+ * Encoding: multi-row perm partition (same as CVRP); data[r][j] = j-th customer on route r.
+ * Objective: minimize total distance.
+ * Constraints: (a) capacity, (b) time windows (arrival ≤ latest; early arrival waits).
+ *
+ * Validation instance: 8 customers, 3 vehicles; hand-crafted coords + windows with known feasible solution.
  */
 
 #pragma once
@@ -14,12 +14,12 @@
 #include "cuda_utils.cuh"
 
 struct VRPTWProblem : ProblemBase<VRPTWProblem, 8, 64> {
-    const float* d_dist;        // 距离矩阵 [(n+1)*(n+1)]（含 depot）
-    const float* d_demand;      // 需求 [n]
-    const float* d_earliest;    // 最早服务时间 [n+1]（含 depot）
-    const float* d_latest;      // 最晚服务时间 [n+1]（含 depot）
-    const float* d_service;     // 服务耗时 [n+1]（含 depot）
-    int n;                      // 客户数（不含 depot）
+    const float* d_dist;        // distance matrix [(n+1)*(n+1)] (includes depot)
+    const float* d_demand;      // demand [n]
+    const float* d_earliest;    // earliest service time [n+1] (includes depot)
+    const float* d_latest;      // latest service time [n+1] (includes depot)
+    const float* d_service;     // service time [n+1] (includes depot)
+    int n;                      // number of customers (excludes depot)
     int stride;                 // n+1
     float capacity;
     int num_vehicles;
@@ -63,30 +63,30 @@ struct VRPTWProblem : ProblemBase<VRPTWProblem, 8, 64> {
             if (size == 0) continue;
             active++;
             
-            // 容量约束
+            // Capacity constraint
             float load = 0.0f;
             for (int j = 0; j < size; j++)
                 load += d_demand[sol.data[r][j]];
             if (load > capacity)
                 penalty += (load - capacity) * 100.0f;
             
-            // 时间窗约束：模拟路线行驶
+            // Time windows: simulate route travel
             float time = 0.0f;
             int prev = 0;
             for (int j = 0; j < size; j++) {
                 int node = sol.data[r][j] + 1;
                 float travel = d_dist[prev * stride + node];
                 time += travel;
-                // 早到需等待
+                // Wait if early
                 if (time < d_earliest[node])
                     time = d_earliest[node];
-                // 迟到产生惩罚
+                // Penalize lateness
                 if (time > d_latest[node])
                     penalty += (time - d_latest[node]) * 50.0f;
                 time += d_service[node];
                 prev = node;
             }
-            // 返回 depot 的时间窗
+            // Time window returning to depot
             float return_time = time + d_dist[prev * stride + 0];
             if (return_time > d_latest[0])
                 penalty += (return_time - d_latest[0]) * 50.0f;

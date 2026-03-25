@@ -1,8 +1,8 @@
 /**
- * schedule.cuh - 排班问题
- * 
- * 继承 ProblemBase，使用 ObjDef 目标注册机制
- * 2 个目标：总成本（min）+ 不公平度（min，权重更高）
+ * schedule.cuh - staff scheduling
+ *
+ * Extends ProblemBase with ObjDef objective registration.
+ * Two objectives: total cost (min) + unfairness (min, higher weight).
  */
 
 #pragma once
@@ -14,7 +14,7 @@ struct ScheduleProblem : ProblemBase<ScheduleProblem, 8, 16> {
     const float* d_cost;
     int days, emps, required;
     
-    // ---- 目标计算 ----
+    // ---- objective evaluation ----
     __device__ float calc_total_cost(const Sol& sol) const {
         float total = 0.0f;
         for (int d = 0; d < days; d++)
@@ -37,7 +37,7 @@ struct ScheduleProblem : ProblemBase<ScheduleProblem, 8, 16> {
         return (float)(max_w - min_w);
     }
     
-    // ---- 目标定义（OBJ_DEFS 与 compute_obj 必须一一对应）----
+    // ---- objective defs (OBJ_DEFS must match compute_obj one-to-one) ----
     static constexpr ObjDef OBJ_DEFS[] = {
         {ObjDir::Minimize, 1.0f, 0.0f},   // case 0: calc_total_cost
         {ObjDir::Minimize, 5.0f, 0.0f},   // case 1: calc_unfairness
@@ -71,9 +71,9 @@ struct ScheduleProblem : ProblemBase<ScheduleProblem, 8, 16> {
         return cfg;
     }
     
-    // 默认回退全量（基类行为）— 不需要覆盖 evaluate_move
+    // Default full re-eval (base behavior) — no need to override evaluate_move
     
-    // ---- shared memory 接口 ----
+    // ---- shared memory interface ----
     size_t shared_mem_bytes() const {
         return (size_t)days * emps * sizeof(float);
     }

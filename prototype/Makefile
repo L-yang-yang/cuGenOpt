@@ -1,10 +1,10 @@
 # GenSolver Makefile
 #
-# 用法:
-#   make e1 e2 e3 e4 e5 e6   → 编译单个实验
-#   make diag                  → 编译诊断程序
-#   make all                   → 编译全部
-#   make clean                 → 清理
+# Usage:
+#   make e1 e2 e3 e4 e5 e6   → Build individual experiments
+#   make diag                  → Build diagnostic program
+#   make all                   → Build all
+#   make clean                 → Clean
 
 NVCC     = nvcc
 ARCH     ?= -arch=sm_75
@@ -40,10 +40,10 @@ $(EXP_DIR)/%/gpu: $(EXP_DIR)/%/gpu.cu $(ALL_HEADERS) problems/tsplib_data.h
 $(EXP_DIR)/e0_diagnosis/bench_diagnosis: $(EXP_DIR)/e0_diagnosis/bench_diagnosis.cu $(ALL_HEADERS)
 	$(NVCC) $(ARCH) $(CFLAGS) $(INCLUDES) -o $@ $<
 
-test_multi_gpu: test_multi_gpu.cu $(ALL_HEADERS)
+test_multi_gpu: $(EXP_DIR)/e9_multi_gpu_b3/test_multi_gpu.cu $(ALL_HEADERS)
 	$(NVCC) $(ARCH) $(CFLAGS) $(INCLUDES) -o $@ $<
 
-test_multi_gpu_b3: test_multi_gpu_b3.cu $(ALL_HEADERS)
+test_multi_gpu_b3: $(EXP_DIR)/e9_multi_gpu_b3/test_multi_gpu_b3.cu $(ALL_HEADERS)
 	$(NVCC) $(ARCH) $(CFLAGS) $(INCLUDES) -o $@ $<
 
 clean:

@@ -1,13 +1,13 @@
 /**
- * bin_packing.cuh - 一维装箱问题（Integer 编码 + 约束）
- * 
- * N 个物品，每个重量 w[i]，装入最多 B 个箱子，每个箱子容量 C。
- * 决策变量：data[0][i] ∈ [0, B-1]，表示物品 i 放入的箱子编号。
- * 目标：最小化使用的箱子数。
- * 约束：每个箱子总重不超过 C，超出部分作为 penalty。
- * 
- * 验证实例：8 物品 weights=[7,5,3,4,6,2,8,1], C=10, 最优=4 箱
- *   箱0={7,3}=10, 箱1={5,4,1}=10, 箱2={6,2}=8, 箱3={8}=8
+ * bin_packing.cuh - one-dimensional bin packing (Integer encoding + constraints)
+ *
+ * N items with weights w[i], at most B bins, capacity C per bin.
+ * Decision: data[0][i] in [0, B-1] = bin index for item i.
+ * Objective: minimize number of bins used.
+ * Constraint: bin load ≤ C; overflow contributes to penalty.
+ *
+ * Validation instance: 8 items weights=[7,5,3,4,6,2,8,1], C=10, optimum=4 bins
+ *   bin0={7,3}=10, bin1={5,4,1}=10, bin2={6,2}=8, bin3={8}=8
  */
 
 #pragma once
@@ -16,9 +16,9 @@
 
 struct BinPackingProblem : ProblemBase<BinPackingProblem, 1, 64> {
     const float* d_weights;
-    int n;              // 物品数
-    int max_bins;       // 最大箱子数 B
-    float capacity;     // 箱子容量 C
+    int n;              // number of items
+    int max_bins;       // max bins B
+    float capacity;     // bin capacity C
     
     __device__ float calc_bins_used(const Sol& sol) const {
         bool used[32] = {};

@@ -1,12 +1,12 @@
 /**
- * load_balance.cuh - 离散负载均衡问题（Integer 编码验证）
- * 
- * N 个任务分配到 M 台机器，每个任务有一个处理时间 p[i]。
- * 决策变量：data[0][i] ∈ [0, M-1]，表示任务 i 分配到哪台机器。
- * 目标：最小化 makespan（最大机器负载）。
- * 
- * 已知 NP-hard（等价于 multiprocessor scheduling / load balancing）。
- * LPT（最长处理时间优先）贪心可得 4/3 近似。
+ * load_balance.cuh - discrete load balancing (Integer encoding sanity check)
+ *
+ * N tasks on M machines, processing time p[i] per task.
+ * Decision: data[0][i] in [0, M-1] = machine for task i.
+ * Objective: minimize makespan (max machine load).
+ *
+ * NP-hard (same as multiprocessor scheduling / load balancing).
+ * LPT (longest processing time first) greedy achieves 4/3 approximation.
  */
 
 #pragma once
@@ -14,12 +14,12 @@
 #include "cuda_utils.cuh"
 
 struct LoadBalanceProblem : ProblemBase<LoadBalanceProblem, 1, 64> {
-    const float* d_proc_time;   // 任务处理时间 [N]
-    int n;                      // 任务数
-    int m;                      // 机器数
+    const float* d_proc_time;   // task processing times [N]
+    int n;                      // number of tasks
+    int m;                      // number of machines
     
     __device__ float calc_makespan(const Sol& sol) const {
-        float load[32] = {};    // 最多 32 台机器
+        float load[32] = {};    // at most 32 machines
         int size = sol.dim2_sizes[0];
         for (int i = 0; i < size; i++) {
             int machine = sol.data[0][i];
@@ -43,7 +43,7 @@ struct LoadBalanceProblem : ProblemBase<LoadBalanceProblem, 1, 64> {
     }
     
     __device__ float compute_penalty(const Sol& sol) const {
-        return 0.0f;   // 无约束（任何分配都合法）
+        return 0.0f;   // no side constraints (any assignment is feasible)
     }
     
     ProblemConfig config() const {
