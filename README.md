@@ -165,7 +165,8 @@ Define your own problem by inheriting `ProblemBase` and implementing `compute_ob
 ## Installation
 
 ### Python Package
-come soon
+
+coming soon～
 ```bash
 pip install cugenopt
 ```
