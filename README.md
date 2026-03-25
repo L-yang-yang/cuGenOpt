@@ -224,10 +224,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Contact
 
 **Yuyang Liu**  
-Independent Researcher 
-Algorithm Engineer with Experience at AVIC , Huawei, Alibaba, and Shopee
-Shenzhen, China  
-Email: 15251858055@163.com
+- Independent Researcher 
+- Algorithm Engineer with Experience at AVIC , Huawei, Alibaba, and Shopee
+- Shenzhen, China  
+- Email: 15251858055@163.com
 
 ---
 
