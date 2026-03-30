@@ -15,6 +15,13 @@
 **Paper**: [cuGenOpt: A GPU-Accelerated General-Purpose Metaheuristic Framework for Combinatorial Optimization](https://arxiv.org/abs/2603.19163) 
 
 ---
+Starting April 24, GitHub may use Copilot interaction data for AI model training.
+
+To help protect this project, we kindly ask that anyone who forks this repository disables this feature in  GitHub settings.
+
+Thank you for your understanding.
+
+---
 
 ## Overview
 
@@ -43,7 +50,7 @@ cuGenOpt is a high-performance, problem-agnostic GPU metaheuristic framework des
 ## Quick Start
 
 ### Option 1: Python API (Recommended)
-
+comming soon
 ```bash
 pip install cugenopt
 pip install nvidia-cuda-nvcc-cu12  # If system CUDA Toolkit not available
