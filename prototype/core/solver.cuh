@@ -528,42 +528,52 @@ __global__ void inject_to_islands_kernel(Sol* pop, int pop_size, int island_size
 // ============================================================
 // v5.0 plan B3: inject_check_kernel — passive injection check
 // ============================================================
-// During migrate, GPU checks InjectBuffer; if new solution exists, inject at worst of first island
-// atomicExch reads and clears flag atomically for thread safety
+// During migrate, GPU checks InjectBuffer; if new solution exists, inject into
+// target islands based on MultiGpuInjectMode.
 //
 // Design notes:
-// 1. Single thread (thread 0 of block 0) to avoid races
+// 1. Single thread (thread 0 of block 0) — serial over target islands (count is small)
 // 2. atomicExch reads flag and clears it so each solution is handled once
-// 3. Inject only into first island (OneIsland strategy) to preserve diversity
+// 3. Inject mode: OneIsland (island 0), HalfIslands (random half), AllIslands (all)
 // 4. Optional: if inject_buf is nullptr, skip (single-GPU unaffected)
 
 template<typename Sol>
 __global__ void inject_check_kernel(Sol* pop, int pop_size, int island_size,
-                                     InjectBuffer<Sol>* inject_buf, ObjConfig oc) {
-    // Single-thread execution
+                                     InjectBuffer<Sol>* inject_buf, ObjConfig oc,
+                                     MultiGpuInjectMode mode) {
     if (threadIdx.x != 0 || blockIdx.x != 0) return;
-    
-    // No injection buffer — return (single-GPU case)
     if (inject_buf == nullptr) return;
-    
-    // Atomically read and clear flag (each solution processed once)
+
     int flag = atomicExch(inject_buf->d_flag, 0);
-    
-    // No new solution — return
     if (flag != 1) return;
-    
-    // Read injected solution
+
     Sol inject_sol = *(inject_buf->d_solution);
-    
-    // Find worst slot on first island
+
     int num_islands = pop_size / island_size;
     if (num_islands == 0) return;
-    
-    int worst = find_worst_in_island(pop, 0, island_size, oc);
-    
-    // Replace if injection is better
-    if (is_better(inject_sol, pop[worst], oc)) {
-        pop[worst] = inject_sol;
+
+    if (mode == MultiGpuInjectMode::OneIsland) {
+        int worst = find_worst_in_island(pop, 0, island_size, oc);
+        if (is_better(inject_sol, pop[worst], oc))
+            pop[worst] = inject_sol;
+
+    } else if (mode == MultiGpuInjectMode::AllIslands) {
+        for (int i = 0; i < num_islands; i++) {
+            int worst = find_worst_in_island(pop, i * island_size, island_size, oc);
+            if (is_better(inject_sol, pop[worst], oc))
+                pop[worst] = inject_sol;
+        }
+
+    } else {  // HalfIslands — randomly select num_islands/2 islands
+        int half = (num_islands + 1) / 2;
+        unsigned seed = (unsigned)clock();
+        for (int count = 0; count < half; count++) {
+            seed = seed * 1664525u + 1013904223u;  // LCG
+            int isle = (int)(seed % (unsigned)num_islands);
+            int worst = find_worst_in_island(pop, isle * island_size, island_size, oc);
+            if (is_better(inject_sol, pop[worst], oc))
+                pop[worst] = inject_sol;
+        }
     }
 }
 
@@ -1247,7 +1257,8 @@ SolveResult<typename Problem::Sol> solve(Problem& prob, const SolverConfig& cfg,
         // Must be outside Graph: inject_buf content changes dynamically
         if (inject_buf != nullptr && use_islands) {
             inject_check_kernel<<<1, 1>>>(pop.d_solutions, pop_size,
-                                           island_size, inject_buf, oc);
+                                           island_size, inject_buf, oc,
+                                           cfg.multi_gpu_inject_mode);
             CUDA_CHECK(cudaDeviceSynchronize());
         }
         
